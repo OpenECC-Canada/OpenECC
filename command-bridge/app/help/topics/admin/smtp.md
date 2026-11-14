@@ -191,3 +191,12 @@ More detail is written to the server's error log (`/var/log/apache2/commandbridg
 - Record who created the app registration and when its secret expires.
 - Secrets are stored in the Command Bridge database and are never shown again on this page. To replace one, type the
   new value and save; leaving the field blank keeps the saved one.
+
+## ICS 213 messages
+
+**Email the people holding the "To" position** decides what happens when someone sends an [ICS 213](help:forms/ics213/index) to a position:
+
+- **Only when the sender ticks "Also email"** (the default): the people in that position always get the dashboard notice, and are emailed only if the sender ticks the box.
+- **Always:** they're emailed every time, as well as getting the dashboard notice. This helps when people in some positions work away from the main centre.
+
+The email goes to the address on each person's user account. Anyone without one only gets the dashboard notice, and the sender is told.

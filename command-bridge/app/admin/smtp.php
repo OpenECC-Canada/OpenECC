@@ -28,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'email_graph_tenant_id' => trim($_POST['email_graph_tenant_id'] ?? ''),
             'email_graph_client_id' => trim($_POST['email_graph_client_id'] ?? ''),
             'email_graph_sender_mailbox' => trim($_POST['email_graph_sender_mailbox'] ?? ''),
+            // ICS 213: email the people holding the "To" position always, or only when the sender ticks the box.
+            'ics213_email_position_holders' => ($_POST['ics213_email_position_holders'] ?? '') === 'always' ? 'always' : 'ticked',
         ];
 
         // Checks run before anything is saved, so a rejected form leaves the working configuration untouched.
@@ -249,6 +251,18 @@ settings_menu('smtp');
     <label>Sending mailbox
       <input name="email_graph_sender_mailbox" type="email" value="<?= e($config['graph_mailbox']) ?>">
       <span class="field-hint">The mailbox the app sends from, for example a shared mailbox such as <code>commandbridge@example.ca</code>.</span>
+    </label>
+  </section>
+
+  <section class="card">
+    <h2>ICS 213 messages</h2>
+    <?php $ics213Mode = (string)get_app_setting('ics213_email_position_holders', 'ticked') === 'always' ? 'always' : 'ticked'; ?>
+    <label>Email the people holding the "To" position
+      <select name="ics213_email_position_holders">
+        <option value="ticked"<?= $ics213Mode === 'ticked' ? ' selected' : '' ?>>Only when the sender ticks "Also email" (default)</option>
+        <option value="always"<?= $ics213Mode === 'always' ? ' selected' : '' ?>>Always, as well as the dashboard notice</option>
+      </select>
+      <span class="field-hint">They always get the dashboard notice. Email uses the address on their user account.</span>
     </label>
   </section>
 

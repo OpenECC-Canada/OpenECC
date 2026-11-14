@@ -2,14 +2,37 @@
 
 ## Unreleased
 
-* **ICS 213 messages reach the person they are for.** "2. To" used to be free text only, so nobody was told about
-  a message.
-  - Now you pick the position from those filled in the incident. Everyone holding it gets a dashboard notification
-    under **My action items**, and opening the message clears it.
-  - When a message gets its first reply, the sender is notified.
-  - People outside the incident organization can still be typed in by name (no notification).
-  - Database: migration `0007_ics213_addressee.sql` adds `form_213_messages.to_role_code` and `from_user_id`.
-  - New file `includes/ics213_messages.php`. Help updated.
+* **ICS 213 messages reach the person they are for, in the app or by email.** "2. To" used to be free text only,
+  so nobody was told about a message.
+  - **Dashboard:** pick the "To" position from those filled in the incident. Everyone holding it gets a notice under
+    **My action items**; opening the message clears it. The sender is notified of the first reply.
+  - **Email:** when writing a message you can also email it:
+    - to the people holding the "To" position (tick "Also email", or always, if an admin chooses that under
+      Email Delivery > ICS 213 messages)
+    - to contacts with an email on this period's ICS 205A
+    - to any typed addresses
+
+    The email has the incident and a reference code (`CB-213-XXXXX`) in the subject, and the full message as plain
+    text in the body. The official ICS 213 is attached as a PDF (the form itself is not changed). Reply-To is the
+    sender's own email.
+  - **Writing tips:** a note above "6. Message" explains who will see the message and asks the sender to say how to
+    reply, with examples.
+  - **Each message keeps a send log:** who it went to, sent or failed, when, by whom. **Resend** retries a failed
+    email; **Send to more people** emails it later.
+  - **Replies that come back by email are typed in by hand.** **Find a message** on the list searches by reference
+    code, and the reply records "received by email" and the address it came from. Command Bridge does not read any
+    mailbox.
+  - **ICS 205A:** phone, email and notes now have their own columns, and the email is checked. **Fix:** the 205A
+    Notes box was never saved.
+  - **Email:** the app's email sender can now attach files and set Reply-To (SMTP and Microsoft Graph). Subjects
+    with accented letters are encoded properly.
+  - **Database:**
+    - migrations `0007_ics213_addressee.sql` (`to_role_code`, `from_user_id`) and `0008_ics213_email.sql`
+      (`ref_code`, reply-received fields, the `form_213_sends` table, the 205A phone/email/notes columns, filled in
+      from existing entries)
+    - the `ics213_email_position_holders` setting in seed.sql
+  - New file `includes/ics213_messages.php`. Help updated for the ICS 213, ICS 205A and Email Delivery. Smoke test
+    extended.
 * **Fix: the ICS 202 could not be approved while it was waiting for approval.** The new lock refused the Incident
   Commander's **Approve** ("ICS 202 has been signed and is waiting for approval, so it is locked"). Approving is
   now allowed on a locked ICS 202, as it already was for the ICS 204.

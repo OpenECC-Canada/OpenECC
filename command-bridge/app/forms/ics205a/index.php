@@ -73,21 +73,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $incidentId > 0) {
                 throw new RuntimeException('ICS 205A is already submitted and can no longer be edited.');
             }
 
+            // The combined text is what the official ICS 205A prints under "Methods of contact" (notes included).
             $contactMethods = trim(implode(' | ', array_filter([
                 trim($_POST['phone'] ?? ''),
-                trim($_POST['email'] ?? '')
+                trim($_POST['email'] ?? ''),
+                trim(preg_replace('/\s+/', ' ', (string)($_POST['notes'] ?? '')) ?? '')
             ])));
 
+            $email = trim($_POST['email'] ?? '');
+            if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new RuntimeException('The email address is not valid.');
+            }
+            // phone / email / notes have their own columns (migration 0008); contact_methods keeps the combined text.
             $stmt = $pdo->prepare("
                 INSERT INTO form_205a_entries
-                (header_id, incident_assigned_position, person_name, contact_methods, display_order, created_at, updated_at)
-                VALUES (?, ?, ?, ?, 1, NOW(), NOW())
+                (header_id, incident_assigned_position, person_name, contact_methods, phone, email, notes, display_order, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
             ");
             $stmt->execute([
                 $headerId,
                 trim($_POST['position_title'] ?? ''),
                 trim($_POST['contact_name'] ?? ''),
-                $contactMethods ?: null
+                $contactMethods ?: null,
+                trim($_POST['phone'] ?? '') ?: null,
+                $email ?: null,
+                trim($_POST['notes'] ?? '') ?: null,
             ]);
 
             flash('success', 'ICS 205A draft entry saved.');

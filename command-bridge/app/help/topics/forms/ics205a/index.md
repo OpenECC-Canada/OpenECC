@@ -15,7 +15,7 @@ Under **Add Communications Contact**, enter:
 |---|---|
 | Contact Name | The person's name. |
 | Position Title | Their assigned ICS position. |
-| Phone, Email | How to reach them. Include the area code. |
+| Phone, Email | How to reach them. Include the area code. Anyone with an email here can be picked when sending an [ICS 213](help:forms/ics213/index) by email. |
 | Notes | Other ways to reach them, such as a radio call sign, pager or satellite phone, or the hours they can be reached. |
 
 Saved contacts show under **Existing Entries**. The form stays editable while it is a draft; sign it when it's ready for the period handover or the IAP.
