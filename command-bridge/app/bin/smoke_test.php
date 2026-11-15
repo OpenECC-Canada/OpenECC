@@ -218,6 +218,36 @@ if ($want('env')) {
         t_ok('Page-level Submit records the signature and approver', $noSig === [], 'missing in: ' . implode(', ', $noSig));
     } catch (Throwable $e) { t_ok('Form lock checks', false, $e->getMessage()); }
 
+    t_ok('ICS 213 messages know who they are for (form_213_messages.to_role_code, from_user_id)',
+        count(array_intersect(['to_role_code', 'from_user_id'], table_columns('form_213_messages'))) === 2, 'run update.sh (migration 0007)');
+    t_ok('File present: app/includes/ics213_messages.php', is_file($appRoot . '/includes/ics213_messages.php'));
+    t_ok('ICS 213 email columns and log (form_213_messages.ref_code, form_213_sends)',
+        in_array('ref_code', table_columns('form_213_messages'), true) && table_columns('form_213_sends') !== [], 'run update.sh (migration 0008)');
+    t_ok('ICS 205A keeps phone and email in their own columns', count(array_intersect(['phone', 'email', 'notes'], table_columns('form_205a_entries'))) === 3,
+        'run update.sh (migration 0008)');
+    try {
+        require_once $appRoot . '/includes/ics213_messages.php';
+        $code = ics213_new_ref_code();
+        t_ok('ICS 213 reference codes look right (' . $code . ')', ics213_valid_ref_code($code));
+        [$okAddr, $badAddr] = ics213_parse_addresses("a@example.ca; b@example.ca\nnot-an-address");
+        t_ok('ICS 213 typed email addresses are checked', count($okAddr) === 2 && $badAddr === ['not-an-address']);
+        [$subj, $body] = ics213_email_content(['id' => 1, 'ref_code' => $code, 'to_name' => 'T', 'from_name' => 'F', 'subject' => 'S', 'date_time' => '', 'message' => 'M', 'approved_by' => ''],
+            ['incident_name' => 'Smoke'], '');
+        t_ok('ICS 213 email subject carries the incident and reference code', strpos($subj, $code) !== false && strpos($subj, 'Smoke') !== false && strpos($body, 'M') !== false);
+        require_once $appRoot . '/includes/mail.php';
+        $mime = cb_email_mime(['sender_name' => 'CB', 'sender_address' => 'cb@example.ca'], 'x@example.ca', $subj, $body,
+            ['reply_to' => 'r@example.ca', 'attachments' => [['name' => 'a.pdf', 'type' => 'application/pdf', 'data' => '%PDF-1.4']]]);
+        t_ok('Email with a PDF attachment and Reply-To is built correctly', strpos($mime, 'multipart/mixed') !== false && strpos($mime, 'Reply-To: <r@example.ca>') !== false
+            && strpos($mime, 'filename="a.pdf"') !== false);
+        t_ok('ICS 213 approval columns (form_213_messages.status, approver_user_id, sent_at; form_213_sends.approver_user_id)',
+            count(array_intersect(['status', 'signed_at', 'approver_user_id', 'approved_by_user_id', 'approved_at', 'return_reason', 'sent_at'], table_columns('form_213_messages'))) === 7
+            && in_array('approver_user_id', table_columns('form_213_sends'), true), 'run update.sh (migration 0009)');
+        t_ok('ICS 213 status labels', ics213_status_label(['status' => 'awaiting_approval']) === 'Awaiting approval'
+            && ics213_status_label(['status' => 'sent', 'reply' => 'ok']) === 'Replied' && ics213_status_label(['status' => 'sent', 'reply' => '']) === 'Sent');
+        require_once $appRoot . '/includes/signoff.php';
+        t_ok('ICS 213 is no longer in the operational period sign-off', !signoff_needs_creator_sign('ICS213'));
+    } catch (Throwable $e) { t_ok('ICS 213 email checks', false, $e->getMessage()); }
+
     // Dashboard panels per position (includes/dashboard_panels.php, migration 0006).
     try {
         require_once $appRoot . '/includes/dashboard_panels.php';

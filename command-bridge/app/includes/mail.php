@@ -54,7 +54,7 @@ function cb_smtp_cmd($socket, string $command, array $expected): array {
     [$code,$line]=cb_smtp_read($socket);
     return [in_array($code,$expected,true),'SMTP relay rejected the request ('.$code.').'];
 }
-function cb_smtp_send(array $c,string $to,string $subject,string $body): array {
+function cb_smtp_send(array $c,string $to,string $subject,string $body,array $opt=[]): array {
     if ($c['host']==='' || !filter_var($c['sender_address'],FILTER_VALIDATE_EMAIL)) return cb_email_error('SMTP host or sender address is not configured.');
     $scheme=$c['encryption']==='ssl'?'ssl://':'tcp://';
     $ctx=stream_context_create(['ssl'=>['verify_peer'=>true,'verify_peer_name'=>true,'allow_self_signed'=>false]]);
@@ -74,25 +74,57 @@ function cb_smtp_send(array $c,string $to,string $subject,string $body): array {
         [$ok,$msg]=cb_smtp_cmd($socket,'AUTH XOAUTH2 '.$xo,[235]); if(!$ok){fclose($socket);return cb_email_error($msg);}
     }
     foreach ([['MAIL FROM:<'.$c['sender_address'].'>',[250]],['RCPT TO:<'.$to.'>',[250,251]],['DATA',[354]]] as [$cmd,$valid]) {[$ok,$msg]=cb_smtp_cmd($socket,$cmd,$valid);if(!$ok){fclose($socket);return cb_email_error($msg);}}
-    $headers='From: '.cb_email_clean($c['sender_name']).' <'.$c['sender_address'].">\r\n".'To: <'.$to.">\r\n".'Subject: '.cb_email_clean($subject)."\r\n".'MIME-Version: 1.0'."\r\n".'Content-Type: text/plain; charset=UTF-8'."\r\n";
-    $data=$headers."\r\n".str_replace("\n.", "\n..", str_replace("\r\n","\n",$body))."\r\n.";
+    $data=cb_email_mime($c,$to,$subject,$body,$opt);
     [$ok,$msg]=cb_smtp_cmd($socket,$data,[250]); @cb_smtp_cmd($socket,'QUIT',[221]); fclose($socket);
     return $ok ? ['ok'=>true,'message'=>'Email accepted by SMTP relay.'] : cb_email_error($msg);
 }
-function cb_graph_send(array $c,string $to,string $subject,string $body): array {
+function cb_graph_send(array $c,string $to,string $subject,string $body,array $opt=[]): array {
     if ($c['graph_tenant']===''||$c['graph_client_id']===''||$c['graph_secret']===''||!filter_var($c['graph_mailbox'],FILTER_VALIDATE_EMAIL)) return cb_email_error('Microsoft Graph settings are incomplete.');
     $t=cb_token($c['graph_tenant'],$c['graph_client_id'],$c['graph_secret'],'https://graph.microsoft.com/.default'); if(!$t['ok']) return $t;
     $payload=['message'=>['subject'=>cb_email_clean($subject),'body'=>['contentType'=>'Text','content'=>$body],'toRecipients'=>[['emailAddress'=>['address'=>$to]]]],'saveToSentItems'=>false];
+    if(!empty($opt['reply_to']) && filter_var($opt['reply_to'],FILTER_VALIDATE_EMAIL)) $payload['message']['replyTo']=[['emailAddress'=>['address'=>$opt['reply_to']]]];
+    foreach((array)($opt['attachments'] ?? []) as $a){ $payload['message']['attachments'][]=['@odata.type'=>'#microsoft.graph.fileAttachment','name'=>cb_email_clean((string)$a['name']),'contentType'=>(string)($a['type'] ?? 'application/octet-stream'),'contentBytes'=>base64_encode((string)$a['data'])]; }
     $ch=curl_init('https://graph.microsoft.com/v1.0/users/'.rawurlencode($c['graph_mailbox']).'/sendMail');
     curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>json_encode($payload),CURLOPT_HTTPHEADER=>['Authorization: Bearer '.$t['token'],'Content-Type: application/json'],CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>20]);
     curl_exec($ch);$code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);curl_close($ch);
     return $code===202 ? ['ok'=>true,'message'=>'Email accepted by Microsoft Graph.'] : cb_email_error('Microsoft Graph rejected the email (HTTP '.$code.').');
 }
-function app_send_mail_result(string $to,string $subject,string $body): array {
+/**
+ * Sends one email. $opt (optional):
+ *   reply_to    => address replies should go to
+ *   attachments => [['name' => 'file.pdf', 'type' => 'application/pdf', 'data' => <bytes>], ...]
+ */
+function app_send_mail_result(string $to,string $subject,string $body,array $opt=[]): array {
     if(!filter_var($to,FILTER_VALIDATE_EMAIL)) return cb_email_error('Recipient email address is invalid.');
-    $c=cb_email_config(); return $c['method']==='graph' ? cb_graph_send($c,$to,$subject,$body) : cb_smtp_send($c,$to,$subject,$body);
+    $c=cb_email_config(); return $c['method']==='graph' ? cb_graph_send($c,$to,$subject,$body,$opt) : cb_smtp_send($c,$to,$subject,$body,$opt);
 }
-function app_send_mail(string $to,string $subject,string $body): bool { return app_send_mail_result($to,$subject,$body)['ok']; }
+
+/** The SMTP DATA block: headers and body, multipart when there are attachments. Ends with the "." line. */
+function cb_email_mime(array $c,string $to,string $subject,string $body,array $opt=[]): string {
+    $subj=cb_email_clean($subject);
+    if(preg_match('/[^\x20-\x7e]/',$subj) && function_exists('mb_encode_mimeheader')) $subj=mb_encode_mimeheader($subj,'UTF-8','B',"\r\n");
+    $h='From: '.cb_email_clean($c['sender_name']).' <'.$c['sender_address'].">\r\n".'To: <'.$to.">\r\n".'Subject: '.$subj."\r\n"
+      .'Date: '.date('r')."\r\n".'MIME-Version: 1.0'."\r\n";
+    if(!empty($opt['reply_to']) && filter_var($opt['reply_to'],FILTER_VALIDATE_EMAIL)) $h.='Reply-To: <'.cb_email_clean((string)$opt['reply_to']).">\r\n";
+    $text=str_replace("\r\n","\n",$body);
+    $atts=(array)($opt['attachments'] ?? []);
+    if(!$atts){
+        $msg=$h.'Content-Type: text/plain; charset=UTF-8'."\r\n".'Content-Transfer-Encoding: base64'."\r\n\r\n".chunk_split(base64_encode($text),76,"\r\n");
+    } else {
+        $b='=_cb_'.bin2hex(random_bytes(12));
+        $msg=$h.'Content-Type: multipart/mixed; boundary="'.$b.'"'."\r\n\r\n".'This is a multi-part message in MIME format.'."\r\n"
+            .'--'.$b."\r\n".'Content-Type: text/plain; charset=UTF-8'."\r\n".'Content-Transfer-Encoding: base64'."\r\n\r\n".chunk_split(base64_encode($text),76,"\r\n");
+        foreach($atts as $a){
+            $name=preg_replace('/[^A-Za-z0-9._-]+/','_',(string)($a['name'] ?? 'attachment'));
+            $msg.='--'.$b."\r\n".'Content-Type: '.cb_email_clean((string)($a['type'] ?? 'application/octet-stream')).'; name="'.$name.'"'."\r\n"
+                .'Content-Transfer-Encoding: base64'."\r\n".'Content-Disposition: attachment; filename="'.$name.'"'."\r\n\r\n".chunk_split(base64_encode((string)$a['data']),76,"\r\n");
+        }
+        $msg.='--'.$b.'--'."\r\n";
+    }
+    // Base64 lines never start with ".", so no dot-stuffing is needed beyond the header block.
+    return $msg."\r\n.";
+}
+function app_send_mail(string $to,string $subject,string $body,array $opt=[]): bool { return app_send_mail_result($to,$subject,$body,$opt)['ok']; }
 
 /**
  * Sends initial local-account credentials after an administrator creates a user.
