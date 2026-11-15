@@ -900,3 +900,10 @@ img,video{max-width:100%;height:auto}
 .ics213-status-cancelled{border-left-color:#9ca3af}
 .ics213-status-sent{border-left-color:#059669}
 .ics213-status h2{margin:.1rem 0 .4rem}
+
+/* ICS 233 action tracker */
+.ics233-table tr.ics233-overdue td{background:#fdecec}
+.ics233-table tr.ics233-due td{background:#fff7e0}
+.ics233-due-label{color:#92400e;font-weight:700}
+.ics233-status-form{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ics233-status-form input[type=text]{flex:1 1 160px;min-width:0}

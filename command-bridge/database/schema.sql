@@ -1026,6 +1026,27 @@ CREATE TABLE `form_definitions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `form_type` (`form_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `form_233_actions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `incident_id` int(11) NOT NULL,
+  `item_no` int(11) NOT NULL,
+  `item` varchar(500) NOT NULL,
+  `poc_role_code` varchar(50) DEFAULT NULL,
+  `poc_text` varchar(200) DEFAULT NULL,
+  `briefed_at` datetime DEFAULT NULL,
+  `briefed_by_user_id` int(11) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `status_text` varchar(255) NOT NULL DEFAULT '',
+  `target_date` date DEFAULT NULL,
+  `actual_date` date DEFAULT NULL,
+  `is_completed` tinyint(1) NOT NULL DEFAULT 0,
+  `created_by_user_id` int(11) DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_form_233_incident` (`incident_id`,`is_completed`,`item_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `form_ics209wf_values` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `form_record_id` int(11) NOT NULL,

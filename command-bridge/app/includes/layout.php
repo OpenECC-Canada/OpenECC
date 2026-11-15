@@ -124,6 +124,7 @@ function render_header(string $title, ?string $helpTopic = null): void {
           ['code' => 'ICS215A', 'path' => '/forms/ics215a/index.php', 'label' => 'ICS 215A - Safety Analysis'],
           ['code' => 'ICS218', 'path' => '/forms/ics218/index.php', 'label' => 'ICS 218 - Support Vehicle/Equipment Inventory'],
           ['code' => 'ICS230', 'path' => '/forms/ics230/index.php', 'label' => 'ICS 230 - Meeting Schedule'],
+          ['code' => 'ICS233', 'path' => '/forms/ics233/index.php', 'label' => 'ICS 233 - Action Tracker'],
       ];
     ?>
     <nav>
