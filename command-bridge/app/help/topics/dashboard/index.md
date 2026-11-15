@@ -13,6 +13,8 @@ The dashboard is your starting page for the active incident. It shows the panels
 | Resource requests waiting for Logistics | ICS 213RR requests that Logistics has to order | LSC, Supply |
 | Resources Unit intake | How many ordered resources are expected or waiting to be put on the ICS 211 or 218 | RESL |
 | Finance/Admin review | How many ICS 213RR requests are waiting for a Finance/Admin decision | FSC, Procurement, Cost |
+| Open facilities | Every open incident facility with its contact and capacity | Facilities Unit, LSC |
+| Staging | How many resources are available, assigned or out of service at each staging area | Staging Area Manager, OSC |
 | Copied forms requiring review | Every form copied forward from the last operational period that still needs review | IC/UC, Deputy IC, PSC, SITL, DOCL |
 | Forms to submit before the period ends | Every form for this operational period that isn't signed yet | IC/UC, Deputy IC, PSC, SITL, DOCL |
 | Operational period form status | The status of every IAP form (ICS 202 to 208) and any other form started this period | IC/UC, Deputy IC, PSC, SITL, DOCL |

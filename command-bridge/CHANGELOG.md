@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+* **Facilities (#44): check-in locations become the incident facility list.**
+  - **New Facilities page:** replaces Settings > Check-in Locations, which now redirects there. It lists every
+    facility: ECC, reception centres, staging areas, camps and so on.
+  - **Facility details:** type (from an admin-editable "Facility Types" lookup list), address, map position,
+    capacity, hours, contact, services, accessibility and notes. Each facility is Planned, Open, Closed or Archived,
+    and the open and close times are recorded.
+  - **Check-in points:** only facilities marked as check-in points are used for Companion Check-In, the ICS 213RR
+    receiving location and the Check-In Gateway. Existing locations stay check-in points.
+  - **Privacy:** contact details and notes are never sent to the gateway.
+  - **Access:** managed by the Facilities Unit Leader, LSC, PSC and IC (Form Permissions: FACILITIES). Everyone in
+    the incident can read it.
+  - **Elsewhere:** open facilities are suggested in the ICS 204, 215 and 230 location boxes, and there's a new
+    **Open facilities** dashboard panel.
+* **Staging board (#45).** A new Staging page for the Staging Area Manager.
+  - **The board:** every received resource by facility, set to Available, Assigned (to what), Out of service or
+    Released, with notes. Every change is kept with who made it and when.
+  - **Access:** Operations, the Resources Unit and IC can update it; others can view it (Form Permissions: STAGING).
+  - **Dashboard:** a new **Staging** panel with counts per facility.
+* **Database:** migration `0017_facilities_staging.sql`:
+  - facility columns on `external_checkin_locations`
+  - tables `resource_staging` and `resource_staging_history`
+  - the FACILITIES and STAGING page permissions
+  - the "Facility Types" defaults
+  - dashboard panels for FAC and SAM
+
+  Matching schema.sql and seed.sql. Help added for Facilities and Staging. Smoke test extended, including a check
+  that facility contact details aren't sent to the gateway.
 * **Fix: Check-In Recorder and Staging Area Manager have a section and a supervisor.** The app and the Check-In
   Gateway use the codes CIR and SAM, but the position list only had them as inactive CHECK_IN_RECORDER /
   STAGING_AREA_MANAGER entries, so CIR and SAM had no section and no supervisor (their ICS 214 went to the IC). CIR is

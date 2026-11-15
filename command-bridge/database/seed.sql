@@ -95,7 +95,9 @@ INSERT INTO `forms` VALUES
 (57,'RESOURCES_UNIT','Resources Unit',1,'hidden','Resources Unit intake board (not an ICS form). Controls who can open the Resources Unit page.','2026-11-13 15:00:00','2026-11-13 15:00:00'),
 (58,'FINANCE_ADMIN','Finance/Admin Queue',1,'hidden','Finance/Admin 213RR queue (not an ICS form). Controls who can open the Finance/Admin queue.','2026-11-13 15:00:00','2026-11-13 15:00:00'),
 (59,'ICS233','ICS 233 - Incident Open Action Tracker',1,'read_only','Open action tracker (one list per incident).','2026-11-14 22:00:00','2026-11-14 22:00:00'),
-(60,'ICS215','ICS 215 - Operational Planning Worksheet',1,'read_only','Operational planning worksheet.','2026-11-14 22:00:00','2026-11-14 22:00:00');
+(60,'ICS215','ICS 215 - Operational Planning Worksheet',1,'read_only','Operational planning worksheet.','2026-11-14 22:00:00','2026-11-14 22:00:00'),
+(61,'FACILITIES','Facilities',1,'hidden','Incident facility list (not an ICS form). Controls who can see and manage facilities.','2026-11-15 04:00:00','2026-11-15 04:00:00'),
+(62,'STAGING','Staging Board',1,'hidden','Staging status board (not an ICS form). Controls who can see and update staging.','2026-11-15 04:00:00','2026-11-15 04:00:00');
 
 INSERT INTO `form_permissions` VALUES
 (329,'ICS201','IC',1,1,1,1,1,NULL,1,'2026-10-19 13:36:04','2026-10-19 13:36:04'),
@@ -510,14 +512,47 @@ INSERT INTO `form_permissions` (`form_code`, `role_code`, `can_view`, `can_creat
 ('RESOURCES_UNIT', 'DMOB', 1, 0, 0, 0, 0, 1),
 ('RESOURCES_UNIT', 'PSC', 1, 0, 0, 0, 0, 1),
 -- Supply Unit Leader (migration 0015)
-('ICS213RR', 'SPUL', 1, 1, 1, 0, 0, 1);
+('ICS213RR', 'SPUL', 1, 1, 1, 0, 0, 1),
+-- Facilities and Staging pages (migration 0017)
+('FACILITIES', 'FAC', 1, 1, 1, 1, 0, 1),
+('FACILITIES', 'LSC', 1, 1, 1, 1, 0, 1),
+('FACILITIES', 'PSC', 1, 1, 1, 0, 0, 1),
+('FACILITIES', 'IC', 1, 1, 1, 1, 1, 1),
+('FACILITIES', 'UC', 1, 1, 1, 1, 0, 1),
+('FACILITIES', 'DIC', 1, 1, 1, 0, 0, 1),
+('FACILITIES', 'INCIDENT_POSITION', 1, 0, 0, 0, 0, 1),
+('STAGING', 'SAM', 1, 1, 1, 1, 0, 1),
+('STAGING', 'OSC', 1, 1, 1, 1, 0, 1),
+('STAGING', 'RESL', 1, 1, 1, 0, 0, 1),
+('STAGING', 'IC', 1, 1, 1, 1, 1, 1),
+('STAGING', 'UC', 1, 1, 1, 1, 0, 1),
+('STAGING', 'DIC', 1, 1, 1, 0, 0, 1),
+('STAGING', 'PSC', 1, 0, 0, 0, 0, 1),
+('STAGING', 'LSC', 1, 0, 0, 0, 0, 1),
+('STAGING', 'DMOB', 1, 0, 0, 0, 0, 1),
+('STAGING', 'DIVS', 1, 0, 0, 0, 0, 1),
+('STAGING', 'BDIR', 1, 0, 0, 0, 0, 1);
 
 INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('email_delivery_method', 'smtp_password'),
 ('email_oauth_scope', 'https://outlook.office365.com/.default'),
-('dashboard_panel_map', '{"_ALL":["action_items","my_forms","my_214","meetings"],"IC":["op_form_status","closeout","staffing","copied_review"],"UC":["op_form_status","closeout","staffing","copied_review"],"DIC":["op_form_status","closeout","staffing","copied_review"],"PSC":["op_form_status","closeout","staffing","copied_review"],"SITL":["op_form_status","closeout","copied_review"],"DOCL":["op_form_status","closeout","copied_review"],"RESL":["resl_queue","staffing"],"OSC":["staffing"],"LSC":["logistics_queue"],"SPUL":["logistics_queue"],"FSC":["finance_queue"],"PROC":["finance_queue"],"COST":["finance_queue"]}'),
+('dashboard_panel_map', '{"_ALL":["action_items","my_forms","my_214","meetings"],"IC":["op_form_status","closeout","staffing","copied_review"],"UC":["op_form_status","closeout","staffing","copied_review"],"DIC":["op_form_status","closeout","staffing","copied_review"],"PSC":["op_form_status","closeout","staffing","copied_review"],"SITL":["op_form_status","closeout","copied_review"],"DOCL":["op_form_status","closeout","copied_review"],"RESL":["resl_queue","staffing"],"OSC":["staffing","staging"],"LSC":["logistics_queue","facilities"],"SPUL":["logistics_queue"],"FAC":["facilities"],"SAM":["staging"],"FSC":["finance_queue"],"PROC":["finance_queue"],"COST":["finance_queue"]}'),
 ('ics213_email_position_holders', 'ticked'),
 ('print_access', 'positions'),
 ('printer_labels', '{}');
+
+-- Facility types for the Facilities page (migration 0017); admin-editable in Settings > Lookups.
+INSERT INTO `lookup_list_items` (`list_category`, `item_value`, `item_description`, `is_active`) VALUES
+('Facility Types', 'Base', NULL, 1),
+('Facility Types', 'Camp', NULL, 1),
+('Facility Types', 'Cooling Centre', NULL, 1),
+('Facility Types', 'ECC', NULL, 1),
+('Facility Types', 'Helispot', NULL, 1),
+('Facility Types', 'ICP', NULL, 1),
+('Facility Types', 'Medical Aid Station', NULL, 1),
+('Facility Types', 'Other', NULL, 1),
+('Facility Types', 'Reception Centre', NULL, 1),
+('Facility Types', 'Staging Area', NULL, 1),
+('Facility Types', 'Warming Centre', NULL, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -181,6 +181,23 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // Facilities (#44) and staging board (#45), migration 0017.
+    try {
+        $fc = table_columns('external_checkin_locations');
+        t_ok('Facilities: check-in locations have facility details (is_checkin_point, capacity, contact)',
+            count(array_intersect(['is_checkin_point', 'latitude', 'capacity_people', 'contact_name', 'contact_phone', 'services', 'notes'], $fc)) === 7, 'run update.sh (migration 0017)');
+        t_ok('Staging board tables (resource_staging, resource_staging_history)', table_columns('resource_staging') !== [] && table_columns('resource_staging_history') !== [],
+            'run update.sh (migration 0017)');
+        t_ok('Facilities and Staging page permissions', (int)$pdo->query("SELECT COUNT(*) FROM form_permissions WHERE (form_code = 'FACILITIES' AND role_code = 'FAC' AND can_edit = 1)
+            OR (form_code = 'STAGING' AND role_code = 'SAM' AND can_edit = 1)")->fetchColumn() === 2, 'run update.sh (migration 0017)');
+        // Contact details must never go to the internet-facing gateway.
+        $syncSrc = (string)file_get_contents($appRoot . '/includes/external_checkin_sync.php');
+        $fnStart = strpos($syncSrc, 'function external_checkin_enqueue_location_snapshot');
+        $fnBody = $fnStart !== false ? substr($syncSrc, $fnStart, 2500) : '';
+        t_ok('Facility contact details and notes are not sent to the Check-In Gateway', $fnBody !== ''
+            && !preg_match('/contact_name|contact_phone|\'notes\'|accessibility/', $fnBody));
+    } catch (Throwable $e) { t_ok('Facilities checks', false, $e->getMessage()); }
+
     // Supply Unit Leader position (migration 0015).
     try {
         t_ok('Supply Unit Leader (SPUL) is in the position list', (int)$pdo->query("SELECT COUNT(*) FROM incident_position_catalog WHERE acronym = 'SPUL' AND is_active = 1")->fetchColumn() === 1

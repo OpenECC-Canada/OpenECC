@@ -1,5 +1,5 @@
 # Check-in locations
 
-Create the receiving, staging and other locations for the active incident. Active locations get a public link and QR code that Check-In Recorders use on the Check-In Gateway.
-
-> Detailed help for this page is still being written. See [all help topics](help:index).
+Check-in locations are now part of [Facilities](help:forms/facilities/index). Every location you had is there, as a
+facility marked as a check-in point. Its public link and QR code are under **Public link and QR**. The old Check-in
+Locations link takes you to Facilities.

@@ -182,8 +182,11 @@ function render_header(string $title, ?string $helpTopic = null): void {
         <?php if (current_user_can_resources_view($activeIncidentId)): ?>
         <a href="<?= e(app_url('/forms/resources/index.php')) ?>">RESL - Resources Unit</a>
         <?php endif; ?>
-        <?php if (is_system_administrator()): ?>
-        <a href="<?= e(app_url('/admin/locations.php')) ?>">Check-in Locations</a>
+        <?php require_once __DIR__ . '/facilities.php'; if (current_user_can_facilities_view($activeIncidentId)): ?>
+        <a href="<?= e(app_url('/forms/facilities/index.php')) ?>">Facilities</a>
+        <?php endif; ?>
+        <?php if ($activeIncidentId > 0 && (is_system_administrator() || current_user_can_view_form('STAGING', $activeIncidentId))): ?>
+        <a href="<?= e(app_url('/forms/staging/index.php')) ?>">Staging</a>
         <?php endif; ?>
         <?php if (current_user_can_finance_view($activeIncidentId)): ?>
         <a href="<?= e(app_url('/forms/finance/index.php')) ?>">FIN/Admin - 213RR Queue</a>

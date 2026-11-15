@@ -396,6 +396,54 @@ function dashboard_render_notification_panels(int $incidentId, array $panels): v
       </section>
     <?php endif; ?>
 
+    <?php if ($show('facilities')): $rendered++;
+        require_once dirname(__DIR__) . '/includes/facilities.php';
+        $openFacilities = [];
+        try { $openFacilities = cb_facilities($incidentId, true); } catch (Throwable $e) { $openFacilities = []; }
+        dashboard_panel_head('facilities'); ?>
+      <?php if (!$openFacilities): ?>
+        <p class="muted">No facilities are open.</p>
+      <?php else: ?>
+        <table class="cb-cards"><thead><tr><th>Facility</th><th>Type</th><th>Contact</th><th>Capacity</th></tr></thead><tbody>
+        <?php foreach ($openFacilities as $f): ?>
+          <tr><td><strong><?= e((string)$f['location_name']) ?></strong><?= trim((string)$f['street_address']) !== '' ? '<br><span class="small">' . e((string)$f['street_address']) . '</span>' : '' ?></td>
+            <td><?= e((string)$f['location_type']) ?></td>
+            <td><?= e((string)($f['contact_name'] ?? '')) ?><?= !empty($f['contact_phone']) ? '<br><span class="small">' . e((string)$f['contact_phone']) . '</span>' : '' ?></td>
+            <td><?= $f['capacity_people'] !== null ? (int)$f['capacity_people'] . ' people' : '' ?></td></tr>
+        <?php endforeach; ?>
+        </tbody></table>
+      <?php endif; ?>
+      <?php if (current_user_can_facilities_view($incidentId)): ?><p><a class="btn btn-small" href="<?= e(app_url('/forms/facilities/index.php')) ?>">Open Facilities</a></p><?php endif; ?>
+      </section>
+    <?php endif; ?>
+
+    <?php if ($show('staging')): $rendered++;
+        $stagingRows = [];
+        try {
+            $sst = db()->prepare("SELECT COALESCE(l.location_name, 'Facility not set') AS facility, COALESCE(rs.status, 'available') AS status, COUNT(*) AS n
+                FROM resource_unit_intake rui
+                LEFT JOIN external_checkin_expected_resources er ON er.resource_unit_intake_id = rui.id
+                LEFT JOIN resource_staging rs ON rs.resource_unit_intake_id = rui.id
+                LEFT JOIN external_checkin_locations l ON l.id = COALESCE(rs.location_id, er.location_id)
+                WHERE rui.incident_id = ? AND rui.intake_status IN ('received','checked_in','converted') AND COALESCE(rs.status, 'available') <> 'released'
+                GROUP BY facility, status ORDER BY facility");
+            $sst->execute([$incidentId]);
+            foreach ($sst->fetchAll() as $r) { $stagingRows[(string)$r['facility']][(string)$r['status']] = (int)$r['n']; }
+        } catch (Throwable $e) { $stagingRows = []; }
+        dashboard_panel_head('staging'); ?>
+      <?php if (!$stagingRows): ?>
+        <p class="muted">No resources in staging.</p>
+      <?php else: ?>
+        <table class="cb-cards"><thead><tr><th>Facility</th><th>Available</th><th>Assigned</th><th>Out of service</th></tr></thead><tbody>
+        <?php foreach ($stagingRows as $fac => $c): ?>
+          <tr><td><?= e($fac) ?></td><td><?= (int)($c['available'] ?? 0) ?></td><td><?= (int)($c['assigned'] ?? 0) ?></td><td><?= (int)($c['out_of_service'] ?? 0) ?></td></tr>
+        <?php endforeach; ?>
+        </tbody></table>
+      <?php endif; ?>
+      <?php if (is_system_administrator() || current_user_can_view_form('STAGING', $incidentId)): ?><p><a class="btn btn-small" href="<?= e(app_url('/forms/staging/index.php')) ?>">Open the staging board</a></p><?php endif; ?>
+      </section>
+    <?php endif; ?>
+
     <?php if ($show('finance_queue')): $rendered++;
         $n = dashboard_count("SELECT COUNT(*) FROM form_213rr_headers h INNER JOIN form_records fr ON fr.id = h.form_record_id
             WHERE fr.incident_id = ? AND fr.is_deleted = 0 AND h.workflow_status NOT IN ('draft','returned_for_revision','cancelled','closed')

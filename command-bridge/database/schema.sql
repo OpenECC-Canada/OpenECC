@@ -106,6 +106,19 @@ CREATE TABLE `external_checkin_locations` (
   `location_token` char(32) NOT NULL,
   `access_code_hash` varchar(255) NOT NULL,
   `lifecycle_status` enum('draft','active','closed','archived') NOT NULL DEFAULT 'draft',
+  `is_checkin_point` tinyint(1) NOT NULL DEFAULT 1,
+  `latitude` decimal(9,6) DEFAULT NULL,
+  `longitude` decimal(9,6) DEFAULT NULL,
+  `capacity_people` int(11) DEFAULT NULL,
+  `capacity_vehicles` int(11) DEFAULT NULL,
+  `hours_text` varchar(100) DEFAULT NULL,
+  `opened_at` datetime DEFAULT NULL,
+  `closed_at` datetime DEFAULT NULL,
+  `contact_name` varchar(150) DEFAULT NULL,
+  `contact_phone` varchar(50) DEFAULT NULL,
+  `services` varchar(255) DEFAULT NULL,
+  `accessibility` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_by` bigint(20) unsigned NOT NULL,
   `updated_by` bigint(20) unsigned NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -1532,6 +1545,36 @@ CREATE TABLE `resource_kind_type_catalog` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_resource_kind_type` (`category_name`,`kind_name`,`type_label`),
   KEY `idx_resource_kind_type_active` (`is_active`,`sort_order`,`category_name`,`kind_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `resource_staging` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `incident_id` int(11) NOT NULL,
+  `resource_unit_intake_id` int(11) NOT NULL,
+  `location_id` bigint(20) unsigned DEFAULT NULL,
+  `status` enum('available','assigned','out_of_service','released') NOT NULL DEFAULT 'available',
+  `assignment` varchar(255) DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `arrived_at` datetime DEFAULT NULL,
+  `status_changed_at` datetime DEFAULT NULL,
+  `updated_by_user_id` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_resource_staging_intake` (`resource_unit_intake_id`),
+  KEY `idx_resource_staging_incident` (`incident_id`,`location_id`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `resource_staging_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `incident_id` int(11) NOT NULL,
+  `resource_unit_intake_id` int(11) NOT NULL,
+  `location_id` bigint(20) unsigned DEFAULT NULL,
+  `status` varchar(20) NOT NULL,
+  `assignment` varchar(255) DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `changed_by_user_id` int(11) DEFAULT NULL,
+  `changed_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_resource_staging_history` (`incident_id`,`resource_unit_intake_id`,`changed_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `resource_unit_intake` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

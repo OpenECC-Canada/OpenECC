@@ -48,7 +48,7 @@ Logistics records the order number, who placed the order (for example the Logist
 - **No tracking required**: supplies, consumables and services. The receiver records delivery on the request with **Record receipt / fulfillment** (full or partial).
 - **RESL to determine**: the Resources Unit Leader decides.
 
-There must be at least one active location set up in [Locations](help:admin/locations) before Logistics can be completed. If Logistics can't fill the request, it is marked **Unable to fill**.
+There must be at least one open facility marked as a check-in point on [Facilities](help:forms/facilities/index) before Logistics can be completed. If Logistics can't fill the request, it is marked **Unable to fill**.
 
 ## Finance
 

@@ -564,7 +564,7 @@ function external_checkin_queue_enqueue(
 
 function external_checkin_enqueue_location_snapshot(int $locationId): int {
     $stmt = db()->prepare(
-        'SELECT id,incident_id,location_name,location_type,street_address,location_token,access_code_hash,lifecycle_status
+        'SELECT id,incident_id,location_name,location_type,street_address,location_token,access_code_hash,lifecycle_status,is_checkin_point
          FROM external_checkin_locations
          WHERE id=? LIMIT 1'
     );
@@ -572,6 +572,13 @@ function external_checkin_enqueue_location_snapshot(int $locationId): int {
     $location = $stmt->fetch();
     if (!$location) {
         throw new RuntimeException('External check-in location was not found.');
+    }
+
+    // Only what the gateway needs for check-in: never the facility's contact details or notes (includes/facilities.php).
+    // A facility that is not a check-in point is sent as closed, so the gateway never offers it.
+    $gatewayStatus = (string)$location['lifecycle_status'];
+    if (empty($location['is_checkin_point']) && $gatewayStatus !== 'archived') {
+        $gatewayStatus = 'closed';
     }
 
     return external_checkin_queue_enqueue(
@@ -586,7 +593,7 @@ function external_checkin_enqueue_location_snapshot(int $locationId): int {
             'street_address' => (string)($location['street_address'] ?? ''),
             'location_token' => (string)$location['location_token'],
             'access_code_hash' => (string)$location['access_code_hash'],
-            'lifecycle_status' => (string)$location['lifecycle_status'],
+            'lifecycle_status' => $gatewayStatus,
         ]
     );
 }
