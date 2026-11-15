@@ -6,6 +6,10 @@ declare(strict_types=1);
  *
  *   php app/bin/form_snapshot.php --user=ID --record=FORM_RECORD_ID --out=/path/to/file.pdf
  *
+ * Printing (includes/printing.php) uses it for any form PDF link, given as the script and its query string:
+ *
+ *   php app/bin/form_snapshot.php --user=ID --script=forms/ics233/pdf.php --query='include=completed' --out=FILE
+ *
  * It runs the form's pdf.php as that user (so the same permissions apply) and writes the PDF to --out instead of
  * sending it to a browser. Exit code 0 when the PDF was written.
  */
@@ -17,9 +21,11 @@ foreach (array_slice($argv, 1) as $a) {
 }
 $userId = (int)($args['user'] ?? 0);
 $recordId = (int)($args['record'] ?? 0);
+$script = (string)($args['script'] ?? '');
 $out = (string)($args['out'] ?? '');
-if ($userId <= 0 || $recordId <= 0 || $out === '' || !is_dir(dirname($out))) {
-    fwrite(STDERR, "usage: form_snapshot.php --user=ID --record=ID --out=FILE\n");
+if ($script !== '' && !preg_match('#^forms/[a-z0-9_]+/(pdf|ics221)\.php$#', $script)) { fwrite(STDERR, "bad --script\n"); exit(2); }
+if ($userId <= 0 || ($recordId <= 0 && $script === '') || $out === '' || !is_dir(dirname($out))) {
+    fwrite(STDERR, "usage: form_snapshot.php --user=ID (--record=ID | --script=forms/x/pdf.php [--query=...]) --out=FILE\n");
     exit(2);
 }
 
@@ -46,6 +52,23 @@ $_SESSION['user'] = [
     'email' => $user['email'] ?? '', 'role_code' => $user['role_code'] ?? null, 'incident_id' => $user['incident_id'] ?? null,
     'is_sysadmin' => (int)($user['is_sysadmin'] ?? 0), 'must_change_pin' => 0,
 ];
+
+if ($script !== '') {
+    // Any form PDF link (printing): run that script with that query string.
+    $pdfScript = $appRoot . '/' . $script;
+    if (!is_file($pdfScript)) { fwrite(STDERR, "no such PDF script\n"); exit(4); }
+    parse_str((string)($args['query'] ?? ''), $query);
+    unset($query['preview']);
+    $_SERVER['REQUEST_METHOD'] = 'GET';
+    $_SERVER['SCRIPT_NAME'] = '/' . $script;
+    $_GET = array_map(static fn($v) => is_scalar($v) ? (string)$v : '', $query);
+    $GLOBALS['cb_pdf_capture_path'] = $out;
+    ob_start();
+    (static function (string $s): void { require $s; })($pdfScript);
+    $text = trim((string)ob_get_clean());
+    fwrite(STDERR, $text !== '' ? mb_substr(strip_tags($text), 0, 300) . "\n" : "no PDF was produced\n");
+    exit(5);
+}
 
 $st = db()->prepare('SELECT * FROM form_records WHERE id = ? LIMIT 1');
 $st->execute([$recordId]);

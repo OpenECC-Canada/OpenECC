@@ -514,6 +514,8 @@ INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('email_delivery_method', 'smtp_password'),
 ('email_oauth_scope', 'https://outlook.office365.com/.default'),
 ('dashboard_panel_map', '{"_ALL":["action_items","my_forms","my_214","meetings"],"IC":["op_form_status","closeout","staffing","copied_review"],"UC":["op_form_status","closeout","staffing","copied_review"],"DIC":["op_form_status","closeout","staffing","copied_review"],"PSC":["op_form_status","closeout","staffing","copied_review"],"SITL":["op_form_status","closeout","copied_review"],"DOCL":["op_form_status","closeout","copied_review"],"RESL":["resl_queue","staffing"],"OSC":["staffing"],"LSC":["logistics_queue"],"SPUL":["logistics_queue"],"FSC":["finance_queue"],"PROC":["finance_queue"],"COST":["finance_queue"]}'),
-('ics213_email_position_holders', 'ticked');
+('ics213_email_position_holders', 'ticked'),
+('print_access', 'positions'),
+('printer_labels', '{}');
 
 SET FOREIGN_KEY_CHECKS = 1;

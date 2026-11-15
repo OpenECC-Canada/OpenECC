@@ -73,6 +73,7 @@ Every save, signature, approval and revision is recorded in the [audit log](help
 ## Printing
 
 - **Preview PDF** opens the filled form in a new tab. **Download PDF** saves it.
+- **Print** sends it straight to a printer on your network, if your SysAdmin has set one up. See [Print](help:forms/print).
 - PDFs are printed on the **official ICS Canada form**. When text is too long for a box, the box ends with "(cont.)" and the full text is printed on a continuation sheet at the end.
 - **Download Blank Form** gives you the empty official form, for example for paper use when the network is down.
 

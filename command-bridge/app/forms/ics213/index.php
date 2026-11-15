@@ -379,7 +379,8 @@ $listUrl = app_url('/forms/ics213/index.php?operational_period_id=' . $opId);
   <?php endif; ?>
   <?php if (!empty($pdfUrls['available'])): ?>
     <p><a class="btn" target="_blank" rel="noopener" href="<?= e((string)$pdfUrls['preview']) ?>">Preview PDF</a>
-       <a class="btn" target="_blank" rel="noopener" href="<?= e((string)$pdfUrls['download']) ?>">Download PDF</a></p>
+       <a class="btn" target="_blank" rel="noopener" href="<?= e((string)$pdfUrls['download']) ?>">Download PDF</a>
+       <?php require_once dirname(dirname(__DIR__)) . '/includes/printing.php'; echo cb_print_button((string)$pdfUrls['download']); ?></p>
   <?php endif; ?>
 </div>
 <?php endif; ?>

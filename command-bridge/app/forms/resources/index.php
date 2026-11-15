@@ -817,7 +817,8 @@ try {
                 <?php endif; ?>
                 <h3>Demobilization</h3>
                 <p><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/resources/ics221.php?preview=1&id=' . (int)$id)) ?>">ICS 221 Demobilization Check-Out</a>
-                   <a class="btn" href="<?= e(app_url('/forms/resources/ics221.php?id=' . (int)$id)) ?>">Download</a></p>
+                   <a class="btn" href="<?= e(app_url('/forms/resources/ics221.php?id=' . (int)$id)) ?>">Download</a>
+                   <?php require_once dirname(__DIR__, 2) . '/includes/printing.php'; echo cb_print_button(app_url('/forms/resources/ics221.php?id=' . (int)$id)); ?></p>
               </div>
               <?php endif; ?>
 
@@ -926,6 +927,7 @@ try {
                   <td><a class="btn small" href="<?= e(app_url('/forms/resources/index.php?action=view&id=' . (int)$r['id'])) ?>">Open</a>
                     <?php if (in_array((string)$r['intake_status'], ['received', 'checked_in'], true)): ?>
                       <a class="btn small" target="_blank" rel="noopener" href="<?= e(app_url('/forms/resources/ics221.php?preview=1&id=' . (int)$r['id'])) ?>" title="ICS 221 Demobilization Check-Out">ICS 221</a>
+                      <?php require_once dirname(__DIR__, 2) . '/includes/printing.php'; echo cb_print_button(app_url('/forms/resources/ics221.php?id=' . (int)$r['id']), 'btn small', 'Print 221'); ?>
                     <?php endif; ?></td>
                 </tr>
               <?php endforeach; ?>
