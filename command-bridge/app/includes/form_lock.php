@@ -544,9 +544,6 @@ function cb_form_status_banner(string $formCode, int $incidentId, int $opId, int
     if ($code === 'ICS230' && $locked) {
         $next .= '<p class="small">Meetings can still be marked held or cancelled with <strong>Was it held?</strong> in the meeting list. Adding, moving or removing a meeting needs a revision.</p>';
     }
-    if ($code === 'ICS213' && $locked) {
-        $next .= '<p class="small">New messages and replies can still be added; each message is locked once it is saved.</p>';
-    }
 
     $subtitle = (string)($opts['subtitle'] ?? '');
     $subtitleParts = array_filter([$subtitle, $revision > 0 ? 'Revision ' . $revision : '']);

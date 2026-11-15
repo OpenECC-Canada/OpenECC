@@ -33,6 +33,25 @@
     - the `ics213_email_position_holders` setting in seed.sql
   - New file `includes/ics213_messages.php`. Help updated for the ICS 213, ICS 205A and Email Delivery. Smoke test
     extended.
+* **ICS 213: sign and send, with approval before anything is emailed.** The 213 no longer uses the general
+  form sign-off.
+  - **No Save button.** A message that only goes to the dashboard is sent with **Sign and Send ICS 213**: it records
+    the sender and time, notifies the "To" position and locks. Block 7 stays optional.
+  - **An emailed message is approved first** (**Sign and Request Approval**), because an email can't be recalled. It
+    goes to the sender's supervisor (falling back to the IC), and the sender can pick another approver. The approver
+    sees the message and recipients and can **Approve and Send** (fills Block 7 with their name, position and time),
+    **Return for changes** with a reason, or **Cancel**. The approver can't edit the message. Nothing is sent until
+    it is approved.
+  - **The IC's own messages** are sent straight away, with the IC in Block 7.
+  - **After sending, only the reply can be changed** (**Save reply**).
+  - **Statuses:** Awaiting approval, Returned, Sent, Replied, Cancelled, shown on the list and the message.
+  - **Send to more people** also needs approval unless the IC sends it. **Resend** stays.
+  - **The send log says "Accepted by mail server"**, not "sent": bounces go to the app's sending mailbox. The help
+    says so.
+  - **Removed from the 213:** the form status banner and sign-off buttons. The 213 no longer appears in the
+    dashboard's forms-to-sign lists or the operational period closeout.
+  - **Database:** migration `0009_ics213_approval.sql` adds the status, signing, approval and sent columns to
+    `form_213_messages` and `approver_user_id` to `form_213_sends`. Existing messages become Sent.
 * **Fix: the ICS 202 could not be approved while it was waiting for approval.** The new lock refused the Incident
   Commander's **Approve** ("ICS 202 has been signed and is waiting for approval, so it is locked"). Approving is
   now allowed on a locked ICS 202, as it already was for the ICS 204.

@@ -111,6 +111,7 @@ function dashboard_get_current_op_form_statuses(int $incidentId, int $operationa
               AND fr.operational_period_id=?
               AND fr.is_deleted=0
               AND (UPPER(REPLACE(fr.form_type, ' ', ''))<>'ICS214' OR fr.prepared_by_user_id=?)
+              AND UPPER(REPLACE(fr.form_type, ' ', ''))<>'ICS213'
             ORDER BY fr.form_type ASC, fr.updated_at DESC, fr.id DESC
         ");
         // ICS 214 logs are personal: show only your own here (everyone's are listed on forms/ics214/logs.php).

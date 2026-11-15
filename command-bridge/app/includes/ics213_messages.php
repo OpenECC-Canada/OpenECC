@@ -73,13 +73,15 @@ function ics213_notify_reply(int $incidentId, int $opId, array $msg, string $rep
 }
 
 /** Opening a message clears the signed-in person's own notifications about it. */
-function ics213_mark_read(int $messageId): void
+function ics213_mark_read(int $messageId, bool $includeApproval = false): void
 {
     $me = (int)(current_user()['id'] ?? 0);
     if ($messageId <= 0 || $me <= 0) { return; }
     try {
+        // An approval request stays on the approver's dashboard until they act on it.
         db()->prepare("UPDATE notifications SET is_read = 1, read_at = COALESCE(read_at, NOW())
-            WHERE related_table = 'form_213_messages' AND related_id = ? AND user_id = ? AND is_read = 0")->execute([$messageId, $me]);
+            WHERE related_table = 'form_213_messages' AND related_id = ? AND user_id = ? AND is_read = 0"
+            . ($includeApproval ? '' : " AND notification_type <> 'ics213_approval'"))->execute([$messageId, $me]);
     } catch (Throwable $e) { /* not important */ }
 }
 
@@ -214,16 +216,9 @@ function ics213_pdf_bytes(array $msg, array $incident, ?string &$error = null): 
     }
 }
 
-/**
- * Emails one message to each recipient (['type' => position|contact|address, 'label' => ..., 'email' => ...]) and
- * logs every attempt in form_213_sends. Returns ['sent' => n, 'failed' => n, 'errors' => [...]].
- */
-function ics213_send_email(int $incidentId, array $msg, array $recipients, string $opLabel): array
+/** Subject, body and options (PDF attachment, Reply-To = the sender) of the email for one message. */
+function ics213_email_parts(int $incidentId, array $msg, string $opLabel): array
 {
-    require_once __DIR__ . '/mail.php';
-    $result = ['sent' => 0, 'failed' => 0, 'errors' => []];
-    $recipients = array_values(array_filter($recipients, static fn($r) => filter_var((string)($r['email'] ?? ''), FILTER_VALIDATE_EMAIL)));
-    if (!$recipients) { return $result; }
     $incident = active_incident() ?: [];
     [$subject, $body] = ics213_email_content($msg, $incident, $opLabel);
     $pdfError = null;
@@ -234,14 +229,30 @@ function ics213_send_email(int $incidentId, array $msg, array $recipients, strin
     } else {
         $body .= "\n(The PDF could not be attached; the full message is above.)\n";
     }
-    $me = current_user() ?: [];
-    $myEmail = trim((string)($me['email'] ?? ''));
-    if ($myEmail === '' && !empty($me['id'])) {
+    // Replies go to the person who wrote the message.
+    $senderEmail = '';
+    if (!empty($msg['from_user_id'])) {
         $st = db()->prepare('SELECT email FROM users WHERE id = ?');
-        $st->execute([(int)$me['id']]);
-        $myEmail = trim((string)$st->fetchColumn());
+        $st->execute([(int)$msg['from_user_id']]);
+        $senderEmail = trim((string)$st->fetchColumn());
     }
-    if (filter_var($myEmail, FILTER_VALIDATE_EMAIL)) { $opt['reply_to'] = $myEmail; }
+    if (filter_var($senderEmail, FILTER_VALIDATE_EMAIL)) { $opt['reply_to'] = $senderEmail; }
+    return [$subject, $body, $opt];
+}
+
+/**
+ * Emails one message now to each recipient (['type' => position|contact|address, 'label' => ..., 'email' => ...]) and
+ * logs every attempt in form_213_sends. Only for messages that are already sent (approved, or not needing approval).
+ * Returns ['sent' => n, 'failed' => n, 'errors' => [...]].
+ */
+function ics213_send_email(int $incidentId, array $msg, array $recipients, string $opLabel): array
+{
+    require_once __DIR__ . '/mail.php';
+    $result = ['sent' => 0, 'failed' => 0, 'errors' => []];
+    $recipients = array_values(array_filter($recipients, static fn($r) => filter_var((string)($r['email'] ?? ''), FILTER_VALIDATE_EMAIL)));
+    if (!$recipients) { return $result; }
+    [$subject, $body, $opt] = ics213_email_parts($incidentId, $msg, $opLabel);
+    $me = (int)(current_user()['id'] ?? 0);
     $log = db()->prepare('INSERT INTO form_213_sends (message_id, incident_id, recipient_type, recipient_label, email, status, error, sent_by_user_id, sent_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())');
     $seen = [];
@@ -255,13 +266,137 @@ function ics213_send_email(int $incidentId, array $msg, array $recipients, strin
         if (!$ok) { $result['errors'][] = $email . ': ' . (string)($res['message'] ?? 'not sent'); }
         try {
             $log->execute([(int)$msg['id'], $incidentId, (string)($r['type'] ?? 'address'), mb_substr((string)($r['label'] ?? $email), 0, 255),
-                $email, $ok ? 'sent' : 'failed', $ok ? null : mb_substr((string)($res['message'] ?? ''), 0, 255), (int)($me['id'] ?? 0) ?: null]);
+                $email, $ok ? 'sent' : 'failed', $ok ? null : mb_substr((string)($res['message'] ?? ''), 0, 255), $me ?: null]);
         } catch (Throwable $e) { security_log($e, 'ics213_send_log'); }
     }
-    audit_log((int)($me['id'] ?? 0) ?: null, 'email', 'ICS213', (int)$msg['form_record_id'],
-        'Emailed ICS 213 ' . ((string)($msg['ref_code'] ?? '') ?: '#' . (int)$msg['id']) . ': ' . $result['sent'] . ' sent, ' . $result['failed'] . ' failed ('
+    audit_log($me ?: null, 'email', 'ICS213', (int)$msg['form_record_id'],
+        'Emailed ICS 213 ' . ((string)($msg['ref_code'] ?? '') ?: '#' . (int)$msg['id']) . ': ' . $result['sent'] . ' accepted, ' . $result['failed'] . ' failed ('
         . mb_substr(implode(', ', array_keys($seen)), 0, 600) . ')');
     return $result;
+}
+
+/** Saves recipients that wait for approval (status 'pending'). */
+function ics213_queue_emails(int $incidentId, int $messageId, array $recipients, int $approverId): int
+{
+    $me = (int)(current_user()['id'] ?? 0);
+    $st = db()->prepare("INSERT INTO form_213_sends (message_id, incident_id, recipient_type, recipient_label, email, status, error, sent_by_user_id, approver_user_id, sent_at)
+        VALUES (?, ?, ?, ?, ?, 'pending', NULL, ?, ?, NOW())");
+    $seen = []; $n = 0;
+    foreach ($recipients as $r) {
+        $email = trim((string)($r['email'] ?? ''));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || isset($seen[strtolower($email)])) { continue; }
+        $seen[strtolower($email)] = true;
+        $st->execute([$messageId, $incidentId, (string)($r['type'] ?? 'address'), mb_substr((string)($r['label'] ?? $email), 0, 255), $email, $me ?: null, $approverId ?: null]);
+        $n++;
+    }
+    return $n;
+}
+
+function ics213_pending_sends(int $messageId): array
+{
+    $st = db()->prepare("SELECT * FROM form_213_sends WHERE message_id = ? AND status = 'pending' ORDER BY id");
+    $st->execute([$messageId]);
+    return $st->fetchAll() ?: [];
+}
+
+/** Sends the approved pending emails of a message, updating each row with the result. */
+function ics213_deliver_pending(int $incidentId, array $msg, string $opLabel): array
+{
+    require_once __DIR__ . '/mail.php';
+    $result = ['sent' => 0, 'failed' => 0, 'errors' => []];
+    $rows = ics213_pending_sends((int)$msg['id']);
+    if (!$rows) { return $result; }
+    [$subject, $body, $opt] = ics213_email_parts($incidentId, $msg, $opLabel);
+    $upd = db()->prepare('UPDATE form_213_sends SET status = ?, error = ?, sent_at = NOW() WHERE id = ?');
+    foreach ($rows as $r) {
+        $res = app_send_mail_result((string)$r['email'], $subject, $body, $opt);
+        $ok = !empty($res['ok']);
+        $result[$ok ? 'sent' : 'failed']++;
+        if (!$ok) { $result['errors'][] = $r['email'] . ': ' . (string)($res['message'] ?? 'not sent'); }
+        $upd->execute([$ok ? 'sent' : 'failed', $ok ? null : mb_substr((string)($res['message'] ?? ''), 0, 255), (int)$r['id']]);
+    }
+    audit_log((int)(current_user()['id'] ?? 0) ?: null, 'email', 'ICS213', (int)$msg['form_record_id'],
+        'Emailed approved ICS 213 ' . ((string)($msg['ref_code'] ?? '') ?: '#' . (int)$msg['id']) . ': ' . $result['sent'] . ' accepted, ' . $result['failed'] . ' failed');
+    return $result;
+}
+
+// ================================================================================================ Approval
+// A message that will be emailed needs approval first, because an email cannot be recalled. Dashboard-only messages
+// and the IC's own messages go straight out. The approver is the sender's supervisor (Settings > Sign-off Approvers,
+// ICS 213), up the chain to the IC; the sender can change it. The approver can approve and send, return it for
+// changes, or cancel it, but not edit it. Once sent, only the reply can be changed.
+
+function ics213_user_is_ic(int $incidentId, int $userId): bool
+{
+    return (bool)array_intersect(['IC', 'UC'], array_map('strtoupper', get_user_role_codes($incidentId, $userId)));
+}
+
+/** The default approver for a sender: [user_id, position]. */
+function ics213_default_approver(int $incidentId, int $opId, int $senderId): array
+{
+    require_once __DIR__ . '/signoff.php';
+    $r = signoff_resolve_approver($incidentId, 'ICS213', $senderId, $opId);
+    $uid = (int)($r['user_id'] ?? 0);
+    if ($uid <= 0 && !empty($r['choices'])) { $uid = (int)$r['choices'][0]; }
+    return [$uid, (string)($r['position'] ?? '')];
+}
+
+function ics213_user_label(int $userId): string
+{
+    if ($userId <= 0) { return ''; }
+    $st = db()->prepare('SELECT COALESCE(NULLIF(real_name, \'\'), username) FROM users WHERE id = ?');
+    $st->execute([$userId]);
+    return (string)($st->fetchColumn() ?: '');
+}
+
+/** "Name (Position title)" for Block 7, from the user's highest-listed role in the incident. */
+function ics213_signature_text(int $incidentId, int $userId): string
+{
+    $name = ics213_user_label($userId);
+    $roles = get_user_role_codes($incidentId, $userId);
+    $title = '';
+    if ($roles) {
+        $st = db()->prepare('SELECT role_name FROM roles WHERE role_code = ? LIMIT 1');
+        $st->execute([(string)$roles[0]]);
+        $title = (string)($st->fetchColumn() ?: $roles[0]);
+    }
+    return trim($name . ($title !== '' ? ' (' . $title . ')' : ''));
+}
+
+function ics213_notify_approver(int $incidentId, int $opId, array $msg, int $approverId, string $what = 'message'): void
+{
+    $title = 'ICS 213 waiting for your approval' . (!empty($msg['subject']) ? ': ' . mb_substr((string)$msg['subject'], 0, 120) : '');
+    $body = ($msg['from_name'] ?: 'Someone') . ' wants to email ' . ($what === 'more' ? 'this message to more people' : 'this message')
+        . '. It is not sent until you approve it. ' . mb_substr(preg_replace('/\s+/', ' ', (string)$msg['message']) ?? '', 0, 200);
+    ics213_notify_users($incidentId, [$approverId], (int)$msg['id'], $title, $body, ics213_message_url($opId, (int)$msg['id']), 'ics213_approval');
+}
+
+/** Delivers a message now: dashboard notice to the "To" position, approved emails, and marks it sent. */
+function ics213_deliver(int $incidentId, int $opId, array $msg, string $opLabel): array
+{
+    db()->prepare("UPDATE form_213_messages SET status = 'sent', sent_at = NOW(), updated_at = NOW() WHERE id = ?")->execute([(int)$msg['id']]);
+    ics213_notify_new_message($incidentId, $opId, (int)$msg['id'], (string)($msg['to_role_code'] ?? ''), (string)$msg['from_name'],
+        (string)$msg['subject'], (string)$msg['message']);
+    return ics213_deliver_pending($incidentId, $msg, $opLabel);
+}
+
+/** Can the signed-in user act as approver on this message (or its pending emails)? */
+function ics213_can_approve(array $msg, ?int $approverId = null): bool
+{
+    $me = (int)(current_user()['id'] ?? 0);
+    $approverId = $approverId ?? (int)($msg['approver_user_id'] ?? 0);
+    if ($me <= 0) { return false; }
+    if ($me === $approverId) { return true; }
+    // A system administrator can step in for an absent approver, but not approve their own message.
+    return !empty(current_user()['is_sysadmin']) && $me !== (int)($msg['from_user_id'] ?? 0);
+}
+
+/** Status label for the list and the message page. */
+function ics213_status_label(array $msg): string
+{
+    $s = (string)($msg['status'] ?? 'sent');
+    if ($s === 'sent') { return trim((string)($msg['reply'] ?? '')) !== '' ? 'Replied' : 'Sent'; }
+    return match ($s) { 'awaiting_approval' => 'Awaiting approval', 'returned' => 'Returned', 'cancelled' => 'Cancelled', default => ucfirst($s) };
 }
 
 /** Email log of one message, newest first. */
@@ -303,7 +438,7 @@ function ics213_recipients_from_post(int $incidentId, int $opId, string $toRole,
 }
 
 /** The "email to" part of the ICS 213 form: ICS 205A contacts to tick, plus a box for any other addresses. */
-function ics213_recipient_picker_html(array $contacts): string
+function ics213_recipient_picker_html(array $contacts, string $typed = ''): string
 {
     $h = '';
     if ($contacts) {
@@ -316,7 +451,7 @@ function ics213_recipient_picker_html(array $contacts): string
     } else {
         $h .= '<p class="small">No contacts with an email address on this period&rsquo;s ICS 205A yet.</p>';
     }
-    $h .= '<label>Other email addresses<textarea name="email_addresses" rows="2" placeholder="name@example.ca, another@example.ca"></textarea></label>'
-        . '<p class="small">Separate addresses with commas or new lines. Replies go to your own email address.</p>';
+    $h .= '<label>Other email addresses<textarea name="email_addresses" rows="2" placeholder="name@example.ca, another@example.ca">' . e($typed) . '</textarea></label>'
+        . '<p class="small">Separate addresses with commas or new lines. Replies go to the sender&rsquo;s own email address.</p>';
     return $h;
 }

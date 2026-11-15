@@ -239,6 +239,13 @@ if ($want('env')) {
             ['reply_to' => 'r@example.ca', 'attachments' => [['name' => 'a.pdf', 'type' => 'application/pdf', 'data' => '%PDF-1.4']]]);
         t_ok('Email with a PDF attachment and Reply-To is built correctly', strpos($mime, 'multipart/mixed') !== false && strpos($mime, 'Reply-To: <r@example.ca>') !== false
             && strpos($mime, 'filename="a.pdf"') !== false);
+        t_ok('ICS 213 approval columns (form_213_messages.status, approver_user_id, sent_at; form_213_sends.approver_user_id)',
+            count(array_intersect(['status', 'signed_at', 'approver_user_id', 'approved_by_user_id', 'approved_at', 'return_reason', 'sent_at'], table_columns('form_213_messages'))) === 7
+            && in_array('approver_user_id', table_columns('form_213_sends'), true), 'run update.sh (migration 0009)');
+        t_ok('ICS 213 status labels', ics213_status_label(['status' => 'awaiting_approval']) === 'Awaiting approval'
+            && ics213_status_label(['status' => 'sent', 'reply' => 'ok']) === 'Replied' && ics213_status_label(['status' => 'sent', 'reply' => '']) === 'Sent');
+        require_once $appRoot . '/includes/signoff.php';
+        t_ok('ICS 213 is no longer in the operational period sign-off', !signoff_needs_creator_sign('ICS213'));
     } catch (Throwable $e) { t_ok('ICS 213 email checks', false, $e->getMessage()); }
 
     // Dashboard panels per position (includes/dashboard_panels.php, migration 0006).

@@ -200,3 +200,6 @@ More detail is written to the server's error log (`/var/log/apache2/commandbridg
 - **Always:** they're emailed every time, as well as getting the dashboard notice. This helps when people in some positions work away from the main centre.
 
 The email goes to the address on each person's user account. Anyone without one only gets the dashboard notice, and the sender is told.
+**Note:** with **Always**, every message sent to a position is emailed, so it needs approval before it goes (unless the Incident Commander sends it).
+
+**Bounces:** an ICS 213 email's send log only shows that the mail server accepted it. If an address is wrong, the bounce comes back to the sending mailbox set up on this page. Have someone watch that mailbox during an incident.

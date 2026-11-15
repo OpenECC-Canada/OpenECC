@@ -885,3 +885,8 @@ img,video{max-width:100%;height:auto}
 .ics213-guidance{background:#f5fbfa;border:1px solid #9bcfc4;border-radius:6px;padding:10px 14px;margin:8px 0}
 .ics213-guidance p{margin:.3rem 0}
 .ics213-guidance ul{margin:.3rem 0 .3rem 1.2rem}
+.ics213-status{border-left:6px solid #2563eb}
+.ics213-status-awaiting_approval,.ics213-status-returned{border-left-color:#d97706;background:#fffbeb}
+.ics213-status-cancelled{border-left-color:#9ca3af}
+.ics213-status-sent{border-left-color:#059669}
+.ics213-status h2{margin:.1rem 0 .4rem}

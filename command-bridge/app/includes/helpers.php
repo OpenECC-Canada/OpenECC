@@ -2320,6 +2320,7 @@ function operational_period_unsubmitted_forms(int $incidentId, int $operationalP
           AND fr.operational_period_id = ?
           AND fr.is_deleted = 0
           AND fr.status IN ('draft','rejected')
+          AND UPPER(fr.form_type) <> 'ICS213'
         ORDER BY fr.form_number ASC, fr.form_type ASC, fr.id ASC
     ");
     $stmt->execute([$incidentId, $operationalPeriodId]);
