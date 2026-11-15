@@ -132,7 +132,7 @@ made or endorsed by ICS Canada.
 ### Official forms
 
 Command Bridge fills the ICS Canada form templates in `command-bridge/app/assets/pdf/official/`. **We do not yet have
-permission from ICS Canada to use or redistribute these forms.** We have asked and hope to have it soon. Until then, the
+permission from ICS Canada to use or redistribute these forms.** We hope to have it soon. Until then, the
 forms remain the property of ICS Canada, and the AGPL does not cover them. If you are from ICS Canada and have concerns,
 please open an issue on this repository. See [command-bridge/docs/FORMS.md](command-bridge/docs/FORMS.md) and
 [command-bridge/THIRD_PARTY.md](command-bridge/THIRD_PARTY.md).
