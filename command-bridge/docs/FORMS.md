@@ -4,6 +4,13 @@
 They are redistributed with permission from the forms' publisher (<https://www.icscanada.ca>) and are **not** covered
 by the AGPL licence of the code.
 
+## Reference
+
+- [ICS Canada forms page](https://icscanada.ca/resources/ics-forms/): the current forms.
+- [ICS Forms Catalogue (2022)](https://icscanada.ca/wp-content/uploads/2023/07/ICS-Canada-Forms-Catalogue-2022_v1.pdf):
+  ICS Canada's instructions for every form (purpose, preparation, distribution and each block). It is linked rather
+  than copied into this repository. When reviewing the forms, also check for a newer catalogue.
+
 ## Keeping them current
 
 ICS Canada revises forms from time to time. Review them **at least twice a year and before each release**:

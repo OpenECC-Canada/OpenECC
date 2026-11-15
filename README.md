@@ -129,6 +129,10 @@ Command Bridge follows the Incident Command System as used in Canada and publish
 [ICS Canada forms page](https://icscanada.ca/resources/ics-forms/). Command Bridge is an independent project and is not
 made or endorsed by ICS Canada.
 
+ICS Canada's [ICS Forms Catalogue (2022)](https://icscanada.ca/wp-content/uploads/2023/07/ICS-Canada-Forms-Catalogue-2022_v1.pdf)
+explains the purpose of each form, who prepares it, who it goes to and what goes in each block. It is a good companion
+to the in-app help.
+
 ### Official forms
 
 Command Bridge fills the ICS Canada form templates in `command-bridge/app/assets/pdf/official/`. **We do not yet have
