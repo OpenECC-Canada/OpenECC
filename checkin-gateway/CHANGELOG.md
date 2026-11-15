@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* **The installer and updater now say what each step is** (the step's name was cut off in the progress box).
+
 ## 0.9.0-beta.2
 
 * New signed connection test `public/api/v1/sync/ping.php` (action `sync.ping`). It answers with the gateway version,

@@ -98,15 +98,24 @@ ui_menu() {  # ui_menu VAR "Title" "Prompt" default tag "text" tag "text" ...
 ui_cancelled() { printf 'Cancelled.\n' >&3 2>/dev/null || printf 'Cancelled.\n'; exit 1; }
 
 ui_steps() { UI_STEP_TOTAL=$1; UI_STEP_N=0; }
-ui_stage() {  # ui_stage "label"   - progress screen (whiptail) or a heading (plain)
+ui_stage() {  # ui_stage "label"   - next step: progress screen (whiptail) or a heading (plain)
     UI_STEP_N=$(( ${UI_STEP_N:-0} + 1 ))
-    local pct=$(( UI_STEP_N * 100 / UI_STEP_TOTAL )) filled bar="" i
+    UI_STEP_LABEL="$1"
+    _ui_progress "$1"
+}
+ui_substage() {  # ui_substage "detail"   - show what the current step is doing now, without moving on
+    _ui_progress "${UI_STEP_LABEL:-Working}" "$1"
+}
+_ui_progress() {  # _ui_progress "label" ["detail"]
+    local pct=$(( UI_STEP_N * 100 / UI_STEP_TOTAL )) filled bar="" i text
     filled=$(( pct * 40 / 100 ))
     for ((i=0;i<40;i++)); do [ $i -lt $filled ] && bar+="#" || bar+="."; done
+    # The step's name goes first and in the title: whiptail cuts off text that doesn't fit the box.
+    text="$1 ...${2:+\n$2}\n\n[$bar] ${pct}%"
     if [ "$UI_WT" = 1 ]; then
-        whiptail --backtitle "$UI_TITLE" --title "Working" --infobox "Step $UI_STEP_N of $UI_STEP_TOTAL\n\n[$bar] ${pct}%\n\n$1 ..." 10 60 >/dev/tty 2>/dev/null </dev/tty || true
-        printf '== %s\n' "$1"          # goes to the log
+        whiptail --backtitle "$UI_TITLE" --title "Step $UI_STEP_N of $UI_STEP_TOTAL: $1" --infobox "$text" 12 72 >/dev/tty 2>/dev/null </dev/tty || true
+        if [ -n "${2:-}" ]; then printf '   %s\n' "$2"; else printf '== Step %s of %s: %s\n' "$UI_STEP_N" "$UI_STEP_TOTAL" "$1"; fi   # goes to the log
     else
-        printf '\n== %s\n' "$1"
+        if [ -n "${2:-}" ]; then printf '   %s\n' "$2"; else printf '\n== Step %s of %s: %s\n' "$UI_STEP_N" "$UI_STEP_TOTAL" "$1"; fi
     fi
 }

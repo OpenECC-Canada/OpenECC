@@ -94,7 +94,7 @@ for f in "$INSTALL_DIR"/database/migrations/[0-9]*.sql; do
     [ -e "$f" ] || continue
     v="$(basename "$f" .sql)"
     if [ "$($SQL -N "$DB_NAME" -e "SELECT COUNT(*) FROM schema_migrations WHERE version='$v'")" = 0 ]; then
-        echo "Applying migration $v"
+        ui_substage "Migration $v"
         $SQL "$DB_NAME" < "$f"
         $SQL "$DB_NAME" -e "INSERT INTO schema_migrations (version) VALUES ('$v')"
         APPLIED=$((APPLIED+1))

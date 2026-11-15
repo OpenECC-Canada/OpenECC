@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* **The installer and updater now say what each step is.** The progress box read "Step 1 of 4" but the step's name was
+  cut off below it. The name is now in the box title and on the first line, and the updater also shows each database
+  migration as it runs. The same change is in the Check-In Gateway's installer and updater (`deploy/lib/ui.sh`).
 * **ICS 213 messages reach the person they are for, in the app or by email.** "2. To" used to be free text only,
   so nobody was told about a message.
   - **Dashboard:** pick the "To" position from those filled in the incident. Everyone holding it gets a notice under
