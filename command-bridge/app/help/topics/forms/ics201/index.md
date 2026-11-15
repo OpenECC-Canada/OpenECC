@@ -2,6 +2,8 @@
 
 The ICS 201 is the first record of an incident. The first Incident Commander uses it to brief whoever takes over command, and to brief the Command and General Staff. It covers the situation, the objectives, what is being done about them, who is in charge of what, and which resources have been ordered. Until a full Incident Action Plan (IAP) exists, the ICS 201 can serve as the first one.
 
+In Command Bridge this is the ECC's briefing: the ECC's first Incident Commander briefs whoever takes over in the ECC. It doesn't replace the on-scene IC's own ICS 201.
+
 - **Usually prepared by:** the Incident Commander who started the response. In Command Bridge the Planning Section Chief and Documentation Unit Leader can also fill it in when the IC is busy, but only the IC can sign it.
 - **Who gets it:** the incoming IC and the Command and General Staff at the first briefing. The map, situation and actions parts help the Situation Unit; the organization and resource parts help the Resources Unit. The signed original goes to the Documentation Unit.
 

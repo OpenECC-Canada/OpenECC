@@ -5,7 +5,7 @@ render_header('Settings');
 ?>
 <div class="card">
 <h2>Settings</h2>
-<p>System administration settings for the ICS application. Access is restricted to System Administrators.</p>
+<p>System administration settings for Command Bridge. Access is restricted to System Administrators.</p>
 <?php settings_menu(); ?>
 </div>
 <?php render_footer(); ?>

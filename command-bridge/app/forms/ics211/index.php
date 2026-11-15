@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $incidentId > 0) {
             $resolvedPreparer = resolve_form_preparer($incidentId, 'ICS211');
             apply_form_preparer_defaults($formRecordId, $resolvedPreparer);
 
-            $checkInLocation = trim($_POST['check_in_location'] ?? 'ICP') ?: 'ICP';
+            $checkInLocation = trim((string)($_POST['check_in_location'] ?? ''));
             $startDateTime = trim($_POST['start_datetime'] ?? '') ?: null;
             $preparedPosition = $resolvedPreparer['position_title'] ?? 'DOCL';
             $pageNo = max(1, (int)($_POST['page_no'] ?? 1));
@@ -148,7 +148,7 @@ $signature = $formRecordId > 0 ? get_form_signature($formRecordId) : null;
 $canSubmit = $incidentId > 0 && $formStatus !== 'submitted' && !empty($permissions['can_submit_final']);
 
 $header = [
-    'check_in_location' => 'ICP',
+    'check_in_location' => '',
     'start_datetime' => current_datetime_local_value(),
     'page_no' => 1,
     'total_pages' => 1,
@@ -232,7 +232,7 @@ render_ics_form_status('ICS211', $formRecord, $preparer, $signature, ['error'=>$
     <label>Check-In Location</label>
     <div class="ics211-radio-row">
       <?php foreach (['ICP'=>'ICP', 'Staging Area'=>'Staging Area', 'Base'=>'Base', 'Camp'=>'Camp', 'Helibase'=>'Helibase', 'Other'=>'Other'] as $value => $label): ?>
-        <label><input type="radio" name="check_in_location" value="<?= e($value) ?>" <?= (($header['check_in_location'] ?? 'ICP') === $value) ? 'checked' : '' ?>> <?= e($label) ?></label>
+        <label><input type="radio" name="check_in_location" value="<?= e($value) ?>" <?= (($header['check_in_location'] ?? '') === $value) ? 'checked' : '' ?>> <?= e($label) ?></label>
       <?php endforeach; ?>
     </div>
 

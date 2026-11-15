@@ -8,6 +8,13 @@
   is not)" section covers ICS positions vs ECC roles, working without the internet (but not without its own server
   and network), and the limited scope of the check-in gateway.
 * Help for the Position catalogue explains keeping ICS positions and locally added ECC roles apart.
+* README explains that the ECC uses the ICS organization for its own staff: the Incident Commander and Section
+  Chiefs in Command Bridge are the ECC's, not the on-scene IC or field IMT.
+* Form help says the forms are the ECC's records (Working with ICS forms, ICS 201, 207 and 211).
+* ICS 211: Check-In Location no longer defaults to ICP; nothing is ticked until you choose. Gateway check-ins with no
+  location are recorded as "Incident Check-In" instead of "ICP".
+* "ICS application" wording replaced with "Command Bridge" on the Settings page, the Microsoft sign-in error and the
+  Entra setup notes.
 
 * **Lookup lists are used on forms now.** The values in Settings > Lookups are suggested as you type, and free text
   still works:

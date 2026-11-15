@@ -2,6 +2,8 @@
 
 Most ICS forms in Command Bridge work the same way. This page covers the common steps. Each form's own help page says what goes in each block and anything that form does differently.
 
+The form help describes each form the way ICS Canada intends it, often in terms of the Incident Command Post (ICP) and the on-scene Incident Management Team. In Command Bridge the forms are the **ECC's** records: the positions named (Incident Commander, Section Chiefs and so on) are the ECC's own staff, not the on-scene team. When the ICP also produces a form, keep the two apart and note whose it is.
+
 ## Before you start
 
 - Every form belongs to the **active incident**. Most forms also belong to an **operational period** (OP). If no OP is active, you are asked to start one first. See [New operational period](help:operational_periods/new).

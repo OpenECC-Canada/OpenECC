@@ -7,7 +7,7 @@ Management Team (IMT) it supports. It is built on PHP 8, MariaDB and Apache and 
 your network.
 
 # Public Demo
-We have put up a public demo page at https://demo.commandbridge.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page presents a list of Section Chiefs that you can log in as including the IC.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
+We have put up a public demo page at https://demo.commandbridge.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page lists the ECC positions you can log in as, including the ECC's Incident Commander.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
 
 > **Public beta - version 0.9.0-beta.4 (Command Bridge; Check-In Gateway 0.9.0-beta.2).** It is used operationally but has not had wide testing. Test your install,
 > keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.
@@ -18,6 +18,11 @@ We have put up a public demo page at https://demo.commandbridge.ca.  This has a 
   forms with sign-off and PDF export, resources, facilities and staging, finance and administration, and an ECC display.
 * **It is not** the field operating environment for an on-scene IMT or ICP, and it does not replace one. It keeps the
   ECC's records in ICS-compatible form and works alongside whatever the IMT uses in the field.
+* **The ECC uses the ICS organization for its own staff.** Many ECCs in Canada are organized with ICS positions, and
+  the person in charge of the ECC is often the Director of Emergency Management acting as Incident Commander. In
+  Command Bridge, the Incident Commander, Section Chiefs and other positions are the **ECC's** staff. They are not the
+  on-scene IC or the field IMT, who keep their own command structure and their own records. The ICS forms in Command
+  Bridge are the ECC's records, kept in ICS-compatible form so they line up with the ICP's.
 * **Positions:** the standard ICS positions come from a controlled catalogue. An ECC can also add its own support roles
   (for example GIS, IT or a municipal liaison). Those are ECC roles, not ICS command positions, unless they genuinely
   map to one.
