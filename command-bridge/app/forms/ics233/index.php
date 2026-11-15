@@ -145,6 +145,7 @@ render_header('ICS 233 - Open Action Tracker');
   <p>
     <a class="btn" target="_blank" rel="noopener" href="<?= e($pdfBase . '?preview=1') ?>">Preview PDF (open actions)</a>
     <a class="btn" href="<?= e($pdfBase) ?>">Download PDF</a>
+    <?php require_once dirname(dirname(__DIR__)) . '/includes/printing.php'; echo cb_print_button($pdfBase); ?>
     <a class="btn" target="_blank" rel="noopener" href="<?= e($pdfBase . '?preview=1&include=completed') ?>">PDF with completed</a>
   </p>
 </div>

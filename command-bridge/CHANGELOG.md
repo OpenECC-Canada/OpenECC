@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+* **Print forms straight to a network printer.** A **Print** button next to **Download PDF** sends the form to a
+  printer on your network. Nothing needs installing on anyone's computer, and it works from phones and tablets.
+  - **Adding printers:** printers are added on the server with the new `tools/setup_printer.sh`. It installs CUPS if
+    needed and prints straight to the printer's IP address: driverless (IPP Everywhere) first, generic PostScript as
+    a fallback. It sets Letter paper and fit-to-page, and prints a test page.
+  - **Settings > Printers:** a friendly name for each printer, which ones people can pick, who may print (anyone in
+    the incident by default) and a test page.
+  - **Same PDF as the download:** the print is exactly what Download PDF makes, run as the person printing, so the
+    same permissions apply. Each job is in the audit log. Printing is off in the demo.
+  - **Where the button is:** every form's banner and Form Actions, the ICS 213 and 213RR, the ICS 233, and the
+    ICS 221 in Resources.
+  - **Database:** migration `0014_server_printing.sql` (settings `print_access` and `printer_labels`) and seed.sql.
+    No schema change. Help for Printers and Print added. Smoke test extended.
 * **ICS 221 Demobilization Check-Out from the Resources Unit page.** An **ICS 221** button next to each received
   resource (and on the resource itself) prints the official form.
   - **Filled in:** the incident, the resource, a demob number and any release details recorded.

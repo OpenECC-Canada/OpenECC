@@ -181,6 +181,22 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // Printing to a network printer (includes/printing.php, migration 0014). CUPS is optional.
+    try {
+        require_once $appRoot . '/includes/printing.php';
+        t_ok('Printing settings exist (app_settings print_access, printer_labels)',
+            (int)$pdo->query("SELECT COUNT(*) FROM app_settings WHERE setting_key IN ('print_access','printer_labels')")->fetchColumn() === 2, 'run update.sh (migration 0014)');
+        t_ok('Print links only accept the app\'s own form PDFs', cb_print_parse_pdf_url('/forms/ics202/pdf.php?op_id=3&preview=1') !== null
+            && cb_print_parse_pdf_url('javascript:/forms/ics202/pdf.php') === null && cb_print_parse_pdf_url('/admin/users.php') === null
+            && cb_print_parse_pdf_url('/forms/ics202/../../admin/pdf.php') === null);
+        if (cb_print_installed()) {
+            $pq = cb_printers();
+            t_info('Printing: CUPS installed, ' . count($pq) . ' printer(s)' . ($pq ? ': ' . implode(', ', array_column($pq, 'queue')) : ' (add one with tools/setup_printer.sh)'));
+        } else {
+            t_info('Printing: not set up (optional; add a printer with tools/setup_printer.sh)');
+        }
+    } catch (Throwable $e) { t_ok('Printing checks', false, $e->getMessage()); }
+
     // ICS 221 from the Resources Unit page; demob tracker status fix (migration 0013).
     try {
         $col = $pdo->query("SHOW COLUMNS FROM resource_demob_tracker LIKE 'demob_status'")->fetch();

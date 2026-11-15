@@ -885,7 +885,7 @@ if ($action === 'new' || ($action === 'edit' && $id>0)) {
     <div class="rr-v2-shell">
       <div class="card rr-v2-hero">
         <div><p class="rr-v2-eyebrow">ICS 213RR</p><h2 class="rr-v2-title"><?= $rr ? 'Update draft request' : 'New resource request' ?></h2><p class="rr-v2-subtitle">Describe the operational need. Logistics and Resources Unit routing are completed later.</p></div>
-        <div><?php if ($id > 0): ?><span class="no-print"><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id . '&preview=1')) ?>">Preview PDF</a> <a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)) ?>">Download PDF</a></span><?php endif; ?></div>
+        <div><?php if ($id > 0): ?><span class="no-print"><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id . '&preview=1')) ?>">Preview PDF</a> <a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)) ?>">Download PDF</a> <?php require_once dirname(dirname(__DIR__)) . '/includes/printing.php'; echo cb_print_button(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)); ?></span><?php endif; ?></div>
       </div>
 
     <div class="card"><h3><?= $rr?'Request details':'Request details' ?></h3>
@@ -1051,7 +1051,7 @@ if ($action === 'new' || ($action === 'edit' && $id>0)) {
             </div>
             <div>
               <span class="rr-v2-status"><?= e(rr_v2_status_label($status)) ?></span><br>
-              <span class="no-print"><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id . '&preview=1')) ?>">Preview PDF</a> <a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)) ?>">Download PDF</a></span>
+              <span class="no-print"><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id . '&preview=1')) ?>">Preview PDF</a> <a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)) ?>">Download PDF</a> <?php require_once dirname(dirname(__DIR__)) . '/includes/printing.php'; echo cb_print_button(app_url('/forms/ics213rr_v2/pdf.php?id=' . $id)); ?></span>
             </div>
           </div>
 

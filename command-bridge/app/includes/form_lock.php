@@ -560,6 +560,7 @@ function cb_form_status_banner(string $formCode, int $incidentId, int $opId, int
           <?php if ($previewUrl !== '' && !empty($pdf['available'])): ?>
             <a class="btn" target="_blank" rel="noopener" href="<?= e($previewUrl) ?>">Preview PDF</a>
             <a class="btn" target="_blank" rel="noopener" href="<?= e($downloadUrl) ?>">Download PDF</a>
+            <?php require_once __DIR__ . '/printing.php'; echo cb_print_button($downloadUrl); ?>
           <?php endif; ?>
         </div>
       </div>
