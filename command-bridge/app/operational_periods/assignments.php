@@ -318,7 +318,7 @@ render_header('Operational Period Position Assignments');
                                 </select>
                             </td>
                             <td><input id="<?= e($nameInputId) ?>" type="text" name="assigned_name[]" value="<?= e((string)($assignment['assigned_name'] ?? '')) ?>"></td>
-                            <td><input type="text" name="agency[]" value="<?= e((string)($assignment['agency'] ?? '')) ?>"></td>
+                            <td><input type="text" name="agency[]" list="cb-lookup-agencies" value="<?= e((string)($assignment['agency'] ?? '')) ?>"><?php require_once dirname(__DIR__) . '/includes/lookups.php'; echo cb_lookup_datalist_html('Agencies'); ?></td>
                             <td>
                                 <select name="assignment_status[]">
                                     <?php foreach (['assigned', 'vacant', 'incoming', 'outgoing', 'relieved'] as $status): ?>

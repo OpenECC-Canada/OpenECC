@@ -181,6 +181,18 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // Lookup lists (migration 0018) and starter lists.
+    try {
+        require_once $appRoot . '/includes/lookups.php';
+        $it = (int)$pdo->query("SELECT COUNT(*) FROM lookup_list_items WHERE list_category = 'Incident Types'")->fetchColumn();
+        t_ok('Lookup lists: default Incident Types', $it >= 10, $it . ' found; run update.sh (migration 0018)');
+        t_ok('Lookup lists: contact details for agencies (phone, 24/7 line, email, verified)',
+            count(array_intersect(['phone', 'phone_24h', 'email', 'website', 'notes', 'verified_at'], table_columns('lookup_list_items'))) === 6, 'run update.sh (migration 0019)');
+        $starters = cb_lookup_starter_lists();
+        t_ok('Lookup starter lists load (Alberta)', isset($starters['alberta']) && count($starters['alberta']['lists']['Agencies'] ?? []) >= 10);
+        t_info('Lookup starter lists: ' . implode(', ', array_map(static fn($s) => $s['label'] . ' (checked ' . ($s['checked'] ?? '?') . ')', $starters)) . '. Review them twice a year.');
+    } catch (Throwable $e) { t_ok('Lookup list checks', false, $e->getMessage()); }
+
     // Facilities (#44) and staging board (#45), migration 0017.
     try {
         $fc = table_columns('external_checkin_locations');

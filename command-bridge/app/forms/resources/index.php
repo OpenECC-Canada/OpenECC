@@ -788,7 +788,7 @@ try {
                   <label>Received by name<input name="received_by_name" value="<?= e((string)($row['received_by_name'] ?? '')) ?>"></label>
                   <label>Received by position<input name="received_by_position" value="<?= e((string)($row['received_by_position'] ?? '')) ?>"></label>
                   <label>Receiving / check-in location<input name="initial_location" value="<?= e((string)($row['initial_location'] ?? '')) ?>"></label>
-                  <label>Supplier / agency / owner<input name="supplier_name" value="<?= e((string)($row['supplier_name'] ?? '')) ?>"></label>
+                  <label>Supplier / agency / owner<input name="supplier_name" list="cb-lookup-agencies" value="<?= e((string)($row['supplier_name'] ?? '')) ?>"></label><?php require_once dirname(__DIR__, 2) . '/includes/lookups.php'; echo cb_lookup_datalist_html('Agencies'); ?>
                   <label>Contact<input name="supplier_contact" value="<?= e((string)($row['supplier_contact'] ?? '')) ?>"></label>
                   <label class="span-2">Receipt notes<textarea name="receipt_notes" placeholder="Record arrival condition, staging/check-in details, or information needed for ICS 211."></textarea></label>
                   <div class="span-2 form-actions">

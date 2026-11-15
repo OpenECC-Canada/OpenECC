@@ -267,7 +267,7 @@ render_ics_form_status('ICS211', $formRecord, $preparer, $signature, ['error'=>$
       <div><label>Total # Personnel</label><input type="number" min="0" name="total_personnel"></div>
       <div><label>Contact Information - Email</label><input name="email" type="email"></div>
       <div><label>Contact Information - Phone</label><input name="phone"></div>
-      <div><label>Home Unit / Agency</label><input name="agency"></div>
+      <div><label>Home Unit / Agency</label><input name="agency" list="cb-lookup-agencies"><?php require_once dirname(__DIR__, 2) . '/includes/lookups.php'; echo cb_lookup_datalist_html('Agencies'); ?></div>
       <div><label>Departure Point</label><input name="departure_point"></div>
       <div><label>Method of Travel</label><input name="method_of_travel" placeholder="P/T, vehicle, air, other"></div>
       <div><label>Incident Assignment</label><input name="assignment_details"></div>
