@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+* **Fix: Check-In Recorder and Staging Area Manager have a section and a supervisor.** The app and the Check-In
+  Gateway use the codes CIR and SAM, but the position list only had them as inactive CHECK_IN_RECORDER /
+  STAGING_AREA_MANAGER entries, so CIR and SAM had no section and no supervisor (their ICS 214 went to the IC). CIR is
+  now in Planning, reporting to the Resources Unit Leader; SAM is in Operations, reporting to the Operations Section
+  Chief. Any assignments on the old long-code roles are moved to CIR/SAM. **Database:** migration
+  `0016_cir_sam_positions.sql`, with matching seed.sql.
 * **Fix: the Supply Unit Leader (SPUL) can now be assigned.** The app already used SPUL (the Logistics queue, the
   ICS 213RR "order placed by" box, the ICS 203 and 207), but it was missing from the position list. It's added under
   Logistics (reports to the LSC), with edit access to the ICS 213RR like the rest of Logistics. **Database:** migration

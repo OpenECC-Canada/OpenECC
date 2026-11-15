@@ -186,6 +186,11 @@ if ($want('env')) {
         t_ok('Supply Unit Leader (SPUL) is in the position list', (int)$pdo->query("SELECT COUNT(*) FROM incident_position_catalog WHERE acronym = 'SPUL' AND is_active = 1")->fetchColumn() === 1
             && (int)$pdo->query("SELECT COUNT(*) FROM roles WHERE role_code = 'SPUL'")->fetchColumn() === 1, 'run update.sh (migration 0015)');
     } catch (Throwable $e) { t_ok('SPUL check', false, $e->getMessage()); }
+    try {
+        $cs = $pdo->query("SELECT acronym, reports_to_acronym FROM incident_position_catalog WHERE acronym IN ('CIR','SAM','CHECK_IN_RECORDER','STAGING_AREA_MANAGER') AND is_active = 1")->fetchAll(PDO::FETCH_KEY_PAIR);
+        t_ok('Check-In Recorder (CIR) and Staging Area Manager (SAM) have a supervisor', ($cs['CIR'] ?? '') === 'RESL' && ($cs['SAM'] ?? '') === 'OSC'
+            && !isset($cs['CHECK_IN_RECORDER']) && !isset($cs['STAGING_AREA_MANAGER']), 'run update.sh (migration 0016)');
+    } catch (Throwable $e) { t_ok('CIR/SAM check', false, $e->getMessage()); }
 
     // Printing to a network printer (includes/printing.php, migration 0014). CUPS is optional.
     try {

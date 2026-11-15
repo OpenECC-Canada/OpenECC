@@ -35,8 +35,6 @@ INSERT INTO `roles` VALUES
 (72,'RESOURCE_UNIT','Resources Unit Staff',0,1),
 (73,'GENERAL_STAFF','General Staff',0,1),
 (74,'DIC','Deputy Incident Commander',1,1),
-(75,'CHECK_IN_RECORDER','Check-In Recorder',0,0),
-(76,'STAGING_AREA_MANAGER','Staging Area Manager',0,0),
 (77,'CIR','Check-In Recorder',0,1),
 (78,'SAM','Staging Area Manager',0,1),
 (79,'SPUL','Supply Unit Leader',0,1);
@@ -69,8 +67,8 @@ INSERT INTO `incident_position_catalog` VALUES
 (57,'Finance / Administration',50,40,'COMP','Compensation / Claims Unit Leader','FSC',0,1,'2026-10-19 19:36:04','2026-10-19 19:36:04'),
 (58,'Finance / Administration',50,50,'COST','Cost Unit Leader','FSC',0,1,'2026-10-19 19:36:04','2026-10-19 19:36:04'),
 (60,'Command',2,2,'DIC','Deputy Incident Commander','IC',0,1,'2026-10-22 14:45:27','2026-10-22 14:45:27'),
-(62,'Logistics',9999,9999,'CHECK_IN_RECORDER','Check-In Recorder','RESL',0,0,'2026-10-23 14:47:27','2026-10-26 14:06:03'),
-(63,'Logistics',9999,9999,'STAGING_AREA_MANAGER','Staging Area Manager','RESL',0,0,'2026-10-23 14:47:58','2026-10-26 14:05:55'),
+(62,'Planning',30,35,'CIR','Check-In Recorder','RESL',0,1,'2026-10-23 14:47:27','2026-11-15 04:00:00'),
+(63,'Operations',20,50,'SAM','Staging Area Manager','OSC',0,1,'2026-10-23 14:47:58','2026-11-15 04:00:00'),
 (64,'Logistics',40,45,'SPUL','Supply Unit Leader','LSC',0,1,'2026-11-15 04:00:00','2026-11-15 04:00:00');
 
 INSERT INTO `forms` VALUES
