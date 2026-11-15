@@ -187,7 +187,7 @@ if ($want('env')) {
         $it = (int)$pdo->query("SELECT COUNT(*) FROM lookup_list_items WHERE list_category = 'Incident Types'")->fetchColumn();
         t_ok('Lookup lists: default Incident Types', $it >= 10, $it . ' found; run update.sh (migration 0018)');
         t_ok('Lookup lists: contact details for agencies (phone, 24/7 line, email, verified)',
-            count(array_intersect(['phone', 'phone_24h', 'email', 'website', 'notes', 'verified_at'], table_columns('lookup_list_items'))) === 6, 'run update.sh (migration 0018)');
+            count(array_intersect(['phone', 'phone_24h', 'email', 'website', 'notes', 'verified_at'], table_columns('lookup_list_items'))) === 6, 'run update.sh (migration 0019)');
         $starters = cb_lookup_starter_lists();
         t_ok('Lookup starter lists load (Alberta)', isset($starters['alberta']) && count($starters['alberta']['lists']['Agencies'] ?? []) >= 10);
         t_info('Lookup starter lists: ' . implode(', ', array_map(static fn($s) => $s['label'] . ' (checked ' . ($s['checked'] ?? '?') . ')', $starters)) . '. Review them twice a year.');

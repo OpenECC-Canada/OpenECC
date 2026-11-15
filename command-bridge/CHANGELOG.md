@@ -22,8 +22,8 @@
     flags details not checked in 12 months.
   * **Suggestions:** when picking an agency in a suggestion box, its phone numbers show next to the name.
   * **Starter lists:** they don't include phone numbers; you add and verify them.
-* **Database:** migration `0018_lookup_lists.sql` adds default Incident Types (also in seed.sql) and the contact
-  columns on `lookup_list_items` (also in schema.sql). Help for Lookups and the Agency Directory written. Smoke test
+* **Database:** migration `0018_lookup_lists.sql` adds default Incident Types (also in seed.sql);
+  `0019_lookup_contacts.sql` adds the contact columns on `lookup_list_items` (also in schema.sql). Help for Lookups and the Agency Directory written. Smoke test
   extended.
 * **Facilities (#44): check-in locations become the incident facility list.**
   - **New Facilities page:** replaces Settings > Check-in Locations, which now redirects there. It lists every
