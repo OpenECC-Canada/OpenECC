@@ -181,6 +181,13 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // ICS 221 from the Resources Unit page; demob tracker status fix (migration 0013).
+    try {
+        $col = $pdo->query("SHOW COLUMNS FROM resource_demob_tracker LIKE 'demob_status'")->fetch();
+        t_ok('Demobilization tracker accepts new resources (demob_status not_ready_for_demob)', $col && str_contains((string)$col['Type'], 'not_ready_for_demob'),
+            'run update.sh (migration 0013)');
+    } catch (Throwable $e) { t_ok('Demobilization tracker check', false, $e->getMessage()); }
+
     // ICS 215 Operational Planning Worksheet (migration 0012).
     try {
         t_ok('ICS 215 worksheet tables (form_215_headers, form_215_rows)', table_columns('form_215_headers') !== [] && table_columns('form_215_rows') !== [],
@@ -698,6 +705,10 @@ if ($want('pdf')) {
             array_fill(0, 7, ['branch' => 'I', 'division_group' => 'A', 'work_assignment' => $long, 'resources' => array_fill(0, 12, ['req' => 3, 'have' => 1]),
                 'overhead' => 'DIVS', 'special_equipment' => 'Pumps', 'reporting_location' => 'Staging', 'arrival_time' => '06:00']));
         $cases['ICS215'] = [$b['pages'], $b['continuations'], null];
+        require_once $appRoot . '/forms/ics221/Ics221OfficialPdfFieldMapper.php';
+        $b = Ics221OfficialPdfFieldMapper::build($incident, ['id' => 1, 'source_request_number' => 'RR-1', 'resource_kind' => 'Engine', 'resource_category' => 'vehicle',
+            'resource_description' => $long], ['id' => 1, 'release_location' => 'Home base', 'release_notes' => $long], 'Smoke RESL', $now);
+        $cases['ICS221'] = [[$b['fields']], $b['continuations'], null];
         $b = Ics230OfficialPdfFieldMapper::build($incident, $op, [['title' => 'Planning Meeting', 'scheduled_at' => $now, 'status' => 'scheduled', 'location' => 'ECC']], 'Smoke SITL', 'SITL', $now);
         $cases['ICS230'] = [$b['pages'], $b['continuations'], null];
 

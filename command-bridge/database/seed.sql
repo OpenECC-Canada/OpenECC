@@ -505,7 +505,10 @@ INSERT INTO `form_permissions` (`form_code`, `role_code`, `can_view`, `can_creat
 ('ICS215', 'SOFR', 1, 0, 0, 0, 0, 1),
 ('ICS215', 'RESL', 1, 0, 0, 0, 0, 1),
 ('ICS215', 'SITL', 1, 0, 0, 0, 0, 1),
-('ICS215', 'DOCL', 1, 0, 0, 0, 0, 1);
+('ICS215', 'DOCL', 1, 0, 0, 0, 0, 1),
+-- Resources Unit page for the Demobilization Unit Leader and PSC (migration 0013)
+('RESOURCES_UNIT', 'DMOB', 1, 0, 0, 0, 0, 1),
+('RESOURCES_UNIT', 'PSC', 1, 0, 0, 0, 0, 1);
 
 INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('email_delivery_method', 'smtp_password'),

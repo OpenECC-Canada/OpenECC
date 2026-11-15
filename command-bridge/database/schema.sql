@@ -1505,7 +1505,7 @@ CREATE TABLE `resource_demob_tracker` (
   `resource_unit_intake_id` int(11) NOT NULL,
   `source_213rr_header_id` int(11) DEFAULT NULL,
   `resource_label` varchar(255) DEFAULT NULL,
-  `demob_status` enum('planned','approved','released','demobilized') NOT NULL DEFAULT 'planned',
+  `demob_status` enum('not_ready_for_demob','planned','approved','released','demobilized') NOT NULL DEFAULT 'not_ready_for_demob',
   `release_location` varchar(255) DEFAULT NULL,
   `release_notes` text DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
