@@ -106,19 +106,17 @@ render_header('Printers');
   <details<?= ($installed && !$printers) ? ' open' : '' ?>>
     <summary><strong>Server check</strong> (what Command Bridge sees)</summary>
     <?php
-      $lpPath = cb_print_binary('lp'); $lpstatPath = cb_print_binary('lpstat');
       $t0 = microtime(true);
-      [$diagCode, $diagOut] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-p'], 10) : [127, 'lpstat not found'];
+      [$diagRows, $diagErr] = cb_printers_query();
       $diagSecs = microtime(true) - $t0;
-      [, $diagV] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-r'], 10) : [127, ''];
       $who = function_exists('posix_getpwuid') && function_exists('posix_geteuid') ? (string)(posix_getpwuid(posix_geteuid())['name'] ?? '') : '';
     ?>
     <table class="data-table">
       <tr><th>Web server user</th><td><?= e($who !== '' ? $who : 'unknown') ?></td></tr>
-      <tr><th>lp</th><td><?= e($lpPath !== '' ? $lpPath : 'not found') ?></td></tr>
-      <tr><th>lpstat</th><td><?= e($lpstatPath !== '' ? $lpstatPath : 'not found') ?></td></tr>
-      <tr><th>Print system</th><td><?= e($diagV !== '' ? $diagV : '(no answer)') ?></td></tr>
-      <tr><th><code>lpstat -p</code> (exit <?= (int)$diagCode ?>, <?= e(number_format($diagSecs, 1)) ?> s)</th><td><pre style="white-space:pre-wrap;margin:0"><?= e($diagOut !== '' ? $diagOut : '(nothing)') ?></pre></td></tr>
+      <tr><th>Print system (CUPS)</th><td><?= e(cb_print_installed() ? 'installed' : 'not found') ?>; connects to <?= e(implode(' or ', cb_cups_endpoints())) ?></td></tr>
+      <tr><th>Asking it for printers (<?= e(number_format($diagSecs, 1)) ?> s)</th><td><?php if ($diagRows === null): ?><span class="priority-high"><?= e((string)$diagErr) ?></span>
+        <?php elseif (!$diagRows): ?>Answered: no printers.
+        <?php else: ?>Answered: <?= e(implode('; ', array_map(static fn($r) => $r['queue'] . ' (' . $r['detail'] . ')', $diagRows))) ?><?php endif; ?></td></tr>
     </table>
   </details>
 </div>
