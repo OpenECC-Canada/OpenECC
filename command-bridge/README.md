@@ -2,9 +2,11 @@
 
 Part of the [Command Bridge repository](../README.md), which also contains the optional public [Check-In Gateway](../checkin-gateway/). The root README explains how the two work together.
 
-Command Bridge is a self-hosted web application for running an Incident Command System (ICS) response:
-incident and operational-period setup, positions and chain of command, ICS forms with sign-off and PDF export,
-resource tracking, check-in, and an Emergency Coordination Centre display.
+Command Bridge is a self-hosted web application for an Emergency Coordination Centre (ECC): incident and
+operational-period setup, the ECC organization, ICS-compatible forms with sign-off and PDF export, resource and
+facility tracking, finance and administration, check-in, and an ECC display. It supports the on-scene Incident Command
+Post / Incident Management Team; it is not a field system for them. See
+[What Command Bridge is (and is not)](../README.md#what-command-bridge-is-and-is-not).
 
 > **Status: public beta (0.9.0-beta.4).** It is used operationally but has not had wide testing.
 > Test your install, keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Wording: Command Bridge is an ECC support system
+* README files now describe Command Bridge as an Emergency Coordination Centre (ECC) support system with
+  ICS-compatible records, not as software for running the on-scene ICS response. A new "What Command Bridge is (and
+  is not)" section covers ICS positions vs ECC roles, working without the internet (but not without its own server
+  and network), and the limited scope of the check-in gateway.
+* Help for the Position catalogue explains keeping ICS positions and locally added ECC roles apart.
+
 * **Lookup lists are used on forms now.** The values in Settings > Lookups are suggested as you type, and free text
   still works:
   - **Agencies:** ICS 211 Home Unit / Agency, position assignments, and the ICS 213RR and Resources supplier boxes

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* README: states plainly that the gateway is a limited check-in intake service, not a remote copy of Command Bridge or a field IMT system.
+
 * **The installer and updater now say what each step is** (the step's name was cut off in the progress box).
 
 ## 0.9.0-beta.2
