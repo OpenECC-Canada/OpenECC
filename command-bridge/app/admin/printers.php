@@ -107,7 +107,9 @@ render_header('Printers');
     <summary><strong>Server check</strong> (what Command Bridge sees)</summary>
     <?php
       $lpPath = cb_print_binary('lp'); $lpstatPath = cb_print_binary('lpstat');
+      $t0 = microtime(true);
       [$diagCode, $diagOut] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-p'], 10) : [127, 'lpstat not found'];
+      $diagSecs = microtime(true) - $t0;
       [, $diagV] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-r'], 10) : [127, ''];
       $who = function_exists('posix_getpwuid') && function_exists('posix_geteuid') ? (string)(posix_getpwuid(posix_geteuid())['name'] ?? '') : '';
     ?>
@@ -116,7 +118,7 @@ render_header('Printers');
       <tr><th>lp</th><td><?= e($lpPath !== '' ? $lpPath : 'not found') ?></td></tr>
       <tr><th>lpstat</th><td><?= e($lpstatPath !== '' ? $lpstatPath : 'not found') ?></td></tr>
       <tr><th>Print system</th><td><?= e($diagV !== '' ? $diagV : '(no answer)') ?></td></tr>
-      <tr><th><code>lpstat -p</code> (exit <?= (int)$diagCode ?>)</th><td><pre style="white-space:pre-wrap;margin:0"><?= e($diagOut !== '' ? $diagOut : '(nothing)') ?></pre></td></tr>
+      <tr><th><code>lpstat -p</code> (exit <?= (int)$diagCode ?>, <?= e(number_format($diagSecs, 1)) ?> s)</th><td><pre style="white-space:pre-wrap;margin:0"><?= e($diagOut !== '' ? $diagOut : '(nothing)') ?></pre></td></tr>
     </table>
   </details>
 </div>

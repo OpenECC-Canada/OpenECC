@@ -20,7 +20,13 @@ require_once __DIR__ . '/form_lock.php';   // cb_php_cli_binary()
 function cb_print_run(array $cmd, int $timeout = 30, ?string $cwd = null): array
 {
     if (!function_exists('proc_open')) { return [127, 'The server cannot run programs (proc_open is disabled).']; }
-    $env = ['LANG' => 'C', 'LC_ALL' => 'C', 'PATH' => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'];
+    // The web server's own environment (as bin/form_snapshot.php gets it), with English messages so the status can
+    // be read. A cut-down environment made lpstat hang under Apache.
+    $env = getenv();
+    $env = is_array($env) ? $env : [];
+    $env['LANG'] = 'C';
+    $env['LC_ALL'] = 'C';
+    if (empty($env['PATH'])) { $env['PATH'] = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'; }
     $proc = @proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $cwd, $env, ['bypass_shell' => true]);
     if (!is_resource($proc)) { return [127, 'Could not start ' . basename((string)$cmd[0]) . '.']; }
     fclose($pipes[0]);
