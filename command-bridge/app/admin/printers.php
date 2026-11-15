@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $access = (string)($_POST['print_access'] ?? 'positions');
             if (!in_array($access, ['positions', 'signed_in', 'off'], true)) { $access = 'positions'; }
             $labels = [];
-            foreach (cb_printers() as $p) {
+            foreach (cb_printers(true) as $p) {
                 $q = $p['queue'];
                 $labels[$q] = [
                     'label' => mb_substr(trim((string)($_POST['label'][$q] ?? '')), 0, 80),
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('success', 'Printer settings saved.');
         } elseif ($action === 'test') {
             $queue = (string)($_POST['queue'] ?? '');
-            if (!in_array($queue, array_column(cb_printers(), 'queue'), true)) { throw new RuntimeException('Unknown printer.'); }
+            if (!in_array($queue, array_column(cb_printers(true), 'queue'), true)) { throw new RuntimeException('Unknown printer.'); }
             $file = tempnam(sys_get_temp_dir(), 'cbtest_');
             if ($file === false) { throw new RuntimeException('Could not make the test page.'); }
             file_put_contents($file, SimpleTextPdf::render('Command Bridge test page', ['Printer: ' . $queue, 'Sent: ' . date('Y-m-d H:i')],
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $installed = cb_print_installed();
-$printers = cb_printers();
+$printers = cb_printers(true);
 $access = cb_print_access();
 render_header('Printers');
 ?>

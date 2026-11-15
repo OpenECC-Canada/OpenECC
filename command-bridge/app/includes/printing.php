@@ -77,14 +77,23 @@ function cb_printer_labels(): array
  *
  * @return array<int, array{queue: string, label: string, enabled: bool, state: string, detail: string}>
  */
-function cb_printers(): array
+function cb_printers(bool $fresh = false): array
 {
     static $cache = null;
-    if ($cache !== null) { return $cache; }
+    if ($cache !== null && !$fresh) { return $cache; }
     $cache = [];
     if (!cb_print_installed()) { return $cache; }
-    [$code, $out] = cb_print_run([cb_print_binary('lpstat'), '-p'], 10);
-    if ($code !== 0 && $out === '') { return $cache; }
+    // The Print button checks this on every form page, and asking CUPS can take a moment, so the answer is kept for a
+    // minute (the Printers and Print pages always ask afresh).
+    $file = storage_root_path() . '/tmp/printers_cache.txt';
+    $out = '';
+    if (!$fresh && is_file($file) && filemtime($file) > time() - 60) {
+        $out = (string)file_get_contents($file);
+    } else {
+        [$code, $out] = cb_print_run([cb_print_binary('lpstat'), '-p'], 10);
+        if ($code !== 0 && $out === '') { return $cache; }
+        try { ensure_directory(dirname($file)); @file_put_contents($file, $out, LOCK_EX); } catch (Throwable $e) { /* cache is optional */ }
+    }
     $labels = cb_printer_labels();
     foreach (preg_split('/\R/', $out) ?: [] as $line) {
         if (!preg_match('/^printer\s+(\S+)\s+(.*)$/', $line, $m)) { continue; }
@@ -103,9 +112,9 @@ function cb_printers(): array
 }
 
 /** Printers people can pick (enabled in Settings and not disabled on the server). */
-function cb_printers_for_users(): array
+function cb_printers_for_users(bool $fresh = false): array
 {
-    return array_values(array_filter(cb_printers(), static fn($p) => $p['enabled'] && $p['state'] !== 'disabled'));
+    return array_values(array_filter(cb_printers($fresh), static fn($p) => $p['enabled'] && $p['state'] !== 'disabled'));
 }
 
 function cb_print_valid_queue(string $queue): bool

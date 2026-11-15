@@ -37,12 +37,33 @@ valid_name() { [[ "$1" =~ ^[A-Za-z0-9_-]{1,40}$ ]]; }
 valid_host() { [[ "$1" =~ ^[A-Za-z0-9.:-]{1,253}$ ]]; }
 cups_installed() { command -v lpadmin >/dev/null 2>&1 && command -v lp >/dev/null 2>&1 && command -v lpstat >/dev/null 2>&1; }
 port_open() { timeout 4 bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null; }   # port_open HOST PORT
-printer_names() { lpstat -p 2>/dev/null | awk '$1 == "printer" {print $2}'; }
+# Printers added on this server, read from CUPS's own list. Asking lpstat about a name it doesn't know can make it
+# search the network for a printer of that name, which takes several seconds.
+# CUPS can take up to 30 seconds to rewrite that file, so printers added or removed in this run are tracked too.
+PRINTERS_CONF=/etc/cups/printers.conf
+SESSION_ADDED=" "; SESSION_REMOVED=" "
+printer_names() {
+    {
+        [ -r "$PRINTERS_CONF" ] && sed -n 's/^<\(Default\)\{0,1\}Printer \(.*\)>$/\2/p' "$PRINTERS_CONF"
+        printf '%s\n' $SESSION_ADDED
+    } | awk -v gone="$SESSION_REMOVED" 'NF && index(gone, " " $0 " ") == 0 && !seen[$0]++'
+}
+queue_exists() { printer_names | grep -qxF -- "$1"; }
+
+# Network printer discovery (cups-browsed) adds every printer it finds on the network, which slows things down and
+# fills Settings > Printers. Command Bridge prints only to the printers added here, so it is switched off.
+stop_discovery() {
+    if systemctl is-enabled cups-browsed >/dev/null 2>&1 || systemctl is-active cups-browsed >/dev/null 2>&1; then
+        systemctl disable --now cups-browsed >/dev/null 2>&1 || true
+        say "Switched off automatic network printer discovery (cups-browsed); only printers added here are used."
+    fi
+}
 
 # 1. The print system. Offer to install it when it is missing; nothing else works without it.
 ensure_cups() {
     if cups_installed; then
         systemctl enable --now cups >/dev/null 2>&1 || true
+        stop_discovery
         return 0
     fi
     ui_yesno "Print system" "The print system (CUPS) is not installed on this server.\n\nCommand Bridge needs it to send forms to a printer. Install it now? This downloads about 30 MB of packages." y \
@@ -50,9 +71,10 @@ ensure_cups() {
     ui_steps 1
     ui_stage "Installing the print system (CUPS)"
     export DEBIAN_FRONTEND=noninteractive
-    { apt-get update -qq && apt-get install -y -qq cups cups-client cups-filters; } >/dev/null 2>&1 \
+    { apt-get update -qq && apt-get install -y -qq --no-install-recommends cups cups-client cups-filters; } >/dev/null 2>&1 \
         || die "CUPS did not install. Check the server's internet access and apt sources, then run this again."
     systemctl enable --now cups >/dev/null 2>&1 || true
+    stop_discovery
     cups_installed || die "CUPS installed but its commands were not found."
     ui_msg "Print system" "The print system (CUPS) is installed. Next, add a printer."
 }
@@ -96,9 +118,9 @@ add_printer() {  # add_printer NAME HOST auto|postscript
 
 do_add() {  # do_add [NAME] [HOST] [auto|postscript]
     local name=${1:-} host=${2:-} mode=${3:-} out
-    while [ -z "$name" ] || ! valid_name "$name" || lpstat -p "$name" >/dev/null 2>&1; do
+    while [ -z "$name" ] || ! valid_name "$name" || queue_exists "$name"; do
         [ -n "$name" ] && ! valid_name "$name" && ui_msg "Printer name" "\"$name\" can't be used. Use letters, numbers, dash or underscore (up to 40), for example ECC-Copier."
-        [ -n "$name" ] && valid_name "$name" && lpstat -p "$name" >/dev/null 2>&1 && ui_msg "Printer name" "There is already a printer called $name. Pick another name, or remove that one first."
+        [ -n "$name" ] && valid_name "$name" && queue_exists "$name" && ui_msg "Printer name" "There is already a printer called $name. Pick another name, or remove that one first."
         [ "$CMD" = add ] && [ -n "${1:-}" ] && die "Printer name \"$name\" can't be used (invalid or already exists)."
         ui_ask name "Add a printer" "A short name for the printer on this server, for example ECC-Copier.\nPeople see a friendlier name, which you set later in Settings > Printers." "ECC-Printer"
     done
@@ -117,6 +139,7 @@ do_add() {  # do_add [NAME] [HOST] [auto|postscript]
     if ! add_printer "$name" "$host" "$mode"; then
         fail "$ADD_ERROR"; return 0
     fi
+    SESSION_ADDED="$SESSION_ADDED$name "; SESSION_REMOVED="${SESSION_REMOVED// $name / }"
     ui_stage "Added $name"
     say "Added $name at $host: $ADDED_HOW"
     if ui_yesno "Printer added" "$name was added ($ADDED_HOW).\n\nPrint a test page now?" y; then
@@ -138,9 +161,11 @@ do_list() {
         if [ -z "$(printer_names)" ]; then
             echo "No printers yet."
         else
-            lpstat -v 2>/dev/null || true
+            # shellcheck disable=SC2046
+            lpstat -v $(printer_names) 2>/dev/null || true
             echo
-            lpstat -p 2>/dev/null || true
+            # shellcheck disable=SC2046
+            lpstat -p $(printer_names) 2>/dev/null || true
         fi
     } >"$f"
     if [ "$UI_WT" = 1 ]; then ui_textfile "Printers" "$f"; else cat "$f" >&3; fi
@@ -158,7 +183,7 @@ pick_printer() {  # pick_printer VAR "Title" "Prompt"
 do_test() {  # do_test [NAME]
     local name=${1:-} out
     if [ -z "$name" ]; then pick_printer name "Test page" "Which printer?" || return 0; fi
-    lpstat -p "$name" >/dev/null 2>&1 || { fail "No printer called $name."; return 0; }
+    queue_exists "$name" || { fail "No printer called $name."; return 0; }
     if out="$(test_page "$name")"; then ui_msg "Test page" "A test page was sent to $name.\n$out"; say "Test page sent to $name."
     else fail "The test page was not accepted: $out"; fi
 }
@@ -166,11 +191,12 @@ do_test() {  # do_test [NAME]
 do_remove() {  # do_remove [NAME] [--yes]
     local name=${1:-} force=${2:-}
     if [ -z "$name" ]; then pick_printer name "Remove a printer" "Which printer should be removed?" || return 0; fi
-    lpstat -p "$name" >/dev/null 2>&1 || { fail "No printer called $name."; return 0; }
+    queue_exists "$name" || { fail "No printer called $name."; return 0; }
     if [ "$force" != --yes ]; then
         ui_yesno "Remove a printer" "Remove $name? People will no longer be able to print to it from Command Bridge." n || return 0
     fi
     lpadmin -x "$name"
+    SESSION_REMOVED="$SESSION_REMOVED$name "; SESSION_ADDED="${SESSION_ADDED// $name / }"
     ui_msg "Remove a printer" "$name was removed."
     say "Removed $name."
 }

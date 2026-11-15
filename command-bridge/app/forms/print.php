@@ -19,7 +19,7 @@ if ($back === '' || !str_starts_with($back, $base . '/') || str_starts_with($bac
 }
 $target = cb_print_parse_pdf_url($pdfUrl);
 $denied = cb_print_denied_reason($incidentId);
-$printers = $denied === '' ? cb_printers_for_users() : [];
+$printers = $denied === '' ? cb_printers_for_users(true) : [];
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $denied === '' && $target) {
