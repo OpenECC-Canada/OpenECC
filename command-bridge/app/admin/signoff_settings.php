@@ -19,7 +19,7 @@ $formNames = [
     'ICS205A' => 'ICS 205A Communications List', 'ICS206' => 'ICS 206 Medical Plan', 'ICS207' => 'ICS 207 Incident Organization Chart',
     'ICS208' => 'ICS 208 Safety Message / Plan', 'ICS209' => 'ICS 209 Incident Status Summary', 'ICS209WF' => 'ICS 209-WF Wildfire Status Summary',
     'ICS210' => 'ICS 210 Resource Status Change', 'ICS211' => 'ICS 211 Check-In List', 'ICS213' => 'ICS 213 General Message',
-    'ICS214' => 'ICS 214 Activity Log', 'ICS215A' => 'ICS 215A Incident Action Plan Safety Analysis', 'ICS218' => 'ICS 218 Support Vehicle / Equipment Inventory',
+    'ICS214' => 'ICS 214 Activity Log', 'ICS215' => 'ICS 215 Operational Planning Worksheet', 'ICS215A' => 'ICS 215A Incident Action Plan Safety Analysis', 'ICS218' => 'ICS 218 Support Vehicle / Equipment Inventory',
     'ICS230' => 'ICS 230 Daily Meeting Schedule',
 ];
 

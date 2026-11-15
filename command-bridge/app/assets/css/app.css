@@ -909,3 +909,14 @@ img,video{max-width:100%;height:auto}
 .ics233-due-label{color:#92400e;font-weight:700}
 .ics233-status-form{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .ics233-status-form input[type=text]{flex:1 1 160px;min-width:0}
+
+/* ICS 215 planning worksheet */
+.ics215-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ics215-cols label{margin:0}
+fieldset.ics215-row{border:1px solid #cbd5e1}
+fieldset.ics215-row legend{font-weight:700;padding:0 6px}
+.ics215-res{border-collapse:collapse;margin:8px 0;max-width:100%}
+.ics215-res th,.ics215-res td{border:1px solid #cbd5e1;padding:4px 6px;text-align:center;font-size:13px}
+.ics215-res thead th{background:#f1f5f9}
+.ics215-res input[type=number]{width:64px;text-align:center}
+.ics215-res tr.ics215-need td{font-weight:700;background:#f8fafc}

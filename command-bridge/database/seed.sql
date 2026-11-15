@@ -94,7 +94,8 @@ INSERT INTO `forms` VALUES
 (56,'EXTERNAL_CHECKIN','External Check-in',1,'hidden','Internal staging and controlled publication for the external check-in gateway.','2026-10-23 15:40:23','2026-10-23 15:40:23'),
 (57,'RESOURCES_UNIT','Resources Unit',1,'hidden','Resources Unit intake board (not an ICS form). Controls who can open the Resources Unit page.','2026-11-13 15:00:00','2026-11-13 15:00:00'),
 (58,'FINANCE_ADMIN','Finance/Admin Queue',1,'hidden','Finance/Admin 213RR queue (not an ICS form). Controls who can open the Finance/Admin queue.','2026-11-13 15:00:00','2026-11-13 15:00:00'),
-(59,'ICS233','ICS 233 - Incident Open Action Tracker',1,'read_only','Open action tracker (one list per incident).','2026-11-14 22:00:00','2026-11-14 22:00:00');
+(59,'ICS233','ICS 233 - Incident Open Action Tracker',1,'read_only','Open action tracker (one list per incident).','2026-11-14 22:00:00','2026-11-14 22:00:00'),
+(60,'ICS215','ICS 215 - Operational Planning Worksheet',1,'read_only','Operational planning worksheet.','2026-11-14 22:00:00','2026-11-14 22:00:00');
 
 INSERT INTO `form_permissions` VALUES
 (329,'ICS201','IC',1,1,1,1,1,NULL,1,'2026-10-19 13:36:04','2026-10-19 13:36:04'),
@@ -196,7 +197,8 @@ INSERT INTO `form_definitions` VALUES
 (50,'ICS215A','215A','Incident Action Plan Safety Analysis','SOFR',1),
 (51,'ICS218','218','Support Vehicle / Equipment Inventory','GSUL',1),
 (52,'ICS230','230','Daily Meeting Schedule','PSC',1),
-(53,'ICS233','233','Incident Open Action Tracker','PSC',0);
+(53,'ICS233','233','Incident Open Action Tracker','PSC',0),
+(54,'ICS215','215','Operational Planning Worksheet','OSC',1);
 
 INSERT INTO `resource_kind_type_catalog` VALUES
 (172,'Personnel','Incident Management Team','personnel',NULL,'Type 1',1,10,1,'2026-10-19 19:36:04','2026-10-19 19:36:04'),
@@ -491,7 +493,19 @@ INSERT INTO `form_permissions` (`form_code`, `role_code`, `can_view`, `can_creat
 ('ICS233', 'UC', 1, 1, 1, 1, 0, 1),
 ('ICS233', 'DIC', 1, 1, 1, 0, 0, 1),
 ('ICS233', 'DOCL', 1, 1, 1, 0, 0, 1),
-('ICS233', 'INCIDENT_POSITION', 1, 0, 0, 0, 0, 1);
+('ICS233', 'INCIDENT_POSITION', 1, 0, 0, 0, 0, 1),
+-- ICS 215 Operational Planning Worksheet (migration 0012)
+('ICS215', 'OSC', 1, 1, 1, 1, 0, 1),
+('ICS215', 'PSC', 1, 1, 1, 0, 0, 1),
+('ICS215', 'IC', 1, 1, 1, 1, 1, 1),
+('ICS215', 'UC', 1, 1, 1, 1, 0, 1),
+('ICS215', 'DIC', 1, 1, 1, 0, 0, 1),
+('ICS215', 'LSC', 1, 0, 0, 0, 0, 1),
+('ICS215', 'FSC', 1, 0, 0, 0, 0, 1),
+('ICS215', 'SOFR', 1, 0, 0, 0, 0, 1),
+('ICS215', 'RESL', 1, 0, 0, 0, 0, 1),
+('ICS215', 'SITL', 1, 0, 0, 0, 0, 1),
+('ICS215', 'DOCL', 1, 0, 0, 0, 0, 1);
 
 INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('email_delivery_method', 'smtp_password'),
