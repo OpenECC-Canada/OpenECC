@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* README files and the page footer now say plainly that Command Bridge is provided as is, with no warranty,
+  and that you use it at your own risk (AGPL-3.0 sections 15 and 16).
+
 ### Fixed
 * Phones and tablets: the side menu can now be scrolled all the way down to Logout. It was sized to the full screen
   height including the browser's toolbars, which hid the last links.
