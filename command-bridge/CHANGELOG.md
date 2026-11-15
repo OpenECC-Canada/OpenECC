@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+* **Lookup lists are used on forms now.** The values in Settings > Lookups are suggested as you type, and free text
+  still works:
+  - **Agencies:** ICS 211 Home Unit / Agency, position assignments, and the ICS 213RR and Resources supplier boxes
+  - **Jurisdictions:** ICS 209 blocks 20 and 21
+  - **Incident Types:** incident setup
+  - **Facility Types:** the Facilities page
+* **Lookups page:** each list now says where it's used. Adding a value that already exists shows a message instead
+  of an error.
+* **Retired lists:** Facilities, Resource Kinds, Resource Types and Positions are retired from the page; they're
+  kept in the Facilities page, Resource Catalogue and Role Catalogue.
+* **Starter lists:** optional, province-specific, loaded from the Lookups page. The first is **Alberta** (24 common
+  agencies, names checked November 2026). They aren't in the seed, because agencies differ by province. Review them
+  twice a year with the ICS Canada forms check.
+* **Database:** migration `0018_lookup_lists.sql` adds default Incident Types (also in seed.sql). Help for Lookups
+  written. Smoke test extended.
 * **Facilities (#44): check-in locations become the incident facility list.**
   - **New Facilities page:** replaces Settings > Check-in Locations, which now redirects there. It lists every
     facility: ECC, reception centres, staging areas, camps and so on.

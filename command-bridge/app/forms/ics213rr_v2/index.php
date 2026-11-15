@@ -1246,7 +1246,7 @@ if ($action === 'new' || ($action === 'edit' && $id>0)) {
                   <option value="FACL" <?= (($rr['order_placed_by'] ?? '') === 'FACL') ? 'selected' : '' ?>>FACL - Facilities Unit Leader</option>
                   <option value="COML" <?= (($rr['order_placed_by'] ?? '') === 'COML') ? 'selected' : '' ?>>COML - Communications Unit Leader</option>
                 </select></label>
-                <label class="span-2">Supplier / point of contact<input name="supplier_name" value="<?= e((string)($rr['supplier_name'] ?? '')) ?>"></label>
+                <label class="span-2">Supplier / point of contact<input name="supplier_name" list="cb-lookup-agencies" value="<?= e((string)($rr['supplier_name'] ?? '')) ?>"></label><?php require_once dirname(__DIR__, 2) . '/includes/lookups.php'; echo cb_lookup_datalist_html('Agencies'); ?>
                 <label class="span-2">Supplier phone, email, or other contact<input name="supplier_contact" value="<?= e((string)($rr['supplier_contact'] ?? '')) ?>"></label>
                 <label class="span-2">Logistics notes<textarea name="logistics_notes"><?= e((string)($rr['logistics_notes'] ?? '')) ?></textarea></label>
 

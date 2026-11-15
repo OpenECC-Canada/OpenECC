@@ -264,7 +264,7 @@ render_header('First-Run Setup');
     <?= csrf_field() ?>
     <label>Incident Name</label><input name="name" required value="<?= e($incidentForm['name']) ?>">
     <label>Incident Number</label><input name="incident_number" value="<?= e($incidentForm['incident_number']) ?>">
-    <label>Incident Type</label><input name="incident_type" value="<?= e($incidentForm['incident_type']) ?>">
+    <label>Incident Type</label><input name="incident_type" list="cb-lookup-incident-types" value="<?= e($incidentForm['incident_type']) ?>"><?php require_once dirname(__DIR__) . '/includes/lookups.php'; echo cb_lookup_datalist_html('Incident Types'); ?>
     <label>Status</label><input name="status" value="<?= e($incidentForm['status']) ?>">
     <div class="govai-dt-wrap" data-govai-datetime>
       <label>Incident Start Date/Time</label><input class="govai-dt-display" name="start_datetime" type="text" inputmode="numeric" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}" placeholder="YYYY-MM-DD HH:mm" required value="<?= e($incidentForm['start_datetime']) ?>">

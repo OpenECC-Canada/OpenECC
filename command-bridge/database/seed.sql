@@ -541,8 +541,21 @@ INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('print_access', 'positions'),
 ('printer_labels', '{}');
 
--- Facility types for the Facilities page (migration 0017); admin-editable in Settings > Lookups.
+-- Facility types (migration 0017) and incident types (migration 0018); admin-editable in Settings > Lookups.
 INSERT INTO `lookup_list_items` (`list_category`, `item_value`, `item_description`, `is_active`) VALUES
+('Incident Types', 'Dangerous goods release', NULL, 1),
+('Incident Types', 'Flood', NULL, 1),
+('Incident Types', 'Infrastructure failure', NULL, 1),
+('Incident Types', 'Other', NULL, 1),
+('Incident Types', 'Pandemic / public health', NULL, 1),
+('Incident Types', 'Planned event', NULL, 1),
+('Incident Types', 'Search and rescue', NULL, 1),
+('Incident Types', 'Severe weather', NULL, 1),
+('Incident Types', 'Structure fire', NULL, 1),
+('Incident Types', 'Train derailment', NULL, 1),
+('Incident Types', 'Utility outage', NULL, 1),
+('Incident Types', 'Water / wastewater emergency', NULL, 1),
+('Incident Types', 'Wildfire', NULL, 1),
 ('Facility Types', 'Base', NULL, 1),
 ('Facility Types', 'Camp', NULL, 1),
 ('Facility Types', 'Cooling Centre', NULL, 1),

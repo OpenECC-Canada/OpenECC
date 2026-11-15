@@ -450,11 +450,13 @@ $suggestButtons = function (string $k) use (&$suggest): string {
     }
     return $html === '' ? '' : '<div class="s209-suggest-row">' . $html . '</div>';
 };
+require_once dirname(__DIR__, 2) . '/includes/lookups.php';
 $input = function (string $k, string $label, array $o = []) use ($v, $note): void {
     $span = (int)($o['span'] ?? 4);
     echo '<div class="s209-cell" style="grid-column: span ' . $span . '"><label for="f_' . s209_h($k) . '">' . s209_h($label) . $note($k) . '</label>';
     echo '<input type="text" id="f_' . s209_h($k) . '" name="' . s209_h($k) . '" value="' . s209_h($v($k)) . '"'
-       . (!empty($o['placeholder']) ? ' placeholder="' . s209_h($o['placeholder']) . '"' : '') . (!empty($o['readonly']) ? ' readonly' : '') . '></div>';
+       . (!empty($o['placeholder']) ? ' placeholder="' . s209_h($o['placeholder']) . '"' : '') . (!empty($o['readonly']) ? ' readonly' : '')
+       . (!empty($o['list']) ? ' list="' . s209_h(cb_lookup_datalist_id($o['list'])) . '"' : '') . '>' . (!empty($o['list']) ? cb_lookup_datalist_html($o['list']) : '') . '</div>';
 };
 $area = function (string $k, string $label, array $o = []) use ($v, $note, $suggestButtons): void {
     $span = (int)($o['span'] ?? 12);
@@ -566,7 +568,7 @@ render_ics_form_status(S209_FORM, $formRecord, $preparer, $signature, [
 
 <?php $section('16-27  Incident Location Information'); ?>
     <?php $input('province_territory', '16. Province/Territory', ['span' => 4]); $input('county_regional', '17. County, Regional/Rural Municipality, Regional/Municipal District', ['span' => 4]); $input('city', '18. City', ['span' => 4]); ?>
-    <?php $input('unit_other', '19. Unit or Other', ['span' => 4]); $input('incident_jurisdiction', '20. Incident Jurisdiction', ['span' => 4]); $input('location_ownership', '21. Incident Location Ownership', ['span' => 4]); ?>
+    <?php $input('unit_other', '19. Unit or Other', ['span' => 4]); $input('incident_jurisdiction', '20. Incident Jurisdiction', ['span' => 4, 'list' => 'Jurisdictions']); $input('location_ownership', '21. Incident Location Ownership', ['span' => 4, 'list' => 'Jurisdictions']); ?>
     <?php $input('longitude', '22. Longitude', ['span' => 3]); $input('latitude', 'Latitude', ['span' => 3]); $input('datum', '23. Datum', ['span' => 3]); $input('utm_coordinates', '26. UTM Coordinates', ['span' => 3]); ?>
     <?php $area('legal_description', '24. Legal Description', ['span' => 6, 'rows' => 3]); $area('short_location_desc', '25. Short Location or Area Description', ['span' => 6, 'rows' => 3]); ?>
     <?php $area('geospatial_data', '27. Electronic Geospatial Data Included or Attached', ['rows' => 2]); ?>
