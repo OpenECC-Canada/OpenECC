@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+* **New form: ICS 215 Operational Planning Worksheet.** The Operations Section Chief's plan for the next operational
+  period.
+  - **Resources:** up to 12 resource columns. For each work assignment, enter the resources required and on hand, and
+    "Need" is worked out. The totals (blocks 11-13) add up every assignment.
+  - **Sign-off:** signed by the preparer (usually the OSC) from the banner and approved by the Planning Section Chief,
+    like the other forms. LSC, FSC, SOFR, RESL, SITL and DOCL can read it.
+  - **PDF:** fills the official ICS 215, 6 assignments a page, with a continuation sheet for long text.
+  - **Database:** migration `0012_ics215_planning_worksheet.sql` (tables `form_215_headers` and `form_215_rows`, the
+    form, its definition and permissions), with matching schema.sql and seed.sql. Help and smoke test added (including
+    the check that every PDF field exists on the template).
 * **New form: ICS 233 Open Action Tracker.** It tracks tasks the IC gives out that aren't incident objectives.
   - **One list per incident:** open actions carry over between operational periods.
   - **Kept by the PSC:** the Planning Section Chief keeps it, along with the IC, Unified Command, Deputy IC and

@@ -379,7 +379,7 @@ function cb_form_status_banner(string $formCode, int $incidentId, int $opId, int
         'ICS206' => 'Medical Plan', 'ICS207' => 'Incident Organization Chart', 'ICS208' => 'Safety Message/Plan',
         'ICS209' => 'Incident Status Summary', 'ICS209WF' => 'Wildfire Incident Status Summary', 'ICS210' => 'Resource Status Change',
         'ICS211' => 'Check-In List', 'ICS213' => 'General Message', 'ICS214' => 'Activity Log',
-        'ICS215A' => 'Incident Action Plan Safety Analysis', 'ICS218' => 'Support Vehicle/Equipment Inventory', 'ICS230' => 'Daily Meeting Schedule',
+        'ICS215' => 'Operational Planning Worksheet', 'ICS215A' => 'Incident Action Plan Safety Analysis', 'ICS218' => 'Support Vehicle/Equipment Inventory', 'ICS230' => 'Daily Meeting Schedule',
     ];
     $state = $formRecordId > 0 ? signoff_state($formRecordId) : ['record' => null, 'creator' => null, 'approval' => null];
     $rec = $state['record'];

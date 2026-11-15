@@ -1131,6 +1131,19 @@ function resolve_form_preparer(int $incidentId, string $formType): array {
         ];
     }
 
+    if ($formType === 'ICS215' || $formType === '215') {
+        $assigned = find_assigned_user_by_role_codes($incidentId, ['OSC', 'PSC', 'IC']);
+        if ($assigned) {
+            return [
+                'user_id' => (int)$assigned['id'],
+                'name' => (string)($assigned['real_name'] ?: $assigned['username']),
+                'position_title' => (string)$assigned['role_code'],
+                'role_code' => (string)$assigned['role_code'],
+            ];
+        }
+        return ['user_id' => null, 'name' => 'TBD', 'position_title' => 'OSC', 'role_code' => null];
+    }
+
     return [
         'user_id' => null,
         'name' => 'TBD',
@@ -1319,7 +1332,7 @@ function cb_form_permission_role_codes(int $incidentId, int $userId): array {
 
 /** Forms that make up the Incident Action Plan (read by everyone working the incident). Shown as "Action plan" in the menu. */
 function cb_action_plan_form_codes(): array {
-    return ['ICS201', 'ICS202', 'ICS203', 'ICS204', 'ICS205', 'ICS206', 'ICS207', 'ICS208', 'ICS215', 'ICS215A', 'ICS230'];
+    return ['ICS201', 'ICS202', 'ICS203', 'ICS204', 'ICS205', 'ICS206', 'ICS207', 'ICS208', 'ICS215A', 'ICS230'];
 }
 
 /**

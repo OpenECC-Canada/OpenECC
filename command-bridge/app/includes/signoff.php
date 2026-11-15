@@ -28,7 +28,7 @@ function signoff_form_supported(string $code): bool
 /** Forms with no submit button of their own get a "Sign and submit" button in the status banner. */
 function signoff_needs_creator_sign(string $code): bool
 {
-    return in_array(signoff_normalize($code), ['ICS201', 'ICS214', 'ICS215A', 'ICS218', 'ICS230'], true);
+    return in_array(signoff_normalize($code), ['ICS201', 'ICS214', 'ICS215', 'ICS215A', 'ICS218', 'ICS230'], true);
 }
 
 function signoff_is_sysadmin(): bool
@@ -127,7 +127,7 @@ function signoff_default_approver_map(): array
     $m = [
         'ICS201' => 'IC', 'ICS203' => 'PSC', 'ICS205' => 'LSC', 'ICS205A' => 'LSC', 'ICS206' => 'LSC', 'ICS207' => 'PSC',
         'ICS208' => 'IC', 'ICS209' => 'PSC', 'ICS209WF' => 'PSC', 'ICS210' => 'PSC', 'ICS211' => 'PSC', 'ICS213' => '@supervisor',
-        'ICS214' => '@supervisor', 'ICS215A' => 'IC', 'ICS218' => 'LSC', 'ICS230' => 'IC',
+        'ICS214' => '@supervisor', 'ICS215' => 'PSC', 'ICS215A' => 'IC', 'ICS218' => 'LSC', 'ICS230' => 'IC',
     ];
     $out = [];
     foreach ($m as $f => $p) { $out[$f] = ['primary' => $p, 'fallback' => '']; }

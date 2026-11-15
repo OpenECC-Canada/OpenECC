@@ -121,6 +121,7 @@ function render_header(string $title, ?string $helpTopic = null): void {
           ['code' => 'ICS213', 'path' => '/forms/ics213/index.php', 'label' => 'ICS 213 - General Message'],
           ['code' => 'ICS213RR', 'path' => '/forms/ics213rr_v2/index.php', 'label' => 'ICS 213RR - Resource Request'],
           ['code' => 'ICS214', 'path' => '/forms/ics214/index.php', 'label' => 'ICS 214 - Activity Log'],
+          ['code' => 'ICS215', 'path' => '/forms/ics215/index.php', 'label' => 'ICS 215 - Planning Worksheet'],
           ['code' => 'ICS215A', 'path' => '/forms/ics215a/index.php', 'label' => 'ICS 215A - Safety Analysis'],
           ['code' => 'ICS218', 'path' => '/forms/ics218/index.php', 'label' => 'ICS 218 - Support Vehicle/Equipment Inventory'],
           ['code' => 'ICS230', 'path' => '/forms/ics230/index.php', 'label' => 'ICS 230 - Meeting Schedule'],

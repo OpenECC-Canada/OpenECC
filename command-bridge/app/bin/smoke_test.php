@@ -181,6 +181,15 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // ICS 215 Operational Planning Worksheet (migration 0012).
+    try {
+        t_ok('ICS 215 worksheet tables (form_215_headers, form_215_rows)', table_columns('form_215_headers') !== [] && table_columns('form_215_rows') !== [],
+            'run update.sh (migration 0012)');
+        require_once $appRoot . '/forms/ics215/Ics215OfficialPdfFieldMapper.php';
+        t_ok('ICS 215 "Need" is required minus on hand, never below zero', Ics215OfficialPdfFieldMapper::numbers(['req' => 3, 'have' => 1])[2] === 2
+            && Ics215OfficialPdfFieldMapper::numbers(['req' => 1, 'have' => 4])[2] === 0 && Ics215OfficialPdfFieldMapper::numbers([])[2] === null);
+    } catch (Throwable $e) { t_ok('ICS 215 checks', false, $e->getMessage()); }
+
     // ICS 233 Open Action Tracker (migration 0011).
     try {
         t_ok('ICS 233 action tracker table (form_233_actions)', table_columns('form_233_actions') !== [], 'run update.sh (migration 0011)');
@@ -653,7 +662,7 @@ if ($want('pdf')) {
     // Every form's PDF fills the official template: build each mapper with sample data, check its field names exist on
     // the template, and make the PDF.
     t_run('Official PDFs for every form', function () use ($appRoot, $isPdf, $pages) {
-        foreach (['ics201/Ics201', 'ics202/Ics202', 'ics203/Ics203', 'ics204/Ics204', 'ics206/Ics206', 'ics208/Ics208', 'ics214/Ics214', 'ics215a/Ics215A', 'ics230/Ics230'] as $m) {
+        foreach (['ics201/Ics201', 'ics202/Ics202', 'ics203/Ics203', 'ics204/Ics204', 'ics206/Ics206', 'ics208/Ics208', 'ics214/Ics214', 'ics215/Ics215', 'ics215a/Ics215A', 'ics230/Ics230'] as $m) {
             require_once $appRoot . '/forms/' . $m . 'OfficialPdfFieldMapper.php';
         }
         require_once $appRoot . '/forms/ics218/Ics218OfficialPdfOverlay.php';
@@ -685,6 +694,10 @@ if ($want('pdf')) {
         $cases['ICS214'] = [$b['pages'], [], $b['keep']];
         $b = Ics215AOfficialPdfFieldMapper::build(['date_time_prepared' => $now], $incident, $op, [['incident_area' => 'A', 'hazards_risks' => $long, 'mitigations' => 'PPE']]);
         $cases['ICS215A'] = [$b['pages'], $b['continuations'], null];
+        $b = Ics215OfficialPdfFieldMapper::build(['resource_columns' => array_fill(0, 12, 'Engine T3'), 'prepared_by_name' => 'Smoke OSC', 'prepared_at' => $now], $incident, $op,
+            array_fill(0, 7, ['branch' => 'I', 'division_group' => 'A', 'work_assignment' => $long, 'resources' => array_fill(0, 12, ['req' => 3, 'have' => 1]),
+                'overhead' => 'DIVS', 'special_equipment' => 'Pumps', 'reporting_location' => 'Staging', 'arrival_time' => '06:00']));
+        $cases['ICS215'] = [$b['pages'], $b['continuations'], null];
         $b = Ics230OfficialPdfFieldMapper::build($incident, $op, [['title' => 'Planning Meeting', 'scheduled_at' => $now, 'status' => 'scheduled', 'location' => 'ECC']], 'Smoke SITL', 'SITL', $now);
         $cases['ICS230'] = [$b['pages'], $b['continuations'], null];
 

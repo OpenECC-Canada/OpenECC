@@ -1026,6 +1026,35 @@ CREATE TABLE `form_definitions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `form_type` (`form_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `form_215_headers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_record_id` int(11) NOT NULL,
+  `resource_columns` text DEFAULT NULL,
+  `prepared_by_name` varchar(150) DEFAULT NULL,
+  `prepared_by_position` varchar(150) DEFAULT NULL,
+  `prepared_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_form_215_headers_record` (`form_record_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `form_215_rows` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_record_id` int(11) NOT NULL,
+  `row_order` int(11) NOT NULL DEFAULT 0,
+  `branch` varchar(100) DEFAULT NULL,
+  `division_group` varchar(100) DEFAULT NULL,
+  `work_assignment` text DEFAULT NULL,
+  `resources_json` text DEFAULT NULL,
+  `overhead` text DEFAULT NULL,
+  `special_equipment` text DEFAULT NULL,
+  `reporting_location` varchar(255) DEFAULT NULL,
+  `arrival_time` varchar(50) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_form_215_rows_record` (`form_record_id`,`row_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `form_233_actions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `incident_id` int(11) NOT NULL,
