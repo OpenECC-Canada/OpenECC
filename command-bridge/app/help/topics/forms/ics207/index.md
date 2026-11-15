@@ -1,6 +1,6 @@
 # ICS 207 - Incident Organization Chart
 
-The ICS 207 is a wall chart of the incident organization: the positions that are active and who is in each one. It is meant to be posted at the Incident Command Post and other incident locations. It is **not** part of the Incident Action Plan.
+The ICS 207 is a wall chart of the incident organization: the positions that are active and who is in each one. ICS Canada intends it to be posted at the Incident Command Post and other incident locations. In Command Bridge it shows the **ECC's** organization; post it in the ECC. It is **not** part of the Incident Action Plan.
 
 - **Usually prepared by:** the Resources Unit Leader. The Incident Commander checks it. Make a new one each operational period, and update it when the organization changes.
 - **Who gets it:** posted on the wall. The signed original goes to the Documentation Unit.

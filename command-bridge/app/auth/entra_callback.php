@@ -46,7 +46,7 @@ $upn = $claims['preferred_username'] ?? ($claims['email'] ?? '');
 if ($oid === '') { http_response_code(401); echo 'Microsoft sign-in did not return a user ID.'; exit; }
 
 $user = fetch_user_by_entra_object_id($oid);
-if (!$user || empty($user['is_active'])) { http_response_code(403); echo 'Your Microsoft account is not assigned to this ICS application. Contact an administrator.'; exit; }
+if (!$user || empty($user['is_active'])) { http_response_code(403); echo 'Your Microsoft account is not assigned to Command Bridge. Contact an administrator.'; exit; }
 
 login_user($user);
 audit_log((int)$user['id'], 'login', 'user', (int)$user['id'], 'Successful Entra login: ' . $upn);

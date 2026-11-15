@@ -2,7 +2,7 @@
 
 The ICS 211 records people and equipment as they arrive at the incident. It shows when each one arrived, where they were first sent, and what is needed to send them home again (home base, how they travelled, and so on). It is the starting point for resource tracking, demobilization and cost records.
 
-- **Usually prepared by:** whoever runs check-in at the Incident Command Post, a staging area, base, camp or air base, or the Communications Centre, or a Resources Unit recorder at the ICP.
+- **Usually prepared by:** whoever runs check-in at the Incident Command Post, a staging area, base, camp or air base, or the Communications Centre, or a Resources Unit recorder at the ICP. In Command Bridge, check-ins also come from the ECC and from the Check-In Gateway.
 - **Who gets it:** the Resources Unit (which keeps the master list of everyone and everything checked in), the Demobilization Unit and the Finance/Administration Section.
 
 General steps for saving, signing and printing are in [Working with ICS forms](help:forms/working_with_forms).
@@ -13,7 +13,7 @@ General steps for saving, signing and printing are in [Working with ICS forms](h
 |---|---|
 | Incident Name, Incident Number | Filled in from the incident. |
 | Start Date/Time | When this check-in list was started. |
-| Check-In Location | Where check-in is happening: Base, Camp, Staging Area, ICP, Helibase or another place. Be specific. |
+| Check-In Location | Where check-in is happening: Base, Camp, Staging Area, ICP, Helibase or another place. Nothing is ticked until you choose. For the ECC or a reception centre, choose **Other**. |
 
 ## Each check-in entry
 

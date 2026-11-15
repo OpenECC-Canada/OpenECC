@@ -1209,7 +1209,7 @@ function external_checkin_apply_checkin_to_ics_forms(
         FILTER_VALIDATE_INT,
         ['options' => ['min_range' => 0]]
     );
-    $location = trim((string)($resource['location_name'] ?? $resource['initial_location'] ?? 'ICP')) ?: 'ICP';
+    $location = trim((string)($resource['location_name'] ?? $resource['initial_location'] ?? '')) ?: 'Incident Check-In';
     $contact = implode(' | ', array_filter([
         trim((string)($data['mobile_phone'] ?? '')),
         trim((string)($data['radio_call_sign'] ?? '')),

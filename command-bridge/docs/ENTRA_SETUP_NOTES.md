@@ -16,9 +16,9 @@ App registrations > your app > Authentication > Platform configurations > Web > 
 
 1. Create a new App Registration in Microsoft Entra.
 2. Use single-tenant unless other agencies need access.
-3. Add the app's Web redirect URI exactly as shown in the ICS app.
-4. Create a client secret and copy the secret value into the ICS app.
-5. Copy the Directory tenant ID and Application client ID into the ICS app.
+3. Add the app's Web redirect URI exactly as shown in Command Bridge.
+4. Create a client secret and copy the secret value into Command Bridge.
+5. Copy the Directory tenant ID and Application client ID into Command Bridge.
 6. Click Save and Validate Settings.
 
 ## User setup
