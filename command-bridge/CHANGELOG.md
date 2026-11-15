@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+* Phones and tablets: the side menu can now be scrolled all the way down to Logout. It was sized to the full screen
+  height including the browser's toolbars, which hid the last links.
+
 ### Wording: Command Bridge is an ECC support system
 * README files now describe Command Bridge as an Emergency Coordination Centre (ECC) support system with
   ICS-compatible records, not as software for running the on-scene ICS response. A new "What Command Bridge is (and

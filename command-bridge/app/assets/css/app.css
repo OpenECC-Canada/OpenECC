@@ -688,6 +688,7 @@ table input[type="button"]{
     top:0;
     align-self:flex-start;
     height:100vh;
+    height:100dvh;          /* the visible height on tablets, not counting the browser's toolbars */
     min-height:0;
     overflow-y:auto;
     overscroll-behavior:contain;
@@ -800,6 +801,10 @@ img,video{max-width:100%;height:auto}
   .sidebar{position:fixed;top:0;left:0;bottom:0;width:300px;max-width:85vw;z-index:1700;overflow-y:auto;overscroll-behavior:contain;
     transform:translateX(-105%);transition:transform .2s ease;visibility:hidden}
   body.nav-open .sidebar{transform:none;visibility:visible;box-shadow:6px 0 24px rgba(0,0,0,.35)}
+  /* Phones and tablets: the menu is exactly the visible screen height and scrolls inside it, so the last links
+     (Logout) can always be reached. 100vh counts the area behind the browser's toolbars and hid the bottom. */
+  .sidebar{height:100vh;height:100dvh;min-height:0;padding-bottom:calc(32px + env(safe-area-inset-bottom, 0px));-webkit-overflow-scrolling:touch}
+  .sidebar nav{flex:0 0 auto}
   body.nav-open{overflow:hidden}
   .nav-backdrop{position:fixed;inset:0;background:rgba(16,42,67,.45);z-index:1600}
   .nav-backdrop[hidden]{display:none}
