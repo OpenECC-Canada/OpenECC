@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+* **ICS 221 Demobilization Check-Out from the Resources Unit page.** An **ICS 221** button next to each received
+  resource (and on the resource itself) prints the official form.
+  - **Filled in:** the incident, the resource, a demob number and any release details recorded.
+  - **Ticked:** the units that must sign the resource out (Ground Support only for vehicles and equipment). The rest
+    is completed by hand.
+  - **Access:** the Demobilization Unit Leader and Planning Section Chief can now open the Resources Unit page (read
+    only) to print them.
+* **Fix: recording a resource's receipt could fail.** The receipt adds the resource to the demobilization tracker
+  with a status the database column didn't allow, so MariaDB refused it.
+* **Database:** migration `0013_ics221_demob_checkout.sql` (demob tracker status, Resources Unit read access for DMOB
+  and PSC), with matching schema.sql and seed.sql. Help and smoke test updated.
 * **New form: ICS 215 Operational Planning Worksheet.** The Operations Section Chief's plan for the next operational
   period.
   - **Resources:** up to 12 resource columns. For each work assignment, enter the resources required and on hand, and

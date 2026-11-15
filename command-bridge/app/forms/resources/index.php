@@ -815,6 +815,9 @@ try {
     <?= csrf_field() ?><input type="hidden" name="id" value="<?= e((string)$id) ?>"><button class="btn primary" name="post_action" value="create_ics211">Add to ICS 211 Check-In List</button></form>
                   <?php endif; ?>
                 <?php endif; ?>
+                <h3>Demobilization</h3>
+                <p><a class="btn" target="_blank" rel="noopener" href="<?= e(app_url('/forms/resources/ics221.php?preview=1&id=' . (int)$id)) ?>">ICS 221 Demobilization Check-Out</a>
+                   <a class="btn" href="<?= e(app_url('/forms/resources/ics221.php?id=' . (int)$id)) ?>">Download</a></p>
               </div>
               <?php endif; ?>
 
@@ -920,11 +923,16 @@ try {
                   <td><?= e((string)($r['initial_location'] ?? '')) ?></td>
                   <td><?= e((string)($r['received_at'] ?? '')) ?></td>
                   <td><?= e((string)($r['received_by_name'] ?? '')) ?></td>
-                  <td><a class="btn small" href="<?= e(app_url('/forms/resources/index.php?action=view&id=' . (int)$r['id'])) ?>">Open</a></td>
+                  <td><a class="btn small" href="<?= e(app_url('/forms/resources/index.php?action=view&id=' . (int)$r['id'])) ?>">Open</a>
+                    <?php if (in_array((string)$r['intake_status'], ['received', 'checked_in'], true)): ?>
+                      <a class="btn small" target="_blank" rel="noopener" href="<?= e(app_url('/forms/resources/ics221.php?preview=1&id=' . (int)$r['id'])) ?>" title="ICS 221 Demobilization Check-Out">ICS 221</a>
+                    <?php endif; ?></td>
                 </tr>
               <?php endforeach; ?>
               </tbody>
             </table>
+            <p class="small"><strong>ICS 221</strong> prints a Demobilization Check-Out for a resource being released, filled in with what
+              Command Bridge knows. The units that must sign it out are ticked; their signatures, transport and notifications are done by hand.</p>
           <?php endif; ?>
         </div>
 

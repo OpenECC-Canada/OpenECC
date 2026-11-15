@@ -37,6 +37,21 @@ Add a note under **Exception / review notes**, then use one of:
 
 Once a resource has been received or checked in, don't cancel it or mark it as not tracked. Release it through the ICS 211 or 218 and demobilization instead.
 
+## Demobilization check-out (ICS 221)
+
+When a resource is being released, press **ICS 221** next to it under **Received / Active Resources**. You can also
+open the resource and use **ICS 221 Demobilization Check-Out**. You get the official ICS 221, filled in with:
+
+- the incident, today's date and time, and a demob number (DM- and a number)
+- the resource: request number, kind and type, description and quantity
+- the release location and notes, if they were recorded
+- who printed it
+
+Units that sign resources out are ticked: Supply, Communications, Facilities, Documentation and Time, plus Ground
+Support for vehicles and equipment. The resource takes the sheet to each one for a signature. Transport, the
+manifest, notifications and the performance rating block are filled in by hand. Each print is recorded in the
+audit log.
+
 ## Access
 
-Who can see the queue, and who can record receipts and take action, is set in [Form permissions](help:admin/form_permissions) under the Resources Unit entry. It is normally the Resources Unit Leader and the Planning Section Chief. SysAdmins can always open it. The Planning Section Chief gets a dashboard notification when an item is released for check-in.
+Who can see the queue, and who can record receipts and take action, is set in [Form permissions](help:admin/form_permissions) under the Resources Unit entry. It is normally the Resources Unit Leader, with the Planning Section Chief and the Demobilization Unit Leader able to read it and print ICS 221s. SysAdmins can always open it. The Planning Section Chief gets a dashboard notification when an item is released for check-in.
