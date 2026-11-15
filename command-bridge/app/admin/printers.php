@@ -104,11 +104,10 @@ render_header('Printers');
 
 <div class="card">
   <h3>Adding a printer</h3>
-  <p>On the Command Bridge server, with the printer's IP address (from its network settings page or a configuration printout):</p>
-  <pre>cd <?= e(dirname(__DIR__, 2)) ?>/tools
-sudo ./setup_printer.sh add ECC-Copier 192.0.2.25</pre>
-  <p class="small">It installs the print system if needed, connects driverless first (most office printers and copiers
-    from the last ten years), falls back to generic PostScript, and prints a test page. Then come back here, give it a
-    name and press <strong>Save</strong>. Other commands: <code>list</code>, <code>test NAME</code>, <code>remove NAME</code>.</p>
+  <p>On the Command Bridge server, with the printer's IP address (from its network settings page or a configuration printout), run:</p>
+  <pre>sudo <?= e(dirname(__DIR__, 2)) ?>/tools/setup_printer.sh</pre>
+  <p class="small">It checks for the print system and offers to install it, then a menu lets you add, list, test or
+    remove printers. It connects driverless first (most office printers and copiers from the last ten years) and falls
+    back to generic PostScript. Then come back here, give the printer a name and press <strong>Save</strong>.</p>
 </div>
 <?php render_footer(); ?>

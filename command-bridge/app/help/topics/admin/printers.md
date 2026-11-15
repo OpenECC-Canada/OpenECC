@@ -10,26 +10,30 @@ You need the printer's IP address. It's usually on the printer's network setting
 you can print from the printer's menu. On the Command Bridge server:
 
 ```
-cd /var/www/commandbridge/tools
-sudo ./setup_printer.sh add ECC-Copier 192.0.2.25
+sudo /var/www/commandbridge/tools/setup_printer.sh
 ```
 
-The script:
+It works like the Check-In Gateway setup, with screens and a menu:
 
-- installs the print system (CUPS) the first time
-- connects **driverless** if the printer supports it. Most office printers and copiers from the last ten years do,
-  including most Ricoh and HP models.
-- otherwise uses **generic PostScript**, which most business printers understand
-- sets Letter paper, fits each page to it (so landscape forms come out the right way round), and prints a test page
+1. It checks for the print system (CUPS). If it isn't installed, it offers to install it.
+2. A menu lets you **add**, **list**, **test** or **remove** printers.
+3. **Add** asks for a short name (for example ECC-Copier), the IP address, and how to connect:
+   - **Automatic** (recommended): **driverless** if the printer supports it, which most office printers and copiers
+     from the last ten years do, including most Ricoh and HP models. Otherwise **generic PostScript**, which most
+     business printers understand.
+   - **Generic PostScript**: use this if driverless printed badly.
 
-Other commands:
+   It sets Letter paper with each page fitted to it (so landscape forms come out the right way round), then offers
+   a test page.
+
+For scripts, the same steps work without the menu:
 
 | Command | What it does |
 |---|---|
+| `sudo ./setup_printer.sh add ECC-Copier 192.0.2.25` | Adds a printer (add `--postscript` to skip driverless). |
 | `sudo ./setup_printer.sh list` | Lists the printers and their status. |
 | `sudo ./setup_printer.sh test ECC-Copier` | Prints a test page. |
 | `sudo ./setup_printer.sh remove ECC-Copier` | Removes the printer. |
-| `sudo ./setup_printer.sh add ECC-Copier 192.0.2.25 --postscript` | Skips driverless, if it printed badly. |
 
 ## This page
 
