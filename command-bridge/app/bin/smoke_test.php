@@ -234,7 +234,7 @@ if ($want('env')) {
         $unguarded = [];
         foreach (glob($appRoot . '/forms/ics*/index.php') ?: [] as $page) {
             $dir = basename(dirname($page));
-            if (in_array($dir, ['ics213', 'ics214', 'ics230', 'ics213rr_v2', 'ics213rr', 'ics209wf'], true)) { continue; }   // own rules
+            if (in_array($dir, ['ics213', 'ics214', 'ics230', 'ics213rr_v2', 'ics213rr', 'ics209wf', 'ics233'], true)) { continue; }   // own rules (233: a running list, never signed)
             if (strpos((string)file_get_contents($page), 'cb_form_block_locked_post(') === false) { $unguarded[] = $dir; }
         }
         t_ok('Every form page refuses changes to a signed form', $unguarded === [], 'no lock check in: ' . implode(', ', $unguarded));
