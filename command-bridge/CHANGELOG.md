@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* **Fix: the Supply Unit Leader (SPUL) can now be assigned.** The app already used SPUL (the Logistics queue, the
+  ICS 213RR "order placed by" box, the ICS 203 and 207), but it was missing from the position list. It's added under
+  Logistics (reports to the LSC), with edit access to the ICS 213RR like the rest of Logistics. **Database:** migration
+  `0015_supply_unit_leader.sql`, with matching seed.sql.
 * **Print forms straight to a network printer.** A **Print** button next to **Download PDF** sends the form to a
   printer on your network. Nothing needs installing on anyone's computer, and it works from phones and tablets.
   - **Adding printers:** printers are added on the server with the new `tools/setup_printer.sh`, which has screens and

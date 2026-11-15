@@ -181,6 +181,12 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // Supply Unit Leader position (migration 0015).
+    try {
+        t_ok('Supply Unit Leader (SPUL) is in the position list', (int)$pdo->query("SELECT COUNT(*) FROM incident_position_catalog WHERE acronym = 'SPUL' AND is_active = 1")->fetchColumn() === 1
+            && (int)$pdo->query("SELECT COUNT(*) FROM roles WHERE role_code = 'SPUL'")->fetchColumn() === 1, 'run update.sh (migration 0015)');
+    } catch (Throwable $e) { t_ok('SPUL check', false, $e->getMessage()); }
+
     // Printing to a network printer (includes/printing.php, migration 0014). CUPS is optional.
     try {
         require_once $appRoot . '/includes/printing.php';

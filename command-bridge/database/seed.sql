@@ -38,7 +38,8 @@ INSERT INTO `roles` VALUES
 (75,'CHECK_IN_RECORDER','Check-In Recorder',0,0),
 (76,'STAGING_AREA_MANAGER','Staging Area Manager',0,0),
 (77,'CIR','Check-In Recorder',0,1),
-(78,'SAM','Staging Area Manager',0,1);
+(78,'SAM','Staging Area Manager',0,1),
+(79,'SPUL','Supply Unit Leader',0,1);
 
 INSERT INTO `incident_position_catalog` VALUES
 (33,'Command',1,1,'IC','Incident Commander',NULL,1,1,'2026-10-19 19:36:04','2026-10-22 14:45:38'),
@@ -69,7 +70,8 @@ INSERT INTO `incident_position_catalog` VALUES
 (58,'Finance / Administration',50,50,'COST','Cost Unit Leader','FSC',0,1,'2026-10-19 19:36:04','2026-10-19 19:36:04'),
 (60,'Command',2,2,'DIC','Deputy Incident Commander','IC',0,1,'2026-10-22 14:45:27','2026-10-22 14:45:27'),
 (62,'Logistics',9999,9999,'CHECK_IN_RECORDER','Check-In Recorder','RESL',0,0,'2026-10-23 14:47:27','2026-10-26 14:06:03'),
-(63,'Logistics',9999,9999,'STAGING_AREA_MANAGER','Staging Area Manager','RESL',0,0,'2026-10-23 14:47:58','2026-10-26 14:05:55');
+(63,'Logistics',9999,9999,'STAGING_AREA_MANAGER','Staging Area Manager','RESL',0,0,'2026-10-23 14:47:58','2026-10-26 14:05:55'),
+(64,'Logistics',40,45,'SPUL','Supply Unit Leader','LSC',0,1,'2026-11-15 04:00:00','2026-11-15 04:00:00');
 
 INSERT INTO `forms` VALUES
 (37,'ICS201','ICS 201 - Incident Briefing',1,'read_only','Incident briefing.','2026-10-19 13:36:04','2026-10-19 13:36:04'),
@@ -508,7 +510,9 @@ INSERT INTO `form_permissions` (`form_code`, `role_code`, `can_view`, `can_creat
 ('ICS215', 'DOCL', 1, 0, 0, 0, 0, 1),
 -- Resources Unit page for the Demobilization Unit Leader and PSC (migration 0013)
 ('RESOURCES_UNIT', 'DMOB', 1, 0, 0, 0, 0, 1),
-('RESOURCES_UNIT', 'PSC', 1, 0, 0, 0, 0, 1);
+('RESOURCES_UNIT', 'PSC', 1, 0, 0, 0, 0, 1),
+-- Supply Unit Leader (migration 0015)
+('ICS213RR', 'SPUL', 1, 1, 1, 0, 0, 1);
 
 INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
 ('email_delivery_method', 'smtp_password'),
