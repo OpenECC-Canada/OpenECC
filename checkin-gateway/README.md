@@ -1,6 +1,6 @@
 # Command Bridge Check-In Gateway
 
-> **Public beta (0.9.0-beta.2).** Part of the [Command Bridge repository](../README.md); the root README explains how this gateway and the main app work together. Run it on a **publicly reachable** server. Licensed under the GNU AGPL-3.0 ([LICENSE.txt](../LICENSE.txt)).
+> **Public beta (0.9.0-beta.2).** Part of the [Command Bridge repository](../README.md); the root README explains how this gateway and the main app work together. Run it on a **publicly reachable** server. Free software under the GNU AGPL-3.0 ([LICENSE.txt](../LICENSE.txt)), provided **as is, without any warranty**: we don't promise it works correctly or suits any particular purpose, and you use it at your own risk (see sections 15 and 16 of the licence).
 
 A limited, privacy-minimized check-in intake service. It is not a remotely reachable copy of Command Bridge and not a field system for an Incident Management Team: it only records arrivals and exceptions.
 

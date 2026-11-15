@@ -6,6 +6,16 @@ documentation, resource coordination, finance and administration tracking, and i
 Management Team (IMT) it supports. It is built on PHP 8, MariaDB and Apache and installs on a plain Debian server inside
 your network.
 
+> **Free software, with no warranty.** Command Bridge is free software: you may use, copy, change and share it under
+> the terms of the [GNU Affero General Public License v3.0](LICENSE.txt) (AGPL-3.0). It is provided **as is, without
+> any warranty**. We don't promise that it works correctly, that it is free of errors, or that it is suitable for any
+> particular purpose, including emergency management. You use it at your own risk. As far as the law allows, the
+> authors and contributors are not liable for any loss or harm that comes from using it.
+>
+> Before you rely on it in a real emergency, test it and make sure it does what your organization needs, and keep a
+> way of working without it, such as paper forms. The full terms, including the disclaimer of warranty and limitation
+> of liability (sections 15 and 16), are in [LICENSE.txt](LICENSE.txt).
+
 # Public Demo
 We have put up a public demo page at https://demo.commandbridge.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page lists the ECC positions you can log in as, including the ECC's Incident Commander.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
 
@@ -171,4 +181,4 @@ please open an issue on this repository or email me directly at stephen@thebitbu
 
 Both programs are free software under the **GNU Affero General Public License v3.0** ([LICENSE.txt](LICENSE.txt)). If you run a
 modified version for users over a network, you must offer them the corresponding source; each program's footer links to this
-repository for that purpose.
+repository for that purpose. Both come with **no warranty** (see the notice at the top of this file).

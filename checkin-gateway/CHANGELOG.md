@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* README: says plainly that the gateway is provided as is, with no warranty (AGPL-3.0 sections 15 and 16).
+
 * README: states plainly that the gateway is a limited check-in intake service, not a remote copy of Command Bridge or a field IMT system.
 
 * **The installer and updater now say what each step is** (the step's name was cut off in the progress box).

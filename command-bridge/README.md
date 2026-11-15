@@ -8,6 +8,16 @@ facility tracking, finance and administration, check-in, and an ECC display. It 
 Post / Incident Management Team; it is not a field system for them. See
 [What Command Bridge is (and is not)](../README.md#what-command-bridge-is-and-is-not).
 
+> **Free software, with no warranty.** Command Bridge is free software: you may use, copy, change and share it under
+> the terms of the [GNU Affero General Public License v3.0](../LICENSE.txt) (AGPL-3.0). It is provided **as is, without
+> any warranty**. We don't promise that it works correctly, that it is free of errors, or that it is suitable for any
+> particular purpose, including emergency management. You use it at your own risk. As far as the law allows, the
+> authors and contributors are not liable for any loss or harm that comes from using it.
+>
+> Before you rely on it in a real emergency, test it and make sure it does what your organization needs, and keep a
+> way of working without it, such as paper forms. The full terms, including the disclaimer of warranty and limitation
+> of liability (sections 15 and 16), are in [LICENSE.txt](../LICENSE.txt).
+
 > **Status: public beta (0.9.0-beta.4).** It is used operationally but has not had wide testing.
 > Test your install, keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.
 
@@ -53,5 +63,6 @@ https://github.com/PhantomNomad/CommandBridge
 ## Licence
 
 Command Bridge is free software under the **GNU Affero General Public License v3.0** (AGPL-3.0). If you run a
-modified version for users over a network you must offer them the corresponding source. See `LICENSE.txt` and
+modified version for users over a network you must offer them the corresponding source. It comes with **no warranty**
+(see the notice at the top of this file). See `LICENSE.txt` and
 [THIRD_PARTY.md](THIRD_PARTY.md) for bundled components and the ICS Canada forms.

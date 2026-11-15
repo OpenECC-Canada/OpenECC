@@ -265,7 +265,7 @@ function render_footer(): void {
     ?>
 <?php if (!empty($branding['footer_text'])): ?><div class="app-footer"><?= e($branding['footer_text']) ?></div><?php endif; ?>
 <?php require_once __DIR__ . '/version.php'; ?>
-<div class="app-footer no-print" style="font-size:12px;opacity:.75">Command Bridge <?= e(CB_VERSION) ?> &middot; free software under the GNU AGPL-3.0<?php if (CB_SOURCE_URL !== ''): ?> &middot; <a href="<?= e(CB_SOURCE_URL) ?>" rel="noopener">source code</a><?php endif; ?></div>
+<div class="app-footer no-print" style="font-size:12px;opacity:.75">Command Bridge <?= e(CB_VERSION) ?> &middot; free software under the GNU AGPL-3.0, provided as is with no warranty<?php if (CB_SOURCE_URL !== ''): ?> &middot; <a href="<?= e(CB_SOURCE_URL) ?>" rel="noopener">source code</a><?php endif; ?></div>
 <?php require_once __DIR__ . '/signoff.php'; echo signoff_hidden_form_html(); ?>
 <?php require_once __DIR__ . '/form_lock.php'; echo cb_page_action_form_html(); ?>
 <?php require_once __DIR__ . '/help.php'; ?>
