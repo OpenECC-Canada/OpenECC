@@ -1259,13 +1259,7 @@ function get_current_user_form_permissions(string $formCode, ?int $incidentId = 
     }
 
     try {
-        $roleCodes = get_user_role_codes($incidentId, $userId);
-        $roleCodes[] = 'ALL_AUTHENTICATED';
-        $roleCodes = array_values(array_unique(array_filter(array_map('strtoupper', $roleCodes))));
-
-        if (!$roleCodes) {
-            return $perms;
-        }
+        $roleCodes = cb_form_permission_role_codes($incidentId, $userId);
 
         $placeholders = implode(',', array_fill(0, count($roleCodes), '?'));
         $params = array_merge([strtoupper($formCode)], $roleCodes);
@@ -1310,6 +1304,63 @@ function get_current_user_form_permissions(string $formCode, ?int $incidentId = 
     }
 
     return $perms;
+}
+
+/**
+ * Role codes that form permissions are looked up for: the user's positions in the incident, INCIDENT_POSITION when
+ * they hold any position (everyone working the incident), and ALL_AUTHENTICATED (every signed-in user).
+ */
+function cb_form_permission_role_codes(int $incidentId, int $userId): array {
+    $roleCodes = $incidentId > 0 && $userId > 0 ? get_user_role_codes($incidentId, $userId) : [];
+    if ($roleCodes) { $roleCodes[] = 'INCIDENT_POSITION'; }
+    $roleCodes[] = 'ALL_AUTHENTICATED';
+    return array_values(array_unique(array_filter(array_map('strtoupper', $roleCodes))));
+}
+
+/** Forms that make up the Incident Action Plan (read by everyone working the incident). Shown as "Action plan" in the menu. */
+function cb_action_plan_form_codes(): array {
+    return ['ICS201', 'ICS202', 'ICS203', 'ICS204', 'ICS205', 'ICS206', 'ICS207', 'ICS208', 'ICS215', 'ICS215A', 'ICS230'];
+}
+
+/**
+ * Splits the menu's form links into three groups for the signed-in user:
+ *   mine - forms one of their positions can create or edit (from Form Permissions, so it follows any change there)
+ *   plan - Incident Action Plan forms they can read
+ *   more - every other form they can open
+ * A SysAdmin can open every form; their "mine" still comes from the positions they hold.
+ * Each link is an array with at least 'code'. Returns ['mine' => [...], 'plan' => [...], 'more' => [...]].
+ */
+function cb_form_nav_groups(array $formLinks, int $incidentId): array {
+    $groups = ['mine' => [], 'plan' => [], 'more' => []];
+    $user = current_user();
+    if (!$user) { return $groups; }
+    $userId = (int)($user['id'] ?? 0);
+    $isSysadmin = !empty($user['is_sysadmin']);
+    if ($incidentId <= 0) { $incidentId = (int)($user['incident_id'] ?? 0) ?: active_incident_id(); }
+    if ($incidentId <= 0 && !$isSysadmin) { return $groups; }
+    $byForm = [];
+    try {
+        $roleCodes = cb_form_permission_role_codes($incidentId, $userId);
+        $ph = implode(',', array_fill(0, count($roleCodes), '?'));
+        $st = db()->prepare("SELECT UPPER(form_code) AS form_code, MAX(can_view) AS v, MAX(can_create) AS c, MAX(can_edit) AS e,
+                MAX(can_submit_final) AS s, MAX(can_manage_permissions) AS m
+            FROM vw_form_permissions_effective WHERE role_code IN ($ph) GROUP BY UPPER(form_code)");
+        $st->execute($roleCodes);
+        foreach ($st->fetchAll() as $r) { $byForm[(string)$r['form_code']] = $r; }
+    } catch (Throwable $e) {
+        // Permissions view unavailable: SysAdmins still get every link, others none (fail closed).
+    }
+    $plan = cb_action_plan_form_codes();
+    foreach ($formLinks as $link) {
+        $code = strtoupper((string)($link['code'] ?? ''));
+        $p = $byForm[$code] ?? null;
+        $canOpen = $isSysadmin || ($p && ((int)$p['v'] || (int)$p['c'] || (int)$p['e'] || (int)$p['s'] || (int)$p['m']));
+        if (!$canOpen) { continue; }
+        if ($p && ((int)$p['c'] || (int)$p['e'])) { $groups['mine'][] = $link; }
+        elseif (in_array($code, $plan, true)) { $groups['plan'][] = $link; }
+        else { $groups['more'][] = $link; }
+    }
+    return $groups;
 }
 
 function current_user_can_view_form(string $formCode, ?int $incidentId = null): bool {

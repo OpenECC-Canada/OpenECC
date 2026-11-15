@@ -170,6 +170,17 @@ if ($want('env')) {
         t_ok('At least one active SysAdmin account', $admins > 0, 'none; run bin/create_admin.php');
     } catch (Throwable $e) { t_ok('SysAdmin checks', false, $e->getMessage()); }
 
+    // Form access by position and the menu groups (migration 0010, includes/helpers.php cb_form_nav_groups).
+    try {
+        $iap = (int)$pdo->query("SELECT COUNT(*) FROM form_permissions WHERE role_code = 'INCIDENT_POSITION' AND can_view = 1 AND is_active = 1
+            AND form_code IN ('ICS201','ICS202','ICS203','ICS204','ICS205','ICS206','ICS207','ICS208','ICS215A','ICS230')")->fetchColumn();
+        t_ok('Everyone in the incident can read the Incident Action Plan forms (INCIDENT_POSITION)', $iap === 10, $iap . ' of 10; run update.sh (migration 0010)');
+        $lsc = (int)$pdo->query("SELECT COUNT(*) FROM form_permissions WHERE role_code = 'LSC' AND can_edit = 1 AND is_active = 1
+            AND form_code IN ('ICS205','ICS205A','ICS206','ICS218')")->fetchColumn();
+        t_ok('Logistics Section Chief can edit its units\' forms (205, 205A, 206, 218)', $lsc === 4, $lsc . ' of 4; run update.sh (migration 0010)');
+        t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
+    } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
+
     // ICS 214: one log per person (migration 0003).
     try {
         $cols = table_columns('form_214_activity_log');

@@ -476,6 +476,18 @@ a.btn:focus {
   display:flex;
   flex-direction:column;
 }
+/* Menu groups: Your forms / Action plan / More forms (includes/layout.php) */
+.nav-group{margin:6px 0 2px}
+.nav-group > summary{cursor:pointer;list-style:none;color:rgba(255,255,255,.7);font-size:11.5px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:8px 0 4px;display:flex;align-items:center;gap:6px}
+.nav-group > summary::-webkit-details-marker{display:none}
+/* Chevron drawn with borders: points right when closed, down when open. */
+.nav-group > summary::before{content:"";flex:0 0 auto;width:7px;height:7px;margin:0 4px 0 2px;border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+.nav-group[open] > summary::before{transform:rotate(45deg) translate(-2px,-2px)}
+.nav-group > summary:hover,.nav-group > summary:focus-visible{color:#fff}
+.sidebar nav .nav-group a{padding-left:14px}
+.sidebar nav a[aria-current="page"]{font-weight:700;box-shadow:inset 3px 0 0 #fff}
 .nav-footer{
   margin-top:auto;
   padding-top:14px;
