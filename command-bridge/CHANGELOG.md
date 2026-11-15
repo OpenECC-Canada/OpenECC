@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+* **New form: ICS 233 Open Action Tracker.** It tracks tasks the IC gives out that aren't incident objectives.
+  - **One list per incident:** open actions carry over between operational periods.
+  - **Kept by the PSC:** the Planning Section Chief keeps it, along with the IC, Unified Command, Deputy IC and
+    Documentation Unit Leader. Everyone in the incident can read it.
+  - **The POC is notified:** "For / POC" is a position, and everyone holding it gets a dashboard notice.
+  - **The POC updates it:** they mark it briefed, update the status and mark it completed, and whoever added it is
+    told when it's done.
+  - **Due dates:** rows turn yellow the day before the target date and red when it's overdue.
+  - **PDF:** prints on the official ICS 233. It has no fillable fields, so the text is laid over the form. It can
+    print the open actions only, or include completed ones.
+  - **Database:** migration `0011_ics233_action_tracker.sql` (table `form_233_actions`, the form, its definition and
+    permissions), with matching schema.sql and seed.sql. Help and smoke test added.
 * **The side menu groups forms by position.** Instead of one long list, each person sees:
   - **Your forms**: forms their position can create or edit
   - **Action plan**: the Incident Action Plan forms they can read

@@ -181,6 +181,19 @@ if ($want('env')) {
         t_ok('Menu groups helper is present', function_exists('cb_form_nav_groups') && in_array('ICS202', cb_action_plan_form_codes(), true));
     } catch (Throwable $e) { t_ok('Form access checks', false, $e->getMessage()); }
 
+    // ICS 233 Open Action Tracker (migration 0011).
+    try {
+        t_ok('ICS 233 action tracker table (form_233_actions)', table_columns('form_233_actions') !== [], 'run update.sh (migration 0011)');
+        $f233 = (int)$pdo->query("SELECT COUNT(*) FROM forms WHERE form_code = 'ICS233' AND is_active = 1")->fetchColumn();
+        t_ok('ICS 233 is a known form with permissions', $f233 === 1
+            && (int)$pdo->query("SELECT COUNT(*) FROM form_permissions WHERE form_code = 'ICS233' AND role_code = 'PSC' AND can_edit = 1")->fetchColumn() === 1,
+            'run update.sh (migration 0011)');
+        require_once $appRoot . '/includes/ics233_actions.php';
+        t_ok('ICS 233 due dates turn yellow, then red', ics233_due_state(['target_date' => '2026-01-01'], '2026-01-02') === 'overdue'
+            && ics233_due_state(['target_date' => '2026-01-03'], '2026-01-02') === 'due' && ics233_due_state(['target_date' => '2026-01-09'], '2026-01-02') === ''
+            && ics233_due_state(['target_date' => '2026-01-01', 'is_completed' => 1], '2026-01-02') === '');
+    } catch (Throwable $e) { t_ok('ICS 233 checks', false, $e->getMessage()); }
+
     // ICS 214: one log per person (migration 0003).
     try {
         $cols = table_columns('form_214_activity_log');
@@ -212,7 +225,7 @@ if ($want('env')) {
         $unguarded = [];
         foreach (glob($appRoot . '/forms/ics*/index.php') ?: [] as $page) {
             $dir = basename(dirname($page));
-            if (in_array($dir, ['ics213', 'ics214', 'ics230', 'ics213rr_v2', 'ics213rr', 'ics209wf'], true)) { continue; }   // own rules
+            if (in_array($dir, ['ics213', 'ics214', 'ics230', 'ics213rr_v2', 'ics213rr', 'ics209wf', 'ics233'], true)) { continue; }   // own rules (233: a running list, never signed)
             if (strpos((string)file_get_contents($page), 'cb_form_block_locked_post(') === false) { $unguarded[] = $dir; }
         }
         t_ok('Every form page refuses changes to a signed form', $unguarded === [], 'no lock check in: ' . implode(', ', $unguarded));
