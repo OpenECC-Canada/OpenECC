@@ -15,8 +15,16 @@
 * **Starter lists:** optional, province-specific, loaded from the Lookups page. The first is **Alberta** (24 common
   agencies, names checked November 2026). They aren't in the seed, because agencies differ by province. Review them
   twice a year with the ICS Canada forms check.
-* **Database:** migration `0018_lookup_lists.sql` adds default Incident Types (also in seed.sql). Help for Lookups
-  written. Smoke test extended.
+* **Contact details for Agencies and Jurisdictions:** main phone, 24/7 line, email, website, notes, and when they
+  were last verified (and by whom), set on the Lookups page with a new **Edit** button. Organization contacts only:
+  the help explains why a named person's own number belongs on the incident's ICS 205A instead.
+  * **Agency Directory:** a new page, readable by anyone signed in. It's searchable, has tap-to-call numbers, and
+    flags details not checked in 12 months.
+  * **Suggestions:** when picking an agency in a suggestion box, its phone numbers show next to the name.
+  * **Starter lists:** they don't include phone numbers; you add and verify them.
+* **Database:** migration `0018_lookup_lists.sql` adds default Incident Types (also in seed.sql) and the contact
+  columns on `lookup_list_items` (also in schema.sql). Help for Lookups and the Agency Directory written. Smoke test
+  extended.
 * **Facilities (#44): check-in locations become the incident facility list.**
   - **New Facilities page:** replaces Settings > Check-in Locations, which now redirects there. It lists every
     facility: ECC, reception centres, staging areas, camps and so on.

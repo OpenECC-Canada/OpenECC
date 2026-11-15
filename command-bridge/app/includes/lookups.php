@@ -32,6 +32,38 @@ function cb_lookup_retired_categories(): array
     ];
 }
 
+/** Lists that keep contact details (organization contacts: no named individuals' personal numbers). */
+function cb_lookup_contact_categories(): array
+{
+    return ['Agencies', 'Jurisdictions'];
+}
+
+/** Rows of a list (with contact details), sorted. */
+function cb_lookup_items(string $category, bool $activeOnly = true): array
+{
+    try {
+        $st = db()->prepare('SELECT * FROM lookup_list_items WHERE list_category = ?' . ($activeOnly ? ' AND is_active = 1' : '') . ' ORDER BY item_value');
+        $st->execute([$category]);
+        return $st->fetchAll() ?: [];
+    } catch (Throwable $e) { return []; }
+}
+
+/** Contact details not checked in the last 12 months (or never). */
+function cb_lookup_contact_stale(array $row): bool
+{
+    $v = (string)($row['verified_at'] ?? '');
+    return $v === '' || strtotime($v) < strtotime('-12 months');
+}
+
+/** "24/7: 780-555-0100 · 780-555-0199" for a suggestion's label; '' when there are no numbers. */
+function cb_lookup_phone_summary(array $row): string
+{
+    $parts = [];
+    if (trim((string)($row['phone_24h'] ?? '')) !== '') { $parts[] = '24/7: ' . trim((string)$row['phone_24h']); }
+    if (trim((string)($row['phone'] ?? '')) !== '') { $parts[] = trim((string)$row['phone']); }
+    return implode(' · ', $parts);
+}
+
 /** Active values of a list, sorted. */
 function cb_lookup_values(string $category): array
 {
@@ -61,10 +93,15 @@ function cb_lookup_datalist_html(string $category): string
     static $done = [];
     if (isset($done[$category])) { return ''; }
     $done[$category] = true;
-    $values = cb_lookup_values($category);
-    if (!$values) { return ''; }
+    $rows = cb_lookup_items($category);
+    if (!$rows) { return ''; }
+    // For agencies and jurisdictions the suggestion shows their phone numbers next to the name.
+    $withPhones = in_array($category, cb_lookup_contact_categories(), true);
     $out = '<datalist id="' . e(cb_lookup_datalist_id($category)) . '">';
-    foreach ($values as $v) { $out .= '<option value="' . e($v) . '"></option>'; }
+    foreach ($rows as $r) {
+        $label = $withPhones ? cb_lookup_phone_summary($r) : '';
+        $out .= '<option value="' . e((string)$r['item_value']) . '">' . e($label) . '</option>';
+    }
     return $out . '</datalist>';
 }
 
