@@ -103,6 +103,25 @@ render_header('Printers');
 <?php endforeach; ?>
 
 <div class="card">
+  <details<?= ($installed && !$printers) ? ' open' : '' ?>>
+    <summary><strong>Server check</strong> (what Command Bridge sees)</summary>
+    <?php
+      $lpPath = cb_print_binary('lp'); $lpstatPath = cb_print_binary('lpstat');
+      [$diagCode, $diagOut] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-p'], 10) : [127, 'lpstat not found'];
+      [, $diagV] = $lpstatPath !== '' ? cb_print_run([$lpstatPath, '-r'], 10) : [127, ''];
+      $who = function_exists('posix_getpwuid') && function_exists('posix_geteuid') ? (string)(posix_getpwuid(posix_geteuid())['name'] ?? '') : '';
+    ?>
+    <table class="data-table">
+      <tr><th>Web server user</th><td><?= e($who !== '' ? $who : 'unknown') ?></td></tr>
+      <tr><th>lp</th><td><?= e($lpPath !== '' ? $lpPath : 'not found') ?></td></tr>
+      <tr><th>lpstat</th><td><?= e($lpstatPath !== '' ? $lpstatPath : 'not found') ?></td></tr>
+      <tr><th>Print system</th><td><?= e($diagV !== '' ? $diagV : '(no answer)') ?></td></tr>
+      <tr><th><code>lpstat -p</code> (exit <?= (int)$diagCode ?>)</th><td><pre style="white-space:pre-wrap;margin:0"><?= e($diagOut !== '' ? $diagOut : '(nothing)') ?></pre></td></tr>
+    </table>
+  </details>
+</div>
+
+<div class="card">
   <h3>Adding a printer</h3>
   <p>On the Command Bridge server, with the printer's IP address (from its network settings page or a configuration printout), run:</p>
   <pre>sudo <?= e(dirname(__DIR__, 2)) ?>/tools/setup_printer.sh</pre>
