@@ -122,10 +122,19 @@ Each folder is self-contained: its own `VERSION`, `CHANGELOG.md`, installer, upd
 Release notes: [command-bridge/CHANGELOG.md](command-bridge/CHANGELOG.md), [checkin-gateway/CHANGELOG.md](checkin-gateway/CHANGELOG.md).
 Keep both servers on the same release when upgrading.
 
-## Official forms
+## Based on ICS Canada
 
-Command Bridge fills the ICS Canada form templates in `command-bridge/app/assets/pdf/official/`. They are redistributed with
-permission and are not covered by the AGPL. See [command-bridge/docs/FORMS.md](command-bridge/docs/FORMS.md) and
+Command Bridge follows the Incident Command System as used in Canada and published by
+[ICS Canada](https://icscanada.ca/). Its forms are the approved ICS Canada forms, available from the
+[ICS Canada forms page](https://icscanada.ca/resources/ics-forms/). Command Bridge is an independent project and is not
+made or endorsed by ICS Canada.
+
+### Official forms
+
+Command Bridge fills the ICS Canada form templates in `command-bridge/app/assets/pdf/official/`. **We do not yet have
+permission from ICS Canada to use or redistribute these forms.** We have asked and hope to have it soon. Until then, the
+forms remain the property of ICS Canada, and the AGPL does not cover them. If you are from ICS Canada and have concerns,
+please open an issue on this repository. See [command-bridge/docs/FORMS.md](command-bridge/docs/FORMS.md) and
 [command-bridge/THIRD_PARTY.md](command-bridge/THIRD_PARTY.md).
 
 ## Licence
