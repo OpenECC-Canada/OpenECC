@@ -76,6 +76,18 @@ function cb_print_installed(): bool
     return cb_print_binary('lpadmin') !== '' || file_exists('/run/cups/cups.sock') || file_exists('/etc/cups/cupsd.conf');
 }
 
+function cb_print_access(): string
+{
+    $v = (string)get_app_setting('print_access', 'positions');
+    return in_array($v, ['positions', 'signed_in', 'off'], true) ? $v : 'positions';
+}
+/** @return array<string, array{label: string, enabled: int}> */
+function cb_printer_labels(): array
+{
+    $v = json_decode((string)get_app_setting('printer_labels', '{}'), true);
+    return is_array($v) ? $v : [];
+}
+
 // ---- A small IPP client (RFC 8010/8011), enough for CUPS-Get-Printers and Print-Job. ----
 
 function cb_ipp_attr(int $tag, string $name, $value): string
