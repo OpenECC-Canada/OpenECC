@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* **Access cards (Avery 8371) show the Command Bridge logo** instead of the ICS Canada logo, in both the Word
+  template and the fillable PDF (`app/assets/print_templates`). The PDF keeps its 60 fillable fields. The Word
+  template's sample web address is now `https://commandbridge.example.ca`, and both files' author is
+  "Command Bridge".
 * **Print forms straight to a network printer.** A **Print** button next to **Download PDF** sends the form to a
   printer on your network. Nothing needs installing on anyone's computer, and it works from phones and tablets.
   - **Adding printers:** printers are added on the server with the new `tools/setup_printer.sh`, which has screens and
