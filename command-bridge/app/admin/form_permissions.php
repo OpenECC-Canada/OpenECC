@@ -25,6 +25,7 @@ foreach ($roles as $role) {
     $roleOptions[strtoupper((string)$role['code'])] = strtoupper((string)$role['code']) . ' - ' . (string)$role['name'];
 }
 $roleOptions['ALL_AUTHENTICATED'] = 'ALL_AUTHENTICATED - All signed-in users';
+$roleOptions['INCIDENT_POSITION'] = 'INCIDENT_POSITION - Anyone holding a position in the incident';
 ksort($roleOptions);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

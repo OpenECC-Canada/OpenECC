@@ -40,6 +40,19 @@
     if (narrow.addEventListener) { narrow.addEventListener('change', onChange); } else if (narrow.addListener) { narrow.addListener(onChange); }
   }
 
+  // Menu groups (Your forms / Action plan / More forms): remember which ones were opened or closed, per browser.
+  // The group holding the current page always opens.
+  document.querySelectorAll('details.nav-group').forEach(function (d) {
+    var key = 'cb.nav.' + d.getAttribute('data-nav-group');
+    try {
+      var saved = window.localStorage.getItem(key);
+      if (saved !== null && !d.hasAttribute('data-has-current')) { d.open = saved === '1'; }
+    } catch (e) { /* storage blocked: keep the defaults */ }
+    d.addEventListener('toggle', function () {
+      try { window.localStorage.setItem(key, d.open ? '1' : '0'); } catch (e) { /* ignore */ }
+    });
+  });
+
   // List tables marked .cb-cards become one card per row on phones (CSS in app.css). Each cell is labelled with its
   // column heading so the card still reads "Status: Approved" and so on. Rows added later (the "Add row" buttons on
   // the ICS 201/204/205/206/210/215A) are labelled as they appear.

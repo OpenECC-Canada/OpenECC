@@ -104,18 +104,6 @@ function render_header(string $title, ?string $helpTopic = null): void {
     ?>
     <?php
       $activeIncidentId = (int)($incident['id'] ?? 0);
-      $canAccessForm = static function (string $formCode) use ($user, $activeIncidentId): bool {
-          if (!$user) {
-              return false;
-          }
-
-          $permissions = get_current_user_form_permissions($formCode, $activeIncidentId ?: null);
-          return !empty($permissions['can_view'])
-              || !empty($permissions['can_create'])
-              || !empty($permissions['can_edit'])
-              || !empty($permissions['can_submit_final'])
-              || !empty($permissions['can_manage_permissions']);
-      };
       $formLinks = [
           ['code' => 'ICS201', 'path' => '/forms/ics201/index.php', 'label' => 'ICS 201 - Incident Briefing'],
           ['code' => 'ICS202', 'path' => '/forms/ics202/index.php', 'label' => 'ICS 202 - Objectives'],
@@ -166,10 +154,24 @@ function render_header(string $title, ?string $helpTopic = null): void {
         </div>
       <?php elseif ($user): ?>
         <a href="<?= e(app_url('/dashboard/index.php')) ?>">Dashboard</a>
-        <?php foreach ($formLinks as $formLink): ?>
-          <?php if ($canAccessForm($formLink['code'])): ?>
-            <a href="<?= e(app_url($formLink['path'])) ?>"><?= e($formLink['label']) ?></a>
-          <?php endif; ?>
+        <?php
+          // Forms in three groups: the position's own forms, the Incident Action Plan, and the rest (folded).
+          $navGroups = cb_form_nav_groups($formLinks, $activeIncidentId);
+          $currentScript = (string)($_SERVER['SCRIPT_NAME'] ?? '');
+          $groupTitles = ['mine' => 'Your forms', 'plan' => 'Action plan', 'more' => 'More forms'];
+          foreach ($groupTitles as $groupKey => $groupTitle):
+              $links = $navGroups[$groupKey] ?? [];
+              if (!$links) { continue; }
+              $hasCurrent = false;
+              foreach ($links as $formLink) { if ($currentScript === rtrim(APP_BASE_URL, '/') . $formLink['path']) { $hasCurrent = true; } }
+              $open = $groupKey !== 'more' || $hasCurrent;
+        ?>
+          <details class="nav-group" data-nav-group="<?= e($groupKey) ?>"<?= $open ? ' open' : '' ?><?= $hasCurrent ? ' data-has-current="1"' : '' ?>>
+            <summary><?= e($groupTitle) ?><?= $groupKey === 'more' ? ' (' . count($links) . ')' : '' ?></summary>
+            <?php foreach ($links as $formLink): $isCurrent = $currentScript === rtrim(APP_BASE_URL, '/') . $formLink['path']; ?>
+              <a href="<?= e(app_url($formLink['path'])) ?>"<?= $isCurrent ? ' aria-current="page"' : '' ?>><?= e($formLink['label']) ?></a>
+            <?php endforeach; ?>
+          </details>
         <?php endforeach; ?>
         <a href="<?= e(app_url('/ecc_display/landscape.php')) ?>" target="_blank" rel="noopener">ECC Display - Landscape</a>
         <a href="<?= e(app_url('/ecc_display/portrait.php')) ?>" target="_blank" rel="noopener">ECC Display - Portrait</a>

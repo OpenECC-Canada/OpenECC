@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+* **The side menu groups forms by position.** Instead of one long list, each person sees:
+  - **Your forms**: forms their position can create or edit
+  - **Action plan**: the Incident Action Plan forms they can read
+  - **More forms**: everything else they can open, folded closed
+
+  The groups come from Form Permissions, so they follow any change made there. The group holding the current page
+  opens, and each browser remembers which groups were opened. This works the same in the phone and tablet menu drawer.
+* **Default form access fixed for positions that could see almost nothing.** On a new install the Logistics and
+  Finance/Admin Section Chiefs couldn't open the ICS 202 or 204, and only the IC, Operations, Planning and General Staff
+  could write an ICS 213. New role **INCIDENT_POSITION** means anyone holding a position in the incident. Rights added:
+  - everyone in the incident: read the action plan forms (201, 202, 203, 204, 205, 206, 207, 208, 215A, 230) and
+    write an ICS 213
+  - Unified Command: the same as the IC. Deputy IC: read and edit every form.
+  - Documentation Unit Leader: read every form
+  - Logistics Section Chief: edit the 205, 205A, 206 and 218, edit the 213RR, read the 209, 210 and 211
+  - Finance/Admin Section Chief: read the 209, 210, 211 and 218. Cost, Time and Compensation unit leaders: the
+    Finance/Admin queue, and read the 213RR, 211 and 218
+  - Situation Unit Leader: read the 205A, 210 and 211. PIO and Liaison: read the 209. Safety: read the 209 and 210.
+
+  No existing right is removed. **Database:** migration `0010_form_access_by_position.sql` and the same rows in
+  seed.sql. Help for Form Permissions written. Smoke test extended.
 * **The installer and updater now say what each step is.** The progress box read "Step 1 of 4" but the step's name was
   cut off below it. The name is now in the box title and on the first line, and the updater also shows each database
   migration as it runs. The same change is in the Check-In Gateway's installer and updater (`deploy/lib/ui.sh`).
