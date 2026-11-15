@@ -403,7 +403,7 @@ function rr_sync_expected_resource_from_logistics(int $headerId, int $resourceIn
     }
 
     $locationStmt = db()->prepare('SELECT id FROM external_checkin_locations
-        WHERE id=? AND incident_id=? AND lifecycle_status="active"');
+        WHERE id=? AND incident_id=? AND lifecycle_status="active" AND is_checkin_point=1');
     $locationStmt->execute([$locationId, $incidentId]);
     if (!$locationStmt->fetchColumn()) {
         throw new RuntimeException('The selected receiving location is no longer active.');
@@ -664,7 +664,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $expectedCheckinLocationId = (int)($_POST['expected_checkin_location_id'] ?? 0);
         $locationStmt = db()->prepare('SELECT id, location_name, street_address
             FROM external_checkin_locations
-            WHERE id=? AND incident_id=? AND lifecycle_status="active"');
+            WHERE id=? AND incident_id=? AND lifecycle_status="active" AND is_checkin_point=1');
         $locationStmt->execute([$expectedCheckinLocationId, $incidentId]);
         $expectedCheckinLocation = $locationStmt->fetch();
 
@@ -1224,7 +1224,7 @@ if ($action === 'new' || ($action === 'edit' && $id>0)) {
           <?php
             $activeCheckinLocationsStmt = db()->prepare('SELECT id, location_name, location_type, street_address
               FROM external_checkin_locations
-              WHERE incident_id=? AND lifecycle_status="active"
+              WHERE incident_id=? AND lifecycle_status="active" AND is_checkin_point=1
               ORDER BY location_name');
             $activeCheckinLocationsStmt->execute([$incidentId]);
             $activeCheckinLocations = $activeCheckinLocationsStmt->fetchAll();

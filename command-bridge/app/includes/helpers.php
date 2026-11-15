@@ -506,6 +506,7 @@ function companion_checkin_user_locations(int $incidentId, int $userId): array {
             AND a.user_id = ?
             AND a.revoked_at IS NULL
             AND l.lifecycle_status = "active"
+            AND l.is_checkin_point = 1
           ORDER BY a.location_id'
     );
     $stmt->execute([$incidentId, $userId]);
@@ -574,7 +575,8 @@ function companion_checkin_set_user_locations(int $incidentId, int $userId, arra
             'SELECT id
                FROM external_checkin_locations
               WHERE incident_id = ?
-                AND lifecycle_status = "active" 
+                AND lifecycle_status = "active"
+                AND is_checkin_point = 1
                 AND id IN (' . $placeholders . ')'
         );
         $locationStmt->execute(array_merge([$incidentId], $locationIds));

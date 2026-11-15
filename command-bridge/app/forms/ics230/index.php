@@ -282,7 +282,8 @@ if ($currentOperationalPeriod) {
         </div>
         <div>
           <label>Location</label>
-          <input name="location" value="<?= e((string)($editingMeeting['location'] ?? '')) ?>">
+          <input name="location" list="cb-facilities" value="<?= e((string)($editingMeeting['location'] ?? '')) ?>">
+          <?php require_once dirname(__DIR__, 2) . '/includes/facilities.php'; echo cb_facility_datalist_html((int)$incidentId); ?>
         </div>
         <div class="full-width">
           <label>Purpose</label>

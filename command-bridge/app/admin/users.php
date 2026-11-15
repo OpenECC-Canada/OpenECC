@@ -16,7 +16,7 @@ $incidentId = (int)($incident['id'] ?? 0);
 $roles = get_roles();
 $companionLocations = [];
 if ($incidentId > 0) {
-    $locationStmt = $pdo->prepare('SELECT id, location_name, location_type, lifecycle_status FROM external_checkin_locations WHERE incident_id = ? AND lifecycle_status = "active" ORDER BY location_name');
+    $locationStmt = $pdo->prepare('SELECT id, location_name, location_type, lifecycle_status FROM external_checkin_locations WHERE incident_id = ? AND lifecycle_status = "active" AND is_checkin_point = 1 ORDER BY location_name');
     $locationStmt->execute([$incidentId]);
     $companionLocations = $locationStmt->fetchAll();
 }

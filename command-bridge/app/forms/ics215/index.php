@@ -129,6 +129,7 @@ render_ics_form_status('ICS215', $formRecord, $preparer, $signature, ['error' =>
 ?>
 <form method="post" id="ics215-form">
 <?= csrf_field() ?>
+<?php require_once dirname(__DIR__, 2) . '/includes/facilities.php'; echo cb_facility_datalist_html($incidentId); ?>
 <div class="card">
   <h2>ICS 215 - Operational Planning Worksheet</h2>
   <p class="small">The Operations Section Chief plans the next operational period here: each work assignment, the resources it
@@ -183,7 +184,7 @@ render_ics_form_status('ICS215', $formRecord, $preparer, $signature, ['error' =>
   <div class="grid-2">
     <label>7. Overhead Position(s)<textarea name="rows[<?= $i ?>][overhead]" rows="2"><?= e((string)($r['overhead'] ?? '')) ?></textarea></label>
     <label>8. Special Equipment and Supplies<textarea name="rows[<?= $i ?>][special_equipment]" rows="2"><?= e((string)($r['special_equipment'] ?? '')) ?></textarea></label>
-    <label>9. Reporting Location<input name="rows[<?= $i ?>][reporting_location]" maxlength="255" value="<?= e((string)($r['reporting_location'] ?? '')) ?>"></label>
+    <label>9. Reporting Location<input name="rows[<?= $i ?>][reporting_location]" list="cb-facilities" maxlength="255" value="<?= e((string)($r['reporting_location'] ?? '')) ?>"></label>
     <label>10. Requested Arrival Time<input name="rows[<?= $i ?>][arrival_time]" maxlength="50" value="<?= e((string)($r['arrival_time'] ?? '')) ?>" placeholder="e.g. 06:00"></label>
   </div>
   <?php if (!$isNew): ?><label class="checkbox-line"><input type="checkbox" name="rows[<?= $i ?>][remove]" value="1"> Remove this assignment when saving</label><?php endif; ?>

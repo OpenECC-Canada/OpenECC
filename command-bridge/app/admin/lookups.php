@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/settings_helpers.php';
-$categories = ['Agencies','Jurisdictions','Incident Types','Facilities','Resource Kinds','Resource Types','Positions','Contact Categories'];
+$categories = ['Agencies','Jurisdictions','Incident Types','Facilities','Facility Types','Resource Kinds','Resource Types','Positions','Contact Categories'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf_token();
     $action = $_POST['action'] ?? '';

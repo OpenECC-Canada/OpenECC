@@ -25,6 +25,8 @@ function cb_dashboard_panel_catalogue(): array
         'logistics_queue' => ['title' => 'Resource requests waiting for Logistics', 'help' => 'ICS 213RR requests that Logistics has to order.'],
         'resl_queue' => ['title' => 'Resources Unit intake', 'help' => 'Ordered resources expected, arrived or waiting to be put on the ICS 211 or 218.'],
         'finance_queue' => ['title' => 'Finance/Admin review', 'help' => 'ICS 213RR requests waiting for a Finance/Admin decision.'],
+        'facilities' => ['title' => 'Open facilities', 'help' => 'Every open incident facility (ECC, reception centres, staging areas...) with its contact and capacity.'],
+        'staging' => ['title' => 'Staging', 'help' => 'How many resources are available, assigned or out of service at each staging area.'],
         'copied_review' => ['title' => 'Copied forms requiring review', 'help' => 'Every form copied forward from the last operational period that still needs review.'],
         'closeout' => ['title' => 'Forms to submit before the period ends', 'help' => 'Every form for this operational period that is not signed yet.'],
         'op_form_status' => ['title' => 'Operational period form status', 'help' => 'The status of every IAP form (ICS 202 to 208) and any other form started this period.'],
@@ -43,8 +45,8 @@ function cb_dashboard_default_panel_map(): array
         'SITL' => ['op_form_status', 'closeout', 'copied_review'],
         'DOCL' => ['op_form_status', 'closeout', 'copied_review'],
         'RESL' => ['resl_queue', 'staffing'],
-        'OSC' => ['staffing'],
-        'LSC' => ['logistics_queue'], 'SPUL' => ['logistics_queue'],
+        'OSC' => ['staffing', 'staging'],
+        'LSC' => ['logistics_queue', 'facilities'], 'SPUL' => ['logistics_queue'], 'FAC' => ['facilities'], 'SAM' => ['staging'],
         'FSC' => ['finance_queue'], 'PROC' => ['finance_queue'], 'COST' => ['finance_queue'],
     ];
 }

@@ -182,8 +182,9 @@ cb_form_status_banner('ICS204', (int)$incidentId, (int)$opId, (int)$formRecordId
 </div>
 <div class="grid two"><label>3. Incident Name<input readonly value="<?=h($incidentName)?>"></label><label>4. Operational Period<input readonly value="<?=h($opDates)?>"></label></div>
 <fieldset><legend>5. Operational Personnel</legend><textarea name="operations_personnel" rows="3" placeholder="Division/Group Supervisor, Operations Chief, Branch Director, Staging Area Manager"><?=h($data['operations_personnel'] ?? '')?></textarea></fieldset>
+<?php require_once dirname(__DIR__, 2) . '/includes/facilities.php'; echo cb_facility_datalist_html((int)$incidentId); ?>
 <fieldset><legend>6. Resources Assigned to this Period</legend><table class="cb-cards" id="resources-table"><thead><tr><th>Resource Identifier</th><th>Leader</th><th>No. of Persons</th><th>Contact</th><th>Reporting Location / Special Equipment / Remarks</th></tr></thead><tbody>
-<?php foreach($resources as $idx=>$r):?><tr><td><input name="resources[<?=$idx?>][resource_identifier]" value="<?=h($r['resource_identifier'] ?? '')?>"></td><td><input name="resources[<?=$idx?>][leader_name]" value="<?=h($r['leader_name'] ?? '')?>"></td><td><input type="number" min="0" name="resources[<?=$idx?>][number_persons]" value="<?=h((string)($r['number_persons'] ?? ''))?>"></td><td><input name="resources[<?=$idx?>][contact_info]" value="<?=h($r['contact_info'] ?? '')?>"></td><td><input name="resources[<?=$idx?>][reporting_location]" value="<?=h($r['reporting_location'] ?? '')?>"></td></tr><?php endforeach;?>
+<?php foreach($resources as $idx=>$r):?><tr><td><input name="resources[<?=$idx?>][resource_identifier]" value="<?=h($r['resource_identifier'] ?? '')?>"></td><td><input name="resources[<?=$idx?>][leader_name]" value="<?=h($r['leader_name'] ?? '')?>"></td><td><input type="number" min="0" name="resources[<?=$idx?>][number_persons]" value="<?=h((string)($r['number_persons'] ?? ''))?>"></td><td><input name="resources[<?=$idx?>][contact_info]" value="<?=h($r['contact_info'] ?? '')?>"></td><td><input name="resources[<?=$idx?>][reporting_location]" list="cb-facilities" value="<?=h($r['reporting_location'] ?? '')?>"></td></tr><?php endforeach;?>
 </tbody></table><button type="button" class="btn btn-secondary" onclick="addResourceRow()">Add Resource</button></fieldset>
 <label>7. Work Assignments<textarea name="work_assignments" rows="5"><?=h($data['work_assignments'] ?? '')?></textarea></label>
 <label>8. Special Instructions<textarea name="special_instructions" rows="4"><?=h($data['special_instructions'] ?? '')?></textarea></label>
@@ -206,6 +207,6 @@ if (function_exists('render_ics_form_actions')) {
 ?>
 </form></div>
 <script>
-function addResourceRow(){const tb=document.querySelector('#resources-table tbody'); const i=tb.rows.length; const tr=document.createElement('tr'); tr.innerHTML=`<td><input name="resources[${i}][resource_identifier]"></td><td><input name="resources[${i}][leader_name]"></td><td><input type="number" min="0" name="resources[${i}][number_persons]"></td><td><input name="resources[${i}][contact_info]"></td><td><input name="resources[${i}][reporting_location]"></td>`; tb.appendChild(tr);}
+function addResourceRow(){const tb=document.querySelector('#resources-table tbody'); const i=tb.rows.length; const tr=document.createElement('tr'); tr.innerHTML=`<td><input name="resources[${i}][resource_identifier]"></td><td><input name="resources[${i}][leader_name]"></td><td><input type="number" min="0" name="resources[${i}][number_persons]"></td><td><input name="resources[${i}][contact_info]"></td><td><input name="resources[${i}][reporting_location]" list="cb-facilities"></td>`; tb.appendChild(tr);}
 </script>
 <?php render_footer(); ?>
