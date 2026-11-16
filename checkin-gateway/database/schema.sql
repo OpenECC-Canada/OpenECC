@@ -39,7 +39,7 @@ CREATE TABLE gateway_access_attempts (
  PRIMARY KEY(id), KEY idx_gateway_access_rate(location_id,remote_ip,attempted_at), KEY idx_gateway_access_pin_rate(location_id,attempted_pin_fingerprint,attempted_at), KEY idx_gateway_access_ip_time(remote_ip,attempted_at), KEY idx_gateway_access_location_time(location_id,attempted_at), CONSTRAINT fk_gateway_access_location FOREIGN KEY(location_id) REFERENCES gateway_locations(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- CIR/SAM identities are synchronized from CommandBridge. PINs are stored
+-- CIR/SAM identities are synchronized from OpenECC. PINs are stored
 -- only as supplied bcrypt verifiers; plaintext PINs are never retained.
 CREATE TABLE gateway_companion_users (
  id bigint unsigned NOT NULL AUTO_INCREMENT, incident_id bigint unsigned NOT NULL, gateway_user_id bigint unsigned NOT NULL,

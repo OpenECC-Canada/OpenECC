@@ -7,7 +7,7 @@ Include the component (OpenECC or Check-In Gateway), its `VERSION`, what you did
 
 **Both servers**
 * Use HTTPS. The installers' plain-HTTP option is for testing only.
-* Settings and credentials live in `/etc/commandbridge/` (root:www-data, mode 0640), outside the web root. Only `app/` (OpenECC) or `public/` (gateway) is served.
+* Settings and credentials live in `/etc/openecc/` (root:www-data, mode 0640), outside the web root. Only `app/` (OpenECC) or `public/` (gateway) is served.
 * Keep Debian patched (`unattended-upgrades` is recommended). Back up the databases and test restoring.
 
 **OpenECC (internal)**

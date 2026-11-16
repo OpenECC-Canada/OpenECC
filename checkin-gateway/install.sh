@@ -15,13 +15,13 @@ set -Eeuo pipefail
 umask 022
 
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG=/var/log/commandbridge-gateway-install.log
-CONF_DIR=/etc/commandbridge
+LOG=/var/log/openecc-gateway-install.log
+CONF_DIR=/etc/openecc
 ENV_FILE=$CONF_DIR/checkin_gateway.env
 INSTALL_CONF=$CONF_DIR/gateway-install.conf
-DB_NAME=commandbridge_gateway
-DB_USER=commandbridge_gateway
-SITE_NAME=commandbridge-gateway
+DB_NAME=openecc_gateway
+DB_USER=openecc_gateway
+SITE_NAME=openecc-gateway
 WEB_USER=www-data
 ASSUME_YES="${CB_ASSUME_YES:-0}"
 
@@ -76,12 +76,15 @@ esac
 command -v apt-get >/dev/null || die "apt-get not found."
 
 # ---------------------------------------------------------------- questions
-ui_ask INSTALL_DIR "Install folder" "Where should the gateway be installed?\n\nOnly its public/ subfolder is served by the web server." "${CB_INSTALL_DIR:-/var/www/commandbridge-gateway}"
+ui_ask INSTALL_DIR "Install folder" "Where should the gateway be installed?\n\nOnly its public/ subfolder is served by the web server." "${CB_INSTALL_DIR:-/var/www/openecc-gateway}"
 case "$INSTALL_DIR" in /*) ;; *) die "Install folder must be an absolute path." ;; esac
 INSTALL_DIR="${INSTALL_DIR%/}"
 [ -n "$INSTALL_DIR" ] && [ "$INSTALL_DIR" != / ] || die "Refusing to install into /."
 if [ -e "$INSTALL_DIR/public" ] || [ -f "$ENV_FILE" ] || [ -f "$INSTALL_CONF" ]; then
     die "An existing gateway install was found. This installer is for fresh installs only; use update.sh to upgrade."
+fi
+if [ -f /etc/commandbridge/gateway-install.conf ] || [ -f /etc/apache2/sites-enabled/commandbridge-gateway.conf ]; then
+    die "This server still has an old Command Bridge Check-In Gateway. Remove it first (openecc/docs/MIGRATING.md in the release), then run this installer again."
 fi
 ui_yesno "Confirm install folder" "Install the gateway into:\n\n    $INSTALL_DIR" y || die "Cancelled."
 ROOT_DIR="$INSTALL_DIR"
@@ -127,7 +130,7 @@ if [ "$DELIVERY_MODE" = push ]; then
     [[ $EVENTS_URL =~ ^https:// ]] || die "The events URL must start with https://"
 fi
 
-HMAC_KEY_ID="${CB_HMAC_KEY_ID:-commandbridge-1}"
+HMAC_KEY_ID="${CB_HMAC_KEY_ID:-openecc-1}"
 ui_ask HMAC_KEY_ID "Shared secret" "Key ID that identifies the shared secret between OpenECC and the gateway (the same value goes in OpenECC's settings):" "$HMAC_KEY_ID"
 [[ $HMAC_KEY_ID =~ ^[A-Za-z0-9._:-]{3,64}$ ]] || die "Key ID must be 3-64 characters (letters, digits . _ : -)."
 HMAC_SECRET="${CB_HMAC_SECRET:-}"; GENERATED_SECRET=0
@@ -214,7 +217,7 @@ EXTERNAL_CHECKIN_HMAC_KEY_ID=$HMAC_KEY_ID
 EXTERNAL_CHECKIN_HMAC_SECRET=$HMAC_SECRET
 GATEWAY_DELIVERY_MODE=$DELIVERY_MODE
 GATEWAY_PULL_LEASE_SECONDS=300
-COMMANDBRIDGE_EVENTS_URL=$EVENTS_URL
+OPENECC_EVENTS_URL=$EVENTS_URL
 GATEWAY_REQUEST_TTL_SECONDS=300
 GATEWAY_SESSION_IDLE_SECONDS=28800
 GATEWAY_CONNECT_TIMEOUT_SECONDS=5
@@ -238,7 +241,7 @@ PHPVER="$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;' 2>/dev/null
 if [ -n "$PHPVER" ] && [ -d "/etc/php/$PHPVER" ]; then
     for sapi in apache2 cli; do
         [ -d "/etc/php/$PHPVER/$sapi/conf.d" ] || continue
-        cat > "/etc/php/$PHPVER/$sapi/conf.d/90-commandbridge-gateway.ini" <<PHPEOF
+        cat > "/etc/php/$PHPVER/$sapi/conf.d/90-openecc-gateway.ini" <<PHPEOF
 ; OpenECC Check-In Gateway
 expose_php = Off
 date.timezone = $TZ_NAME
@@ -252,9 +255,9 @@ fi
 ui_stage "Configuring Apache and encryption"
 APACHE_SITES=/etc/apache2/sites-available
 COMMON="$(sed "s#__APP_DIR__#$APP_DIR#g" "$SRC_DIR/deploy/apache/gateway-common.inc.template")"
-LOGLINES='    ErrorLog ${APACHE_LOG_DIR}/commandbridge-gateway-error.log
-    CustomLog ${APACHE_LOG_DIR}/commandbridge-gateway-access.log combined'
-printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/commandbridge-hardening.conf
+LOGLINES='    ErrorLog ${APACHE_LOG_DIR}/openecc-gateway-error.log
+    CustomLog ${APACHE_LOG_DIR}/openecc-gateway-access.log combined'
+printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/openecc-hardening.conf
 
 write_http_only() {
     cat > "$APACHE_SITES/$SITE_NAME.conf" <<VHEOF
@@ -304,7 +307,7 @@ VHEOF
 }
 
 a2enmod rewrite headers ssl >/dev/null
-a2enconf commandbridge-hardening >/dev/null
+a2enconf openecc-hardening >/dev/null
 for s in 000-default default-ssl; do
     [ -e "/etc/apache2/sites-enabled/$s.conf" ] && a2dissite "$s" >/dev/null && say "Disabled Apache's default site '$s'."
 done
@@ -316,13 +319,13 @@ case "$TLS_MODE" in
     4) write_http_only; TLS_RESULT="HTTP only" ;;
     3) write_redirect_80; append_https "$CERT_FILE" "$KEY_FILE" 0; TLS_RESULT="your certificate" ;;
     2)
-        SSL_DIR=/etc/ssl/commandbridge-gateway; mkdir -p "$SSL_DIR"; chmod 0755 "$SSL_DIR"
+        SSL_DIR=/etc/ssl/openecc-gateway; mkdir -p "$SSL_DIR"; chmod 0755 "$SSL_DIR"
         if [[ $SERVER_NAME =~ ^[0-9.]+$ ]]; then SAN="IP:$SERVER_NAME"; else SAN="DNS:$SERVER_NAME"; fi
-        openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge-gateway.key" -out "$SSL_DIR/commandbridge-gateway.crt" \
+        openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/openecc-gateway.key" -out "$SSL_DIR/openecc-gateway.crt" \
             -subj "/CN=$SERVER_NAME/O=OpenECC Gateway" -addext "subjectAltName=$SAN" 2>/dev/null
-        chmod 0640 "$SSL_DIR/commandbridge-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge-gateway.key"
-        write_redirect_80; append_https "$SSL_DIR/commandbridge-gateway.crt" "$SSL_DIR/commandbridge-gateway.key" 0
-        TLS_RESULT="self-signed (valid 825 days: $SSL_DIR/commandbridge-gateway.crt)" ;;
+        chmod 0640 "$SSL_DIR/openecc-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/openecc-gateway.key"
+        write_redirect_80; append_https "$SSL_DIR/openecc-gateway.crt" "$SSL_DIR/openecc-gateway.key" 0
+        TLS_RESULT="self-signed (valid 825 days: $SSL_DIR/openecc-gateway.crt)" ;;
     1)
         write_http_only
         a2ensite "$SITE_NAME" >/dev/null
@@ -335,11 +338,11 @@ case "$TLS_MODE" in
         else
             warn "Let's Encrypt could not issue a certificate (is $SERVER_NAME public and reachable on port 80?)."
             warn "Falling back to a self-signed certificate. Re-run 'certbot certonly --webroot -w $APP_DIR -d $SERVER_NAME' later."
-            SSL_DIR=/etc/ssl/commandbridge-gateway; mkdir -p "$SSL_DIR"
-            openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge-gateway.key" -out "$SSL_DIR/commandbridge-gateway.crt" \
+            SSL_DIR=/etc/ssl/openecc-gateway; mkdir -p "$SSL_DIR"
+            openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/openecc-gateway.key" -out "$SSL_DIR/openecc-gateway.crt" \
                 -subj "/CN=$SERVER_NAME/O=OpenECC Gateway" -addext "subjectAltName=DNS:$SERVER_NAME" 2>/dev/null
-            chmod 0640 "$SSL_DIR/commandbridge-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge-gateway.key"
-            write_redirect_80; append_https "$SSL_DIR/commandbridge-gateway.crt" "$SSL_DIR/commandbridge-gateway.key" 0
+            chmod 0640 "$SSL_DIR/openecc-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/openecc-gateway.key"
+            write_redirect_80; append_https "$SSL_DIR/openecc-gateway.crt" "$SSL_DIR/openecc-gateway.key" 0
             TLS_RESULT="self-signed (Let's Encrypt failed)"
         fi ;;
 esac
@@ -350,11 +353,11 @@ systemctl restart apache2
 
 # ---------------------------------------------------------------- systemd (push mode only)
 if [ -d /run/systemd/system ]; then
-    for u in commandbridge-gateway-dispatch.service commandbridge-gateway-dispatch.timer; do
+    for u in openecc-gateway-dispatch.service openecc-gateway-dispatch.timer; do
         sed "s#__APP_DIR__#$ROOT_DIR#g" "$SRC_DIR/deploy/systemd/$u" > "/etc/systemd/system/$u"
     done
     systemctl daemon-reload
-    if [ "$DELIVERY_MODE" = push ]; then systemctl enable --now commandbridge-gateway-dispatch.timer; fi
+    if [ "$DELIVERY_MODE" = push ]; then systemctl enable --now openecc-gateway-dispatch.timer; fi
 fi
 
 # ---------------------------------------------------------------- self-check
@@ -383,7 +386,7 @@ FINAL="$(mktemp)"; chmod 600 "$FINAL"
     echo "  Settings    : $ENV_FILE"
     echo "  Install log : $LOG"
     echo
-    echo "NEXT, ON THE COMMAND BRIDGE SERVER:"
+    echo "NEXT, ON THE OPENECC SERVER:"
     if [ "$GENERATED_SECRET" = 1 ]; then
         echo "  Run:  sudo <OpenECC folder>/tools/setup_checkin.sh"
         echo "  Choose 'Paste the key from the gateway' and enter:"
@@ -395,7 +398,7 @@ FINAL="$(mktemp)"; chmod 600 "$FINAL"
         echo "  OpenECC already has this key ID and secret. Test the connection and switch sync on:"
         echo "    sudo <OpenECC folder>/tools/setup_checkin.sh --test"
     fi
-    echo "  (Older OpenECC without tools/setup_checkin.sh: see command-bridge/docs/EXTERNAL_CHECKIN.md.)"
+    echo "  (Older OpenECC without tools/setup_checkin.sh: see openecc/docs/EXTERNAL_CHECKIN.md.)"
     echo
     echo "Gateway tools (run as root on this server):"
     echo "  New shared secret       : $INSTALL_DIR/tools/rotate_secret.sh   (start it from OpenECC)"

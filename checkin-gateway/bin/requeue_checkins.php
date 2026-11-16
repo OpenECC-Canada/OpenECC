@@ -13,8 +13,8 @@ declare(strict_types=1);
  *   php bin/requeue_checkins.php --id=ID          (one check-in, by the ID shown in --list)
  *   php bin/requeue_checkins.php --all
  *
- * Run as root or a user that can read /etc/commandbridge/checkin_gateway.env:
- *   sudo php /var/www/commandbridge-gateway/bin/requeue_checkins.php --list
+ * Run as root or a user that can read /etc/openecc/checkin_gateway.env:
+ *   sudo php /var/www/openecc-gateway/bin/requeue_checkins.php --list
  *
  * Re-queuing resets the attempt counter so OpenECC picks the check-in up on its next poll.
  * OpenECC ignores check-ins it has already recorded, so re-sending is safe.

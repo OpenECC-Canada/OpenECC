@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.9.0-beta.3 (2026-11-16)
 
-* Renamed: the gateway is now the **OpenECC Check-In Gateway** (page titles, footer, installer messages, README).
-  Internal folder, service and database names are unchanged.
+* Renamed: the gateway is now the **OpenECC Check-In Gateway**. Its folder (`/var/www/openecc-gateway`), settings
+  (`/etc/openecc`), database and user (`openecc_gateway`), Apache site, logs and dispatch timer
+  (`openecc-gateway-dispatch`) have new names. An old gateway can't be updated in place: remove it and install fresh
+  (openecc/docs/MIGRATING.md). Sync headers are now `X-OpenECC-*`, so OpenECC 0.9.0-beta.5 is required.
 
 * README: says plainly that the gateway is provided as is, with no warranty (AGPL-3.0 sections 15 and 16).
 

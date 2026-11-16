@@ -1,6 +1,6 @@
 # Internal Pull Synchronization API
 
-Use this API when CommandBridge is internal-only and cannot accept inbound requests from the Check-In Gateway. The internal CommandBridge server initiates both HTTPS requests to the gateway.
+Use this API when OpenECC is internal-only and cannot accept inbound requests from the Check-In Gateway. The internal OpenECC server initiates both HTTPS requests to the gateway.
 
 ## Gateway configuration
 
@@ -10,16 +10,16 @@ GATEWAY_DELIVERY_MODE=pull
 GATEWAY_PULL_LEASE_SECONDS=300
 ```
 
-In pull mode, the legacy gateway dispatcher does not post queued check-ins to `COMMANDBRIDGE_EVENTS_URL`.
+In pull mode, the legacy gateway dispatcher does not post queued check-ins to `OPENECC_EVENTS_URL`.
 
 ## Request authentication
 
 All three endpoints (ping, pull, ack) use the shared HMAC key and headers:
 
-- `X-CommandBridge-Timestamp`: current Unix timestamp
-- `X-CommandBridge-Nonce`: a unique 16–128 character nonce
-- `X-CommandBridge-Key-Id`: `EXTERNAL_CHECKIN_HMAC_KEY_ID`
-- `X-CommandBridge-Signature`: Base64 HMAC-SHA256 of `timestamp + "\n" + nonce + "\n" + exact request body`
+- `X-OpenECC-Timestamp`: current Unix timestamp
+- `X-OpenECC-Nonce`: a unique 16–128 character nonce
+- `X-OpenECC-Key-Id`: `EXTERNAL_CHECKIN_HMAC_KEY_ID`
+- `X-OpenECC-Signature`: Base64 HMAC-SHA256 of `timestamp + "\n" + nonce + "\n" + exact request body`
 
 The HMAC key is `EXTERNAL_CHECKIN_HMAC_SECRET`. The internal poller must validate the gateway TLS certificate.
 
@@ -34,7 +34,7 @@ The HMAC key is `EXTERNAL_CHECKIN_HMAC_SECRET`. The internal poller must validat
 Read-only: it never leases, changes or deletes events. A `200` answer proves the key ID, secret and clocks match:
 
 ```json
-{"ok":true,"gateway_version":"0.9.0-beta.2","server_time":1794588650,"delivery_mode":"pull","checkins_waiting":2,"checkins_stuck":0}
+{"ok":true,"gateway_version":"0.9.0-beta.3","server_time":1794588650,"delivery_mode":"pull","checkins_waiting":2,"checkins_stuck":0}
 ```
 
 `checkins_stuck` counts check-ins that are no longer offered (attempts used up, or rejected); re-send them on the gateway with
@@ -74,7 +74,7 @@ Use `retry` for a transient failure. Use `rejected` only for a permanent process
 
 ## CIR/SAM companion-user inbound synchronization
 
-The same signed request format is used by CommandBridge when it sends synchronization events to:
+The same signed request format is used by OpenECC when it sends synchronization events to:
 
 ```txt
 POST /api/v1/sync/events.php
@@ -85,6 +85,6 @@ In addition to location and expected-resource records, the gateway accepts:
 - `companion_user.upsert`
 - `companion_user.revoke`
 
-A companion-user upsert requires a CommandBridge `gateway_user_id`, display name, one or more `CIR`/`SAM` roles, at least one authorized location ID, active/non-revoked booleans, a bcrypt `pin_verifier`, and an optional PIN reset timestamp. Each authorized location must already be synchronized for the same incident.
+A companion-user upsert requires a OpenECC `gateway_user_id`, display name, one or more `CIR`/`SAM` roles, at least one authorized location ID, active/non-revoked booleans, a bcrypt `pin_verifier`, and an optional PIN reset timestamp. Each authorized location must already be synchronized for the same incident.
 
 A revoke requires the incident ID and `gateway_user_id`. It immediately disables all location assignments for that user but preserves audit records and prior event attribution. The gateway does not accept plaintext PINs.

@@ -1,9 +1,9 @@
 # OpenECC
 
-> **Command Bridge is now OpenECC.** The project was renamed in November 2026 because other emergency-management
-> products use the name "Command Bridge". Only the name has changed. Folder, service and database names inside an
-> install (such as `/etc/commandbridge`, `command-bridge/` and the `commandbridge-*` services) keep their old names, so
-> existing installs update normally.
+> **Command Bridge is now OpenECC.** The project was renamed in November 2026 (0.9.0-beta.5) because other
+> emergency-management products use the name "Command Bridge". Folders, services and the database have new names too,
+> so an old Command Bridge install can't be updated in place: back it up, install OpenECC fresh and restore. See
+> [openecc/docs/MIGRATING.md](openecc/docs/MIGRATING.md).
 
 OpenECC is free, self-hosted software for an **Emergency Coordination Centre (ECC)**. It supports incident
 documentation, resource coordination, finance and administration tracking, and incident records, using
@@ -22,9 +22,9 @@ your network.
 > of liability (sections 15 and 16), are in [LICENSE.txt](LICENSE.txt).
 
 # Public Demo
-We have put up a public demo page at https://demo.commandbridge.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page lists the ECC positions you can log in as, including the ECC's Incident Commander.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
+We have put up a public demo page at https://demo.openecc.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page lists the ECC positions you can log in as, including the ECC's Incident Commander.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
 
-> **Public beta - version 0.9.0-beta.4 (OpenECC; Check-In Gateway 0.9.0-beta.2).** It is used operationally but has not had wide testing. Test your install,
+> **Public beta - version 0.9.0-beta.5 (OpenECC; Check-In Gateway 0.9.0-beta.3).** It is used operationally but has not had wide testing. Test your install,
 > keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.
 
 ## What OpenECC is (and is not)
@@ -54,7 +54,7 @@ This repository contains two programs that work together:
 
 | Folder | What it is | Where it runs |
 |---|---|---|
-| [`command-bridge/`](command-bridge/) | The main ECC application: users, incidents, ICS forms, resources, ECC display, admin. | **Inside your network.** Does not need to be reachable from the internet. |
+| [`openecc/`](openecc/) | The main ECC application: users, incidents, ICS forms, resources, ECC display, admin. | **Inside your network.** Does not need to be reachable from the internet. |
 | [`checkin-gateway/`](checkin-gateway/) | A small, limited check-in service where Check-In Recorders and Staging Area Managers record arriving resources from a phone (via a QR code or link). Nothing else. | **On a publicly reachable server** (internet-facing, HTTPS). |
 
 You can run OpenECC on its own. The gateway is optional and is only needed when people **outside** your network
@@ -92,8 +92,8 @@ The thick arrow always starts inside your network and points out. No inbound con
 
 ### The timer that polls the gateway
 
-OpenECC installs a systemd timer, `commandbridge-external-checkin-sync.timer`, that fires **once a minute** and runs
-a one-shot worker (`command-bridge/app/bin/external_checkin_sync_worker.php`). Each run:
+OpenECC installs a systemd timer, `openecc-external-checkin-sync.timer`, that fires **once a minute** and runs
+a one-shot worker (`openecc/app/bin/external_checkin_sync_worker.php`). Each run:
 
 1. **Pushes** anything that changed since last time to the gateway: active check-in locations, the *expected resources* for
    each location, and which Check-In Recorder / Staging Area Manager PINs (as bcrypt verifiers, never plain PINs) are authorised where.
@@ -122,11 +122,11 @@ Do you need check-in from outside your network? If not, install only OpenECC.
 
 1. **OpenECC** (internal Debian 12/13 server, root access):
    ```bash
-   cd command-bridge
+   cd openecc
    sudo ./install.sh
    ```
    Guided installer: packages, database, Apache, HTTPS (self-signed by default for internal servers), first administrator.
-   See [command-bridge/docs/INSTALL.md](command-bridge/docs/INSTALL.md).
+   See [openecc/docs/INSTALL.md](openecc/docs/INSTALL.md).
 2. **Check-In Gateway** (separate, publicly reachable Debian 12/13 server with a DNS name such as `checkin.example.ca`):
    ```bash
    cd checkin-gateway
@@ -135,10 +135,10 @@ Do you need check-in from outside your network? If not, install only OpenECC.
    It asks for its address, HTTPS (Let's Encrypt recommended; OpenECC needs a gateway certificate it trusts) and a
    shared secret. See [checkin-gateway/docs/INSTALL.md](checkin-gateway/docs/INSTALL.md).
 3. **Connect them:** either answer *Yes* to the Check-In Gateway question in OpenECC's installer, or run
-   `sudo /var/www/commandbridge/tools/setup_checkin.sh` later. Whichever server you set up first generates the key ID and
+   `sudo /var/www/openecc/tools/setup_checkin.sh` later. Whichever server you set up first generates the key ID and
    secret; you paste them into the other. The script tests the connection and switches the timer on when it passes.
-   Details, including changing the secret later: [command-bridge/docs/EXTERNAL_CHECKIN.md](command-bridge/docs/EXTERNAL_CHECKIN.md).
-4. Run the built-in self-check on OpenECC ([command-bridge/docs/SMOKE_TEST.md](command-bridge/docs/SMOKE_TEST.md)).
+   Details, including changing the secret later: [openecc/docs/EXTERNAL_CHECKIN.md](openecc/docs/EXTERNAL_CHECKIN.md).
+4. Run the built-in self-check on OpenECC ([openecc/docs/SMOKE_TEST.md](openecc/docs/SMOKE_TEST.md)).
 
 Both installers use friendly `whiptail` dialogs on a terminal and plain prompts otherwise; both log to `/var/log/`.
 
@@ -152,7 +152,7 @@ Both installers use friendly `whiptail` dialogs on a terminal and plain prompts 
 
 ```
 OpenECC/
-├── command-bridge/   main ECC application  (install.sh, update.sh, app/, database/, docs/, deploy/)
+├── openecc/   main ECC application  (install.sh, update.sh, app/, database/, docs/, deploy/)
 ├── checkin-gateway/  public check-in gateway (install.sh, update.sh, public/, app/, database/, docs/, deploy/)
 ├── LICENSE.txt       GNU AGPL-3.0
 ├── SECURITY.md
@@ -160,7 +160,7 @@ OpenECC/
 ```
 
 Each folder is self-contained: its own `VERSION`, `CHANGELOG.md`, installer, updater and numbered database migrations.
-Release notes: [command-bridge/CHANGELOG.md](command-bridge/CHANGELOG.md), [checkin-gateway/CHANGELOG.md](checkin-gateway/CHANGELOG.md).
+Release notes: [openecc/CHANGELOG.md](openecc/CHANGELOG.md), [checkin-gateway/CHANGELOG.md](checkin-gateway/CHANGELOG.md).
 Keep both servers on the same release when upgrading.
 
 ## Based on ICS Canada
@@ -176,11 +176,11 @@ to the in-app help.
 
 ### Official forms
 
-OpenECC fills the ICS Canada form templates in `command-bridge/app/assets/pdf/official/`. **We do not yet have
+OpenECC fills the ICS Canada form templates in `openecc/app/assets/pdf/official/`. **We do not yet have
 permission from ICS Canada to use or redistribute these forms.** We hope to have it soon. Until then, the
 forms remain the property of ICS Canada, and the AGPL does not cover them. If you are from ICS Canada and have concerns,
-please open an issue on this repository or email me directly at stephen@thebitbucket.ca. See [command-bridge/docs/FORMS.md](command-bridge/docs/FORMS.md) and
-[command-bridge/THIRD_PARTY.md](command-bridge/THIRD_PARTY.md).
+please open an issue on this repository or email me directly at stephen@thebitbucket.ca. See [openecc/docs/FORMS.md](openecc/docs/FORMS.md) and
+[openecc/THIRD_PARTY.md](openecc/THIRD_PARTY.md).
 
 ## Licence
 

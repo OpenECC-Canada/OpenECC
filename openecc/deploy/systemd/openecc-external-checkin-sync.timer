@@ -1,0 +1,11 @@
+[Unit]
+Description=Run OpenECC external check-in synchronization every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+Persistent=true
+Unit=openecc-external-checkin-sync.service
+
+[Install]
+WantedBy=timers.target

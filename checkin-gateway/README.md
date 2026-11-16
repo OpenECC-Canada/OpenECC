@@ -1,10 +1,10 @@
 # OpenECC Check-In Gateway
 
-> **Public beta (0.9.0-beta.2).** Part of the [OpenECC repository](../README.md); the root README explains how this gateway and the main app work together. Run it on a **publicly reachable** server. Free software under the GNU AGPL-3.0 ([LICENSE.txt](../LICENSE.txt)), provided **as is, without any warranty**: we don't promise it works correctly or suits any particular purpose, and you use it at your own risk (see sections 15 and 16 of the licence).
+> **Public beta (0.9.0-beta.3).** Part of the [OpenECC repository](../README.md); the root README explains how this gateway and the main app work together. Run it on a **publicly reachable** server. Free software under the GNU AGPL-3.0 ([LICENSE.txt](../LICENSE.txt)), provided **as is, without any warranty**: we don't promise it works correctly or suits any particular purpose, and you use it at your own risk (see sections 15 and 16 of the licence).
 
 A limited, privacy-minimized check-in intake service. It is not a remotely reachable copy of OpenECC and not a field system for an Incident Management Team: it only records arrivals and exceptions.
 
-A standalone, English-language public gateway for authorized Check-In Recorders and Staging Area Managers. It receives only the minimal location/expected-resource manifest from CommandBridge through HMAC-authenticated JSON synchronization, records public check-in or exception events locally, and sends those events back through the internal receipt API.
+A standalone, English-language public gateway for authorized Check-In Recorders and Staging Area Managers. It receives only the minimal location/expected-resource manifest from OpenECC through HMAC-authenticated JSON synchronization, records public check-in or exception events locally, and sends those events back through the internal receipt API.
 
 ## Safety boundary
 
@@ -12,16 +12,16 @@ A standalone, English-language public gateway for authorized Check-In Recorders 
 - Unscheduled arrivals are alert events only.
 - Authorized CIR/SAM users can access an active location only through its linked location URL and their individually issued PIN.
 - The gateway receives only the CIR/SAM display name, role, authorized location IDs, active/revoked state, and bcrypt PIN verifier required for gateway-side authorization.
-- Each check-in and exception event is attributed to the authenticated CommandBridge gateway user ID, display name, role, and location.
-- The primary CommandBridge database is never exposed or connected to by this application.
+- Each check-in and exception event is attributed to the authenticated OpenECC gateway user ID, display name, role, and location.
+- The primary OpenECC database is never exposed or connected to by this application.
 
 Install with `sudo ./install.sh` on a separate Debian 12/13 server (see `docs/INSTALL.md`); upgrade with `./update.sh` (`docs/UPDATING.md`). Test in a non-production scenario before enabling operational use.
 
 ## CIR/SAM companion-user synchronization
 
-CommandBridge must send `companion_user.upsert` for each active, non-revoked CIR/SAM user with at least one authorized active check-in location. The gateway accepts the synchronized bcrypt `pin_verifier`, but never receives or stores a plaintext PIN.
+OpenECC must send `companion_user.upsert` for each active, non-revoked CIR/SAM user with at least one authorized active check-in location. The gateway accepts the synchronized bcrypt `pin_verifier`, but never receives or stores a plaintext PIN.
 
-A `companion_user.revoke` event immediately disables that user’s gateway access while retaining the gateway audit history. New and existing deployments must apply the gateway database migration before the CommandBridge companion-user backfill/worker is enabled.
+A `companion_user.revoke` event immediately disables that user’s gateway access while retaining the gateway audit history. New and existing deployments must apply the gateway database migration before the OpenECC companion-user backfill/worker is enabled.
 
 The shared location access-code hash remains in the location synchronization record for transition compatibility only; it is not used by the CIR/SAM PIN sign-in flow.
 

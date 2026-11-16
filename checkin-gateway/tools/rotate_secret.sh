@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Check-In Gateway: install a new shared secret from OpenECC.  Run as root:
-#     sudo /var/www/commandbridge-gateway/tools/rotate_secret.sh
+#     sudo /var/www/openecc-gateway/tools/rotate_secret.sh
 #
 # Start the rotation on OpenECC (sudo <install folder>/tools/rotate_checkin_secret.sh). It pauses sync,
 # creates the new key ID and secret, and tells you to run this script. Here you type the new key ID and paste
@@ -8,12 +8,12 @@
 # still answers. Back on OpenECC, the rotation script then tests the connection and resumes sync.
 # Check-ins submitted meanwhile wait safely on the gateway.
 #
-# To put the previous values back:  sudo cp <backup file shown at the end> /etc/commandbridge/checkin_gateway.env
+# To put the previous values back:  sudo cp <backup file shown at the end> /etc/openecc/checkin_gateway.env
 set -Eeuo pipefail
 
 TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$TOOLS_DIR")"
-ENV_FILE=/etc/commandbridge/checkin_gateway.env
+ENV_FILE=/etc/openecc/checkin_gateway.env
 WEB_USER=www-data
 
 # shellcheck disable=SC1091
@@ -31,7 +31,7 @@ env_set() {  # env_set KEY VALUE   (VALUE is restricted to [A-Za-z0-9+/=._:-], s
 }
 
 OLD_KEY_ID="$(env_get EXTERNAL_CHECKIN_HMAC_KEY_ID)"
-SUGGEST="${OLD_KEY_ID:-commandbridge-1}"
+SUGGEST="${OLD_KEY_ID:-openecc-1}"
 if [[ $SUGGEST =~ ^(.*[^0-9])([0-9]+)$ ]]; then SUGGEST="${BASH_REMATCH[1]}$(( BASH_REMATCH[2] + 1 ))"; else SUGGEST="$SUGGEST-2"; fi
 
 ui_msg "New shared secret" "This replaces the key ID and shared secret the gateway uses to recognise OpenECC.\n\nCurrent key ID: ${OLD_KEY_ID:-(none)}\n\nHave the new key ID and secret from OpenECC's rotation screen ready. Sync from OpenECC is refused until both servers have the same new values."
@@ -62,7 +62,7 @@ if [ "$(env_get GATEWAY_SYNC_ENABLED)" != 1 ]; then
 fi
 
 # The settings file is read on every request, so no restart is needed. Make sure the gateway still answers.
-SERVER_NAME="$(sed -n 's/^SERVER_NAME=//p' /etc/commandbridge/gateway-install.conf 2>/dev/null | tail -1 || true)"
+SERVER_NAME="$(sed -n 's/^SERVER_NAME=//p' /etc/openecc/gateway-install.conf 2>/dev/null | tail -1 || true)"
 HEALTH="$(curl -ksS --max-time 10 ${SERVER_NAME:+-H "Host: $SERVER_NAME"} https://127.0.0.1/health.php 2>&1 || true)"
 case "$HEALTH" in *'"ok":true'*) HEALTH_LINE="ok   The gateway is answering (health.php)." ;; *) HEALTH_LINE="warn health.php did not answer as expected: $HEALTH" ;; esac
 

@@ -1,6 +1,6 @@
 # Clock check shared by the OpenECC and Check-In Gateway installers (source this file).
 # OpenECC and the gateway sign every request with the current time and reject requests more than
-# 5 minutes old, so both servers need an accurate clock. Keep the copies in command-bridge/ and
+# 5 minutes old, so both servers need an accurate clock. Keep the copies in openecc/ and
 # checkin-gateway/ identical.
 
 # timesync_packages  -> prints "systemd-timesyncd" when no time-sync service is installed yet.
