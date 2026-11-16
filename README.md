@@ -1,6 +1,6 @@
 # OpenECC
 
-> **Command Bridge is now OpenECC.** The project was renamed in November 2026 (0.9.0-beta.5) because other
+> **Command Bridge is now OpenECC.** The project was renamed in November 2026 (version 0.9.0) because other
 > emergency-management products use the name "Command Bridge". Folders, services and the database have new names too,
 > so an old Command Bridge install can't be updated in place: back it up, install OpenECC fresh and restore. See
 > [openecc/docs/MIGRATING.md](openecc/docs/MIGRATING.md).
@@ -24,7 +24,7 @@ your network.
 # Public Demo
 We have put up a public demo page at https://demo.openecc.ca.  This has a fictional incident in progress.  You can do just about everything except change system settings.  The main page lists the ECC positions you can log in as, including the ECC's Incident Commander.  The data gets reset every 60 minutes.  All of the data in this sample incident has been randomly generated and is for testing and demonstration purposes.  There is still a long way to go to finish this project but I think this is a good starting point.
 
-> **Public beta - version 0.9.0-beta.5 (OpenECC; Check-In Gateway 0.9.0-beta.3).** It is used operationally but has not had wide testing. Test your install,
+> **Public beta - version 0.9.0 (OpenECC and Check-In Gateway).** It is used operationally but has not had wide testing. Test your install,
 > keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.
 
 ## What OpenECC is (and is not)

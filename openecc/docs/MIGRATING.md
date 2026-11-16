@@ -1,6 +1,6 @@
 # Moving from Command Bridge to OpenECC
 
-Command Bridge was renamed **OpenECC** in 0.9.0-beta.5. The rename includes the names inside an install: folders,
+Command Bridge was renamed **OpenECC** in version 0.9.0. The rename includes the names inside an install: folders,
 services, the database and its user, Apache sites and logs. An old Command Bridge install can't be updated in place.
 `update.sh` and `install.sh` stop with a message pointing here if they find one.
 

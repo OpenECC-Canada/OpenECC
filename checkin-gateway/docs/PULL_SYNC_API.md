@@ -34,7 +34,7 @@ The HMAC key is `EXTERNAL_CHECKIN_HMAC_SECRET`. The internal poller must validat
 Read-only: it never leases, changes or deletes events. A `200` answer proves the key ID, secret and clocks match:
 
 ```json
-{"ok":true,"gateway_version":"0.9.0-beta.3","server_time":1794588650,"delivery_mode":"pull","checkins_waiting":2,"checkins_stuck":0}
+{"ok":true,"gateway_version":"0.9.0","server_time":1794588650,"delivery_mode":"pull","checkins_waiting":2,"checkins_stuck":0}
 ```
 
 `checkins_stuck` counts check-ins that are no longer offered (attempts used up, or rejected); re-send them on the gateway with

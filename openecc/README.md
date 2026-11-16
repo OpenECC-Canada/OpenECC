@@ -18,7 +18,7 @@ Post / Incident Management Team; it is not a field system for them. See
 > way of working without it, such as paper forms. The full terms, including the disclaimer of warranty and limitation
 > of liability (sections 15 and 16), are in [LICENSE.txt](../LICENSE.txt).
 
-> **Status: public beta (0.9.0-beta.5).** It is used operationally but has not had wide testing.
+> **Status: public beta (0.9.0).** It is used operationally but has not had wide testing.
 > Test your install, keep backups, and read [SECURITY.md](SECURITY.md) before putting real incident data in it.
 
 * PHP 8 + MariaDB on Apache, no framework, no cloud dependency

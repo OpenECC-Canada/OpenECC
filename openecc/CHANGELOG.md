@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.9.0-beta.5 (2026-11-16)
+## 0.9.0 (2026-11-16)
+
+Version numbers drop the "-beta.N" ending from here on: 0.9.0, then 0.9.1, 0.9.2 and so on. OpenECC and the
+Check-In Gateway (which keeps its own version number) both start at 0.9.0. The project is still a public beta.
 
 ### Renamed: Command Bridge is now OpenECC
 Other emergency-management products use the name "Command Bridge". **An old Command Bridge install can't be updated
