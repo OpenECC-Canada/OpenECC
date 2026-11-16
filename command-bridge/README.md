@@ -1,14 +1,14 @@
-# Command Bridge (main application)
+# OpenECC (main application)
 
-Part of the [Command Bridge repository](../README.md), which also contains the optional public [Check-In Gateway](../checkin-gateway/). The root README explains how the two work together.
+Part of the [OpenECC repository](../README.md), which also contains the optional public [Check-In Gateway](../checkin-gateway/). The root README explains how the two work together.
 
-Command Bridge is a self-hosted web application for an Emergency Coordination Centre (ECC): incident and
+OpenECC is a self-hosted web application for an Emergency Coordination Centre (ECC): incident and
 operational-period setup, the ECC organization, ICS-compatible forms with sign-off and PDF export, resource and
 facility tracking, finance and administration, check-in, and an ECC display. It supports the on-scene Incident Command
 Post / Incident Management Team; it is not a field system for them. See
-[What Command Bridge is (and is not)](../README.md#what-command-bridge-is-and-is-not).
+[What OpenECC is (and is not)](../README.md#what-command-bridge-is-and-is-not).
 
-> **Free software, with no warranty.** Command Bridge is free software: you may use, copy, change and share it under
+> **Free software, with no warranty.** OpenECC is free software: you may use, copy, change and share it under
 > the terms of the [GNU Affero General Public License v3.0](../LICENSE.txt) (AGPL-3.0). It is provided **as is, without
 > any warranty**. We don't promise that it works correctly, that it is free of errors, or that it is suitable for any
 > particular purpose, including emergency management. You use it at your own risk. As far as the law allows, the
@@ -24,7 +24,7 @@ Post / Incident Management Team; it is not a field system for them. See
 * PHP 8 + MariaDB on Apache, no framework, no cloud dependency
 * ICS Canada form templates filled and flattened to PDF with `pdftk`
 * Local accounts (password for administrators, 6-digit PIN for incident staff); optional Microsoft Entra sign-in
-* Optional public check-in gateway ([`../checkin-gateway`](../checkin-gateway/)): Command Bridge polls it from inside your network once a minute
+* Optional public check-in gateway ([`../checkin-gateway`](../checkin-gateway/)): OpenECC polls it from inside your network once a minute
 
 ## Requirements
 
@@ -58,11 +58,11 @@ database migrations. See [docs/UPDATING.md](docs/UPDATING.md).
 
 ## Source
 
-https://github.com/PhantomNomad/CommandBridge
+https://github.com/OpenECC-Canada/OpenECC
 
 ## Licence
 
-Command Bridge is free software under the **GNU Affero General Public License v3.0** (AGPL-3.0). If you run a
+OpenECC is free software under the **GNU Affero General Public License v3.0** (AGPL-3.0). If you run a
 modified version for users over a network you must offer them the corresponding source. It comes with **no warranty**
 (see the notice at the top of this file). See `LICENSE.txt` and
 [THIRD_PARTY.md](THIRD_PARTY.md) for bundled components and the ICS Canada forms.

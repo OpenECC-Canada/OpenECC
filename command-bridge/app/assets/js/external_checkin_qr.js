@@ -1,5 +1,5 @@
 /*
- * CommandBridge local QR generator.
+ * OpenECC local QR generator.
  *
  * Derived from QRCode for JavaScript by Kazuhiko Arase.
  * Copyright (c) 2009 Kazuhiko Arase.

@@ -132,12 +132,12 @@ function gateway_render_header(string $title): void {
     $title = gateway_h($title);
     echo <<<HTML
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{$title} | Command Bridge Check-In</title><link rel="stylesheet" href="/assets/app.css"></head>
-<body><main class="container"><header><p class="eyebrow">Command Bridge</p><h1>{$title}</h1></header>
+<title>{$title} | OpenECC Check-In</title><link rel="stylesheet" href="/assets/app.css"></head>
+<body><main class="container"><header><p class="eyebrow">OpenECC</p><h1>{$title}</h1></header>
 HTML;
 }
 function gateway_render_footer(): void {
-    echo '<footer class="muted" style="margin-top:24px;font-size:.85em">Command Bridge Check-In Gateway ' . gateway_h(GATEWAY_VERSION)
+    echo '<footer class="muted" style="margin-top:24px;font-size:.85em">OpenECC Check-In Gateway ' . gateway_h(GATEWAY_VERSION)
         . ' &middot; free software under the GNU AGPL-3.0 &middot; <a href="' . gateway_h(GATEWAY_SOURCE_URL) . '">source code</a></footer></main></body></html>';
 }
 function gateway_render_error(int $status, string $message): never {

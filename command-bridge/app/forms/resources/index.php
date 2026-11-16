@@ -934,7 +934,7 @@ try {
               </tbody>
             </table>
             <p class="small"><strong>ICS 221</strong> prints a Demobilization Check-Out for a resource being released, filled in with what
-              Command Bridge knows. The units that must sign it out are ticked; their signatures, transport and notifications are done by hand.</p>
+              OpenECC knows. The units that must sign it out are ticked; their signatures, transport and notifications are done by hand.</p>
           <?php endif; ?>
         </div>
 

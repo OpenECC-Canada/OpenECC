@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Check-In Gateway: install a new shared secret from Command Bridge.  Run as root:
+# Check-In Gateway: install a new shared secret from OpenECC.  Run as root:
 #     sudo /var/www/commandbridge-gateway/tools/rotate_secret.sh
 #
-# Start the rotation on Command Bridge (sudo <install folder>/tools/rotate_checkin_secret.sh). It pauses sync,
+# Start the rotation on OpenECC (sudo <install folder>/tools/rotate_checkin_secret.sh). It pauses sync,
 # creates the new key ID and secret, and tells you to run this script. Here you type the new key ID and paste
 # the secret (hidden). This script backs up the settings file, writes the new values and checks the gateway
-# still answers. Back on Command Bridge, the rotation script then tests the connection and resumes sync.
+# still answers. Back on OpenECC, the rotation script then tests the connection and resumes sync.
 # Check-ins submitted meanwhile wait safely on the gateway.
 #
 # To put the previous values back:  sudo cp <backup file shown at the end> /etc/commandbridge/checkin_gateway.env
@@ -34,14 +34,14 @@ OLD_KEY_ID="$(env_get EXTERNAL_CHECKIN_HMAC_KEY_ID)"
 SUGGEST="${OLD_KEY_ID:-commandbridge-1}"
 if [[ $SUGGEST =~ ^(.*[^0-9])([0-9]+)$ ]]; then SUGGEST="${BASH_REMATCH[1]}$(( BASH_REMATCH[2] + 1 ))"; else SUGGEST="$SUGGEST-2"; fi
 
-ui_msg "New shared secret" "This replaces the key ID and shared secret the gateway uses to recognise Command Bridge.\n\nCurrent key ID: ${OLD_KEY_ID:-(none)}\n\nHave the new key ID and secret from Command Bridge's rotation screen ready. Sync from Command Bridge is refused until both servers have the same new values."
+ui_msg "New shared secret" "This replaces the key ID and shared secret the gateway uses to recognise OpenECC.\n\nCurrent key ID: ${OLD_KEY_ID:-(none)}\n\nHave the new key ID and secret from OpenECC's rotation screen ready. Sync from OpenECC is refused until both servers have the same new values."
 
-ui_ask NEW_KEY_ID "New key ID" "Key ID shown on Command Bridge:" "$SUGGEST"
+ui_ask NEW_KEY_ID "New key ID" "Key ID shown on OpenECC:" "$SUGGEST"
 [[ $NEW_KEY_ID =~ ^[A-Za-z0-9._:-]{3,64}$ ]] || die "Key ID must be 3-64 characters (letters, digits . _ : -)."
 ui_pass NEW_SECRET "Paste the new shared secret (hidden)"
 NEW_SECRET="$(printf '%s' "$NEW_SECRET" | tr -d '[:space:]')"
 [ "${#NEW_SECRET}" -ge 32 ] || die "The shared secret must be at least 32 characters. Nothing was changed."
-[[ $NEW_SECRET =~ ^[A-Za-z0-9+/=._:-]+$ ]] || die "The shared secret contains characters that are not allowed. Copy it again from Command Bridge. Nothing was changed."
+[[ $NEW_SECRET =~ ^[A-Za-z0-9+/=._:-]+$ ]] || die "The shared secret contains characters that are not allowed. Copy it again from OpenECC. Nothing was changed."
 [ "$NEW_SECRET" != "$(env_get EXTERNAL_CHECKIN_HMAC_SECRET)" ] || die "That is the secret the gateway already has. Nothing was changed."
 
 ui_yesno "Confirm" "Replace key ID '${OLD_KEY_ID:-none}' with '$NEW_KEY_ID' and install the new secret?" y || { echo "Cancelled. Nothing was changed." >&3; exit 1; }
@@ -54,10 +54,10 @@ chown root:"$WEB_USER" "$ENV_FILE"; chmod 0640 "$ENV_FILE"
 
 SYNC_NOTE=""
 if [ "$(env_get GATEWAY_SYNC_ENABLED)" != 1 ]; then
-    if ui_yesno "Sync is switched off" "GATEWAY_SYNC_ENABLED is not 1, so the gateway refuses Command Bridge entirely.\n\nSwitch sync on now?" y; then
+    if ui_yesno "Sync is switched off" "GATEWAY_SYNC_ENABLED is not 1, so the gateway refuses OpenECC entirely.\n\nSwitch sync on now?" y; then
         env_set GATEWAY_SYNC_ENABLED 1
     else
-        SYNC_NOTE="Sync is still switched OFF on the gateway (GATEWAY_SYNC_ENABLED=0), so the test on Command Bridge will fail until you set it to 1."
+        SYNC_NOTE="Sync is still switched OFF on the gateway (GATEWAY_SYNC_ENABLED=0), so the test on OpenECC will fail until you set it to 1."
     fi
 fi
 
@@ -66,7 +66,7 @@ SERVER_NAME="$(sed -n 's/^SERVER_NAME=//p' /etc/commandbridge/gateway-install.co
 HEALTH="$(curl -ksS --max-time 10 ${SERVER_NAME:+-H "Host: $SERVER_NAME"} https://127.0.0.1/health.php 2>&1 || true)"
 case "$HEALTH" in *'"ok":true'*) HEALTH_LINE="ok   The gateway is answering (health.php)." ;; *) HEALTH_LINE="warn health.php did not answer as expected: $HEALTH" ;; esac
 
-MSG="New key ID '$NEW_KEY_ID' and secret installed on the gateway.\n\n$HEALTH_LINE\n\nPrevious settings saved to:\n    $BACKUP\n(To undo: sudo cp $BACKUP $ENV_FILE)\n\nNow go back to Command Bridge and let the rotation script test the connection. It resumes sync when the test passes."
+MSG="New key ID '$NEW_KEY_ID' and secret installed on the gateway.\n\n$HEALTH_LINE\n\nPrevious settings saved to:\n    $BACKUP\n(To undo: sudo cp $BACKUP $ENV_FILE)\n\nNow go back to OpenECC and let the rotation script test the connection. It resumes sync when the test passes."
 [ -n "$SYNC_NOTE" ] && MSG="$MSG\n\n$SYNC_NOTE"
 ui_msg "Done on the gateway" "$MSG"
 [ "$UI_WT" = 1 ] && printf '%b\n' "$MSG" >&3

@@ -1,6 +1,6 @@
 # Email delivery
 
-Command Bridge sends email when an administrator creates a user (their username and PIN), resets a PIN, or uses
+OpenECC sends email when an administrator creates a user (their username and PIN), resets a PIN, or uses
 **Email user** on the Users page. All of it goes out through the one method chosen on this page.
 Only system administrators can change these settings.
 
@@ -25,7 +25,7 @@ All methods need this server to reach the internet: outbound HTTPS (port 443) to
 
 ## Microsoft Graph
 
-Command Bridge signs in as an *app* (no user password) and sends through the Microsoft Graph API. You need someone who
+OpenECC signs in as an *app* (no user password) and sends through the Microsoft Graph API. You need someone who
 can register apps in Microsoft Entra and run Exchange Online PowerShell (an Exchange or Global Administrator).
 
 ### 1. Choose the mailbox to send from
@@ -36,7 +36,7 @@ people go somewhere your team can read. Create it in the Exchange admin center i
 ### 2. Register the app
 
 1. In the [Microsoft Entra admin center](https://entra.microsoft.com), open **App registrations** > **New registration**.
-2. Name it, for example *Command Bridge email*. Leave *Accounts in this organizational directory only*. No redirect URI.
+2. Name it, for example *OpenECC email*. Leave *Accounts in this organizational directory only*. No redirect URI.
 3. On the app's **Overview**, copy the **Application (client) ID** and **Directory (tenant) ID**.
 4. Open **Certificates & secrets** > **New client secret**. Pick an expiry (24 months at most) and copy the
    **Value** straight away. It is shown only once. The *Secret ID* is not the secret.
@@ -54,9 +54,9 @@ the ExchangeOnlineManagement module:
 
 ```
 Connect-ExchangeOnline
-New-ServicePrincipal -AppId <Application ID> -ObjectId <Object ID> -DisplayName "Command Bridge email"
-New-ManagementScope -Name "Command Bridge sender" -RecipientRestrictionFilter "PrimarySmtpAddress -eq 'commandbridge@example.ca'"
-New-ManagementRoleAssignment -App <Application ID> -Role "Application Mail.Send" -CustomResourceScope "Command Bridge sender"
+New-ServicePrincipal -AppId <Application ID> -ObjectId <Object ID> -DisplayName "OpenECC email"
+New-ManagementScope -Name "OpenECC sender" -RecipientRestrictionFilter "PrimarySmtpAddress -eq 'commandbridge@example.ca'"
+New-ManagementRoleAssignment -App <Application ID> -Role "Application Mail.Send" -CustomResourceScope "OpenECC sender"
 Test-ServicePrincipalAuthorization -Identity <Application ID> -Resource commandbridge@example.ca
 ```
 
@@ -83,7 +83,7 @@ Press **Save and send test email**.
 
 ## SMTP OAuth2 (Microsoft 365)
 
-Command Bridge signs in to Microsoft 365's SMTP server with an app token instead of a password. This is Microsoft's
+OpenECC signs in to Microsoft 365's SMTP server with an app token instead of a password. This is Microsoft's
 supported way to keep using SMTP. It needs the same kind of administrator as Graph.
 
 1. Choose the mailbox to send from (a shared mailbox is fine) and register the app with a client secret, exactly as in
@@ -94,7 +94,7 @@ supported way to keep using SMTP. It needs the same kind of administrator as Gra
 
 ```
 Connect-ExchangeOnline
-New-ServicePrincipal -AppId <Application ID> -ObjectId <Object ID> -DisplayName "Command Bridge email"
+New-ServicePrincipal -AppId <Application ID> -ObjectId <Object ID> -DisplayName "OpenECC email"
 Add-MailboxPermission -Identity commandbridge@example.ca -User <Object ID> -AccessRights FullAccess
 Set-CASMailbox -Identity commandbridge@example.ca -SmtpClientAuthenticationDisabled $false
 ```
@@ -120,7 +120,7 @@ New permissions can take up to an hour to work. A brand-new mailbox can take lon
 
 ## SMTP username and password
 
-Command Bridge signs in to an SMTP server with a username and password (`AUTH LOGIN`), always over an encrypted
+OpenECC signs in to an SMTP server with a username and password (`AUTH LOGIN`), always over an encrypted
 connection unless the server is this machine.
 
 ### Google Workspace and Gmail
@@ -140,7 +140,7 @@ Google no longer accepts the normal account password from apps. You need an **ap
 | Password | the app password (the spaces do not matter) |
 | Sender email address | the same address, or an alias set up in Gmail |
 
-Google limits how many messages an account can send per day. That is far more than Command Bridge normally sends.
+Google limits how many messages an account can send per day. That is far more than OpenECC normally sends.
 
 ### Your internet or web hosting provider
 
@@ -154,13 +154,13 @@ and fails for accounts protected by multi-factor sign-in. Use [Microsoft Graph](
 
 ## SMTP relay without authentication
 
-Command Bridge hands email to a relay without signing in. The relay must then decide who is allowed to use it, usually by
+OpenECC hands email to a relay without signing in. The relay must then decide who is allowed to use it, usually by
 IP address. That is only safe when nobody else can reach it.
 
 - **A relay on this server** (for example Postfix set to accept mail only from this machine): host `localhost`, port
   `25`, encryption *None*. This is the one case where "no authentication" is a good choice.
 - **A relay elsewhere** (for example an on-premises Exchange receive connector that accepts this server's IP address):
-  Command Bridge asks you to tick a box confirming the relay accepts mail only from this server. If any other computer
+  OpenECC asks you to tick a box confirming the relay accepts mail only from this server. If any other computer
   can also send through it, anyone on your network can send email that looks like it came from you.
 
 > **Warning:** Never point "no authentication" at your organization's public mail server, or at a relay that accepts
@@ -183,13 +183,13 @@ mail server accepted it. If it does not arrive within a few minutes, check the r
 | Microsoft Graph settings are incomplete | A Graph field is empty. Saved secrets show as "Saved — leave blank to retain". |
 
 More detail is written to the server's error log (`/var/log/apache2/commandbridge-error.log`), on lines starting
-`Command Bridge email:`.
+`OpenECC email:`.
 
 ## Good practice
 
 - Send from a dedicated or shared mailbox, not a person's own mailbox.
 - Record who created the app registration and when its secret expires.
-- Secrets are stored in the Command Bridge database and are never shown again on this page. To replace one, type the
+- Secrets are stored in the OpenECC database and are never shown again on this page. To replace one, type the
   new value and save; leaving the field blank keeps the saved one.
 
 ## ICS 213 messages

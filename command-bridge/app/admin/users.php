@@ -466,7 +466,7 @@ render_header('Users / Roles');
     </div>
     <div id="companion_checkin_create_access" class="card" style="display:none; margin-top:16px;">
       <h3>Companion Check-In Access (CIR / SAM)</h3>
-      <p class="small">Choose the locations where this CIR/SAM user may check in resources. The user's single CommandBridge PIN will also be used for Companion Check-In.</p>
+      <p class="small">Choose the locations where this CIR/SAM user may check in resources. The user's single OpenECC PIN will also be used for Companion Check-In.</p>
       <div class="grid">
         <div>
           <label>Authorized Check-In Locations</label>

@@ -1,8 +1,8 @@
 # ICS 213RR - Resource Request
 
-The ICS 213RR is how anyone on the incident asks for a resource: people, equipment, supplies or services. Command Bridge follows each request from the person who needs it, through approval, Logistics ordering it, arrival and check-in, and Finance review, until it is closed and filed.
+The ICS 213RR is how anyone on the incident asks for a resource: people, equipment, supplies or services. OpenECC follows each request from the person who needs it, through approval, Logistics ordering it, arrival and check-in, and Finance review, until it is closed and filed.
 
-The ICS Canada Forms Catalogue (2022) doesn't include the 213RR, so this page describes how Command Bridge handles it. Follow your agency's ordering procedures for spending limits and who may approve what.
+The ICS Canada Forms Catalogue (2022) doesn't include the 213RR, so this page describes how OpenECC handles it. Follow your agency's ordering procedures for spending limits and who may approve what.
 
 ## The steps
 

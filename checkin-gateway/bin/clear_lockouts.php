@@ -18,7 +18,7 @@ declare(strict_types=1);
  * Clearing removes failure records only. It does not change who is authorized,
  * and the action is written to the gateway audit log.
  *
- * A forgotten or compromised PIN is fixed in Command Bridge (Users > Reset PIN);
+ * A forgotten or compromised PIN is fixed in OpenECC (Users > Reset PIN);
  * the new PIN reaches the gateway on the next synchronization.
  */
 

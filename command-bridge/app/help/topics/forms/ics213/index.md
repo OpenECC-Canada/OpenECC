@@ -74,7 +74,7 @@ On the message you'll find an **Email** list of everyone it was sent to, when an
 
 **Resend** tries one again. **Send to more people** emails it to anyone else later; this needs your approver's OK too, unless you are the IC.
 
-**Bounces:** if an address is wrong or a mailbox is full, the "undeliverable" notice comes back later to Command Bridge's own sending mailbox (the one set up in [Email Delivery](help:admin/smtp)), not to this page. Ask whoever looks after that mailbox to watch for bounces during an incident.
+**Bounces:** if an address is wrong or a mailbox is full, the "undeliverable" notice comes back later to OpenECC's own sending mailbox (the one set up in [Email Delivery](help:admin/smtp)), not to this page. Ask whoever looks after that mailbox to watch for bounces during an incident.
 
 ## Replying
 
@@ -86,5 +86,5 @@ Once the message has been sent, open it and fill in **8. Reply**, **Reply By**, 
 
 - When you pick a position in **2. To**, the message shows up in that person's **My action items** on the dashboard once it is sent. Opening the message clears the notice. An approval request stays until the approver acts on it.
 - The ICS 213 isn't part of the operational period sign-off: messages don't appear in the forms that still need signing.
-- Command Bridge doesn't read anyone's mailbox. Replies sent by email arrive in the sender's inbox and are typed in by hand, as described above.
+- OpenECC doesn't read anyone's mailbox. Replies sent by email arrive in the sender's inbox and are typed in by hand, as described above.
 - To order resources, use the [ICS 213RR](help:forms/ics213rr_v2/index) instead. It follows the request through approval, ordering and delivery.

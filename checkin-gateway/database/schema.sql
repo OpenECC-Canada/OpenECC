@@ -1,4 +1,4 @@
--- Command Bridge Check-In Gateway database schema (baseline for 0.9.0-beta.1)
+-- OpenECC Check-In Gateway database schema (baseline for 0.9.0-beta.1)
 -- Applied once by install.sh into an EMPTY, separate gateway database. Structure only, no data.
 -- Later changes ship as numbered files in database/migrations/.
 SET NAMES utf8mb4;

@@ -12,5 +12,5 @@
 
 The PDF templates in `app/assets/pdf/official/` are based on the Incident Command System forms published by
 ICS Canada (<https://www.icscanada.ca>). They are included with permission to redistribute. Some have been made
-fillable or adjusted by Command Bridge (see `docs/forms-manifest.json`). The forms remain the property of their
+fillable or adjusted by OpenECC (see `docs/forms-manifest.json`). The forms remain the property of their
 owners and are not covered by this project's AGPL-3.0 licence. See [docs/FORMS.md](docs/FORMS.md).

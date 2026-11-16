@@ -459,7 +459,7 @@ function sync_user_checkin_records(int $incidentId, int $userId, bool $include20
 
 /**
  * CIR/SAM Companion Check-In access is incident-specific. The user's
- * CommandBridge PIN is the only PIN stored; authorization and permitted
+ * OpenECC PIN is the only PIN stored; authorization and permitted
  * locations remain separate from the PIN credential.
  */
 function companion_checkin_role_codes(): array {

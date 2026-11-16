@@ -33,7 +33,7 @@ $usesEntra = !$isSysadmin && (($user['auth_provider'] ?? 'local') === 'entra');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($usesEntra) {
-        flash('error', 'Microsoft Entra credentials are managed outside Command Bridge.');
+        flash('error', 'Microsoft Entra credentials are managed outside OpenECC.');
         header('Location: ' . app_url('/account.php'));
         exit;
     }

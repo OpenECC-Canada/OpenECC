@@ -11,8 +11,8 @@ if (!defined('APP_BASE_URL')) {
 }
 
 if (!defined('APP_NAME')) {
-    define('APP_NAME', 'Command Bridge');
-    define('APP_SHORT_NAME', 'Command Bridge');
+    define('APP_NAME', 'OpenECC');
+    define('APP_SHORT_NAME', 'OpenECC');
     define('APP_ORG_NAME', 'Organization');
     define('APP_CUSTOM_LOGO', '/assets/img/command-bridge-icon.svg');
 }

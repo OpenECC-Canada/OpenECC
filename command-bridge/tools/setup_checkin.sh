@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Connect Command Bridge to a Check-In Gateway, test the connection and switch sync on or off.  Run as root:
+# Connect OpenECC to a Check-In Gateway, test the connection and switch sync on or off.  Run as root:
 #
 #     sudo <install folder>/tools/setup_checkin.sh            set up or change the connection (menu)
 #     sudo <install folder>/tools/setup_checkin.sh --test     test it; offers to switch sync on if it is off
@@ -34,15 +34,15 @@ case "${1:-}" in
 esac
 
 [ "$(id -u)" -eq 0 ] || { echo "Run as root: sudo $0 ${1:-}" >&2; exit 1; }
-[ -f "$CONF" ] || { echo "$CONF not found. Is Command Bridge installed on this server (install.sh)?" >&2; exit 1; }
+[ -f "$CONF" ] || { echo "$CONF not found. Is OpenECC installed on this server (install.sh)?" >&2; exit 1; }
 # shellcheck disable=SC1090
 . "$CONF"
 APP_DIR="$INSTALL_DIR/app"
-[ -d "$APP_DIR" ] || { echo "Command Bridge app folder $APP_DIR not found." >&2; exit 1; }
-[ -f "$APP_DIR/bin/external_checkin_ping.php" ] || { echo "This Command Bridge is too old for this script. Update it first (update.sh), then run $INSTALL_DIR/tools/setup_checkin.sh." >&2; exit 1; }
+[ -d "$APP_DIR" ] || { echo "OpenECC app folder $APP_DIR not found." >&2; exit 1; }
+[ -f "$APP_DIR/bin/external_checkin_ping.php" ] || { echo "This OpenECC is too old for this script. Update it first (update.sh), then run $INSTALL_DIR/tools/setup_checkin.sh." >&2; exit 1; }
 
 exec 3>&1
-ui_init "Command Bridge - Check-In Gateway"
+ui_init "OpenECC - Check-In Gateway"
 
 show_secret_screen() {  # terminal only; never logged
     local f; f="$(mktemp)"; chmod 600 "$f"
@@ -62,7 +62,7 @@ do_test() {
         ui_msg "Connection test passed" "$test_out\n\nCheck-in sync is on (the timer polls the gateway every minute)."
     elif [ "$CHK_PING_OK" = 1 ]; then
         if ui_yesno "Connection test passed" "$test_out\n\nCheck-in sync is OFF. Switch it on now?\n\nThis queues the current locations, expected resources and CIR/SAM users for the gateway, then starts the timer that polls every minute." y; then
-            if chk_enable; then ui_msg "Check-in sync is on" "The gateway is polled every minute. Watch it in Command Bridge under Admin > Sync status, or with:\n    journalctl -u $CHK_SERVICE -n 20"
+            if chk_enable; then ui_msg "Check-in sync is on" "The gateway is polled every minute. Watch it in OpenECC under Admin > Sync status, or with:\n    journalctl -u $CHK_SERVICE -n 20"
             else ui_msg "Problem" "Sync could not be switched on completely. See the messages above."; return 1; fi
         fi
     else

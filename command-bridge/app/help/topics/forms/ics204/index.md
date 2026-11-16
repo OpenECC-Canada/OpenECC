@@ -3,7 +3,7 @@
 The ICS 204 tells a Division or Group supervisor what their part of the incident is doing this operational period: who is in charge, which resources they have, what work they are to do, special instructions and how to communicate. It is part of the Incident Action Plan (IAP).
 
 - **Usually prepared by:** the Resources Unit, using the [ICS 202](help:forms/ics202/index) objectives, the operational planning worksheet and direction from the Operations Section Chief.
-- **Approved by:** ICS Canada says the Incident Commander approves it, ideally after the Planning and Operations Section Chiefs have reviewed it. In Command Bridge the Planning Section Chief approves it (see below).
+- **Approved by:** ICS Canada says the Incident Commander approves it, ideally after the Planning and Operations Section Chiefs have reviewed it. In OpenECC the Planning Section Chief approves it (see below).
 - **Who gets it:** everyone who receives the IAP, especially the Division or Group named on it. The approved original goes to the Documentation Unit.
 
 General steps for saving and printing are in [Working with ICS forms](help:forms/working_with_forms).
@@ -29,4 +29,4 @@ General steps for saving and printing are in [Working with ICS forms](help:forms
 2. The Incident Commander, a SysAdmin or the Resources Unit Leader presses **Submit**.
 3. The Planning Section Chief gets a dashboard notification and presses **Approve ICS 204 (Planning Section Chief)**. Until then the form shows "Waiting for Planning Section Chief approval".
 
-> Command Bridge currently keeps **one** ICS 204 for the incident. If you have several Divisions or Groups, list them in Block 2 and separate their resources and assignments clearly, or attach extra pages, until separate 204s per Division are supported.
+> OpenECC currently keeps **one** ICS 204 for the incident. If you have several Divisions or Groups, list them in Block 2 and separate their resources and assignments clearly, or attach extra pages, until separate 204s per Division are supported.

@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (($_POST['action'] ?? 'save') === 'test') {
             $result = app_send_mail_result(
                 trim($_POST['test_email'] ?? ''),
-                'Command Bridge email delivery test',
-                'This is a test email from Command Bridge.'
+                'OpenECC email delivery test',
+                'This is a test email from OpenECC.'
             );
 
             if (!$result['ok']) {
@@ -132,7 +132,7 @@ settings_menu('smtp');
 <div class="page-header">
   <div>
     <h1>Email Delivery</h1>
-    <p>All Command Bridge email uses the single active method selected below. PHP local mail transport is not used.
+    <p>All OpenECC email uses the single active method selected below. PHP local mail transport is not used.
       <a href="<?= e(cb_help_url('admin/smtp#which-method-should-i-use')) ?>" data-help-open="admin/smtp#which-method-should-i-use">Which method should I use?</a></p>
   </div>
 </div>

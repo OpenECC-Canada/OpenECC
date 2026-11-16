@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Command Bridge updater. Run as root from the folder of the NEW release:   sudo ./update.sh
+# OpenECC updater. Run as root from the folder of the NEW release:   sudo ./update.sh
 # Backs up the database, replaces the application code (never touching storage/ or db.env),
 # applies pending database migrations and runs the self-check. See docs/UPDATING.md.
 set -Eeuo pipefail
@@ -20,9 +20,9 @@ trap 'die "Update stopped unexpectedly at line $LINENO. Your database backup (if
 [ "$(id -u)" -eq 0 ] || { echo "Run as root (sudo ./update.sh)." >&2; exit 1; }
 touch "$LOG"; chmod 600 "$LOG"
 exec 3>&1
-ui_init "Command Bridge updater"
+ui_init "OpenECC updater"
 if [ "$UI_WT" = 1 ]; then exec > >(cat >> "$LOG") 2>&1; else exec > >(tee -a "$LOG") 2>&1; fi
-[ -f "$CONF" ] || die "No Command Bridge install found ($CONF missing). Use install.sh for a fresh install."
+[ -f "$CONF" ] || die "No OpenECC install found ($CONF missing). Use install.sh for a fresh install."
 # shellcheck disable=SC1090
 . "$CONF"
 [ -d "$INSTALL_DIR/app" ] || die "Install folder $INSTALL_DIR/app not found."
@@ -33,8 +33,8 @@ NEW_VER="$(tr -d '[:space:]' < "$SRC_DIR/VERSION")"
 APP_DIR="$INSTALL_DIR/app"
 SQL=mariadb; command -v mariadb >/dev/null || SQL=mysql
 [ "$SRC_DIR" != "$INSTALL_DIR" ] || die "Unpack the new release into a separate folder and run its update.sh."
-UI_TITLE="Command Bridge updater"
-ui_yesno "Update Command Bridge" "Update Command Bridge in:\n    $INSTALL_DIR\n\nfrom version $OLD_VER to $NEW_VER?\n\nThe database is backed up first. Uploads and database settings are kept." y || { echo "Cancelled." >&3; exit 1; }
+UI_TITLE="OpenECC updater"
+ui_yesno "Update OpenECC" "Update OpenECC in:\n    $INSTALL_DIR\n\nfrom version $OLD_VER to $NEW_VER?\n\nThe database is backed up first. Uploads and database settings are kept." y || { echo "Cancelled." >&3; exit 1; }
 ui_steps 4
 
 # 1. Back up the database
@@ -54,14 +54,14 @@ if [ -f "$ENVF" ] && ! grep -q '^APP_TIMEZONE=' "$ENVF"; then
 fi
 
 # PHP: sign-out after 1 hour without activity. An existing value is kept, so a changed
-# timeout survives updates; installs without the Command Bridge PHP settings file get one with just this line.
+# timeout survives updates; installs without the OpenECC PHP settings file get one with just this line.
 PHPVER="$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;' 2>/dev/null || true)"
 if [ -n "$PHPVER" ]; then
     for sapi in apache2 cli; do
         d="/etc/php/$PHPVER/$sapi/conf.d"; f="$d/90-commandbridge.ini"
         [ -d "$d" ] || continue
         if ! grep -qs '^session.gc_maxlifetime' "$f"; then
-            [ -f "$f" ] || echo "; Command Bridge" > "$f"
+            [ -f "$f" ] || echo "; OpenECC" > "$f"
             printf '%s\n%s\n' "; Sign-out after this many seconds without activity" "session.gc_maxlifetime = 3600" >> "$f"
             echo "Set session.gc_maxlifetime = 3600 (1 hour) in $f"
         fi

@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 /*
- * Signed connection test for Command Bridge (action "sync.ping").
+ * Signed connection test for OpenECC (action "sync.ping").
  *
- * Proves that Command Bridge can reach this gateway over HTTPS, that both sides hold the same key ID and
+ * Proves that OpenECC can reach this gateway over HTTPS, that both sides hold the same key ID and
  * shared secret, and that the two clocks agree (signed requests are only accepted within
  * GATEWAY_REQUEST_TTL_SECONDS). It reads queue counts but never leases, changes or deletes anything,
  * so it is safe to call at any time, including during an incident.

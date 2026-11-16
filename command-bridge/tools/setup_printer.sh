@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Set up network printers so people can print forms from Command Bridge (Settings > Printers). Printing goes straight
-# to each printer's IP address. Run as root on the Command Bridge server:
+# Set up network printers so people can print forms from OpenECC (Settings > Printers). Printing goes straight
+# to each printer's IP address. Run as root on the OpenECC server:
 #
 #     sudo <install folder>/tools/setup_printer.sh                         menu: add, list, test or remove printers
 #     sudo <install folder>/tools/setup_printer.sh add NAME IP [--postscript]
@@ -31,7 +31,7 @@ esac
 [ "$(id -u)" -eq 0 ] || { echo "Run as root: sudo $0 $*" >&2; exit 1; }
 
 exec 3>&1
-ui_init "Command Bridge - Printers"
+ui_init "OpenECC - Printers"
 
 valid_name() { [[ "$1" =~ ^[A-Za-z0-9_-]{1,40}$ ]]; }
 valid_host() { [[ "$1" =~ ^[A-Za-z0-9.:-]{1,253}$ ]]; }
@@ -51,7 +51,7 @@ printer_names() {
 queue_exists() { printer_names | grep -qxF -- "$1"; }
 
 # Network printer discovery (cups-browsed) adds every printer it finds on the network, which slows things down and
-# fills Settings > Printers. Command Bridge prints only to the printers added here, so it is switched off.
+# fills Settings > Printers. OpenECC prints only to the printers added here, so it is switched off.
 stop_discovery() {
     if systemctl is-enabled cups-browsed >/dev/null 2>&1 || systemctl is-active cups-browsed >/dev/null 2>&1; then
         systemctl disable --now cups-browsed >/dev/null 2>&1 || true
@@ -66,7 +66,7 @@ ensure_cups() {
         stop_discovery
         return 0
     fi
-    ui_yesno "Print system" "The print system (CUPS) is not installed on this server.\n\nCommand Bridge needs it to send forms to a printer. Install it now? This downloads about 30 MB of packages." y \
+    ui_yesno "Print system" "The print system (CUPS) is not installed on this server.\n\nOpenECC needs it to send forms to a printer. Install it now? This downloads about 30 MB of packages." y \
         || { say "CUPS was not installed. Nothing changed."; exit 0; }
     ui_steps 1
     ui_stage "Installing the print system (CUPS)"
@@ -82,8 +82,8 @@ ensure_cups() {
 test_page() {  # test_page NAME  -> prints the CUPS test page
     local file=/usr/share/cups/data/testprint
     [ -f "$file" ] || file=/usr/share/cups/data/default-testpage.pdf
-    [ -f "$file" ] || { echo "No CUPS test page file was found on this server. Print a form from Command Bridge instead."; return 1; }
-    lp -d "$1" -t "Command Bridge test page" "$file" 2>&1
+    [ -f "$file" ] || { echo "No CUPS test page file was found on this server. Print a form from OpenECC instead."; return 1; }
+    lp -d "$1" -t "OpenECC test page" "$file" 2>&1
 }
 
 # Adds a printer. Sets ADDED_HOW. Returns non-zero with ADD_ERROR set when it can't.
@@ -149,7 +149,7 @@ do_add() {  # do_add [NAME] [HOST] [auto|postscript]
             ui_msg "Test page" "The test page was not accepted:\n$out"
         fi
     fi
-    ui_msg "Done" "$name is ready.\n\nIn Command Bridge, open Settings > Printers to give it a name people will recognize (for example \"ECC copier, 2nd floor\") and press Save."
+    ui_msg "Done" "$name is ready.\n\nIn OpenECC, open Settings > Printers to give it a name people will recognize (for example \"ECC copier, 2nd floor\") and press Save."
 }
 
 do_list() {
@@ -193,7 +193,7 @@ do_remove() {  # do_remove [NAME] [--yes]
     if [ -z "$name" ]; then pick_printer name "Remove a printer" "Which printer should be removed?" || return 0; fi
     queue_exists "$name" || { fail "No printer called $name."; return 0; }
     if [ "$force" != --yes ]; then
-        ui_yesno "Remove a printer" "Remove $name? People will no longer be able to print to it from Command Bridge." n || return 0
+        ui_yesno "Remove a printer" "Remove $name? People will no longer be able to print to it from OpenECC." n || return 0
     fi
     lpadmin -x "$name"
     SESSION_REMOVED="$SESSION_REMOVED$name "; SESSION_ADDED="${SESSION_ADDED// $name / }"
@@ -229,6 +229,6 @@ case "$CMD" in
                 *) break ;;
             esac
         done
-        say "Done. Manage the printers people see in Command Bridge under Settings > Printers."
+        say "Done. Manage the printers people see in OpenECC under Settings > Printers."
         ;;
 esac

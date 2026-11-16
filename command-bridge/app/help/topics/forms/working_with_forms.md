@@ -1,8 +1,8 @@
 # Working with ICS forms
 
-Most ICS forms in Command Bridge work the same way. This page covers the common steps. Each form's own help page says what goes in each block and anything that form does differently.
+Most ICS forms in OpenECC work the same way. This page covers the common steps. Each form's own help page says what goes in each block and anything that form does differently.
 
-The form help describes each form the way ICS Canada intends it, often in terms of the Incident Command Post (ICP) and the on-scene Incident Management Team. In Command Bridge the forms are the **ECC's** records: the positions named (Incident Commander, Section Chiefs and so on) are the ECC's own staff, not the on-scene team. When the ICP also produces a form, keep the two apart and note whose it is.
+The form help describes each form the way ICS Canada intends it, often in terms of the Incident Command Post (ICP) and the on-scene Incident Management Team. In OpenECC the forms are the **ECC's** records: the positions named (Incident Commander, Section Chiefs and so on) are the ECC's own staff, not the on-scene team. When the ICP also produces a form, keep the two apart and note whose it is.
 
 ## Before you start
 
@@ -29,7 +29,7 @@ A form that has been signed but not yet approved says **Not approved yet** and n
 Most forms use the same two-step sign-off:
 
 1. The person who prepared the form presses **Sign and submit** (in the banner, or at the bottom of the form). The form is signed digitally and **locked**.
-2. Command Bridge picks the **approver** from the position that normally approves that form. If that position is empty, it moves up the chain of command. If several people hold the position, you choose one. The preparer can change the approver with **Change approver**.
+2. OpenECC picks the **approver** from the position that normally approves that form. If that position is empty, it moves up the chain of command. If several people hold the position, you choose one. The preparer can change the approver with **Change approver**.
 3. The approver gets a dashboard notification and presses **Approve and sign**, or **Return for changes** with a reason.
 
 Once a form is approved, the banner shows who signed and who approved it, and nothing else can be changed.
@@ -46,7 +46,7 @@ To change a locked form, use **Revise** in the banner and give a reason:
   - The form opens as a draft with the next revision number ("Revision 1", "Revision 2" and so on).
   - It has to be signed and approved again.
   - The person who signed it and the approver are notified.
-- **The record of the old version:** before anything changes, Command Bridge saves a PDF of the version being replaced. **Revision history** in the banner lists every earlier version: who revised it and why, who had signed and approved it, and a link to its PDF. Each revision is also in the [audit log](help:audit/index).
+- **The record of the old version:** before anything changes, OpenECC saves a PDF of the version being replaced. **Revision history** in the banner lists every earlier version: who revised it and why, who had signed and approved it, and a link to its PDF. Each revision is also in the [audit log](help:audit/index).
 
 "Return for changes" by the approver works the same way as Revise.
 
@@ -81,4 +81,4 @@ Every save, signature, approval and revision is recorded in the [audit log](help
 
 ## About the form guidance
 
-The block-by-block guidance on each form's help page is based on the ICS Canada Forms Catalogue (2022), written in our own words. ICS Canada's own wording and the official forms are not covered by the Command Bridge licence. Where your agency's procedures say something different, follow your agency.
+The block-by-block guidance on each form's help page is based on the ICS Canada Forms Catalogue (2022), written in our own words. ICS Canada's own wording and the official forms are not covered by the OpenECC licence. Where your agency's procedures say something different, follow your agency.

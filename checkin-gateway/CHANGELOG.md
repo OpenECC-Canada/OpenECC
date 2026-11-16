@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Renamed: the gateway is now the **OpenECC Check-In Gateway** (page titles, footer, installer messages, README).
+  Internal folder, service and database names are unchanged.
+
 * README: says plainly that the gateway is provided as is, with no warranty (AGPL-3.0 sections 15 and 16).
 
 * README: states plainly that the gateway is a limited check-in intake service, not a remote copy of Command Bridge or a field IMT system.

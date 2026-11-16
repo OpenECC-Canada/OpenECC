@@ -1,9 +1,9 @@
 # Connecting the Check-In Gateway
 
 The Check-In Gateway ([`checkin-gateway/`](../../checkin-gateway/)) is a small, separate, internet-facing server where
-Check-In Recorders (CIR) and Staging Area Managers (SAM) check resources in from their phones. Command Bridge stays
-inside your network: once a minute a timer on Command Bridge polls the gateway over HTTPS. It sends locations, expected
-resources and CIR/SAM users to the gateway, then collects new check-ins. The gateway never connects to Command Bridge or
+Check-In Recorders (CIR) and Staging Area Managers (SAM) check resources in from their phones. OpenECC stays
+inside your network: once a minute a timer on OpenECC polls the gateway over HTTPS. It sends locations, expected
+resources and CIR/SAM users to the gateway, then collects new check-ins. The gateway never connects to OpenECC or
 its database.
 
 Every request is signed with a **key ID** and **shared secret** that both servers hold, and carries the current time.
@@ -14,9 +14,9 @@ A request more than 5 minutes off the receiving server's clock is refused, so **
 
 The order does not matter. Whichever server you install first creates the key; you paste it into the second.
 
-### A. Command Bridge first (or Command Bridge is already running)
+### A. OpenECC first (or OpenECC is already running)
 
-1. On Command Bridge, either answer **Yes** to *Connect this Command Bridge to a Check-In Gateway?* in `install.sh`, or
+1. On OpenECC, either answer **Yes** to *Connect this OpenECC to a Check-In Gateway?* in `install.sh`, or
    on an existing server run:
    ```bash
    sudo /var/www/commandbridge/tools/setup_checkin.sh
@@ -27,8 +27,8 @@ The order does not matter. Whichever server you install first creates the key; y
    exist yet, which is expected. Leave sync off.
 2. On the gateway server, run `sudo ./install.sh` ([gateway install guide](../../checkin-gateway/docs/INSTALL.md)).
    When asked *Generate a strong random shared secret?* choose **No** and paste the secret. Enter the same key ID.
-   Answer **Yes** to *Accept synchronisation from Command Bridge*.
-3. Back on Command Bridge:
+   Answer **Yes** to *Accept synchronisation from OpenECC*.
+3. Back on OpenECC:
    ```bash
    sudo /var/www/commandbridge/tools/setup_checkin.sh --test
    ```
@@ -37,7 +37,7 @@ The order does not matter. Whichever server you install first creates the key; y
 ### B. Gateway first
 
 1. Install the gateway and let it generate the secret. Its last screen shows the address, key ID and secret.
-2. On Command Bridge, run `setup_checkin.sh` (or answer Yes in `install.sh`), enter the address, and choose
+2. On OpenECC, run `setup_checkin.sh` (or answer Yes in `install.sh`), enter the address, and choose
    **Yes - paste the key ID and secret the gateway installer showed me**.
 3. The test runs straight away. If it passes, say **Yes** to switch sync on.
 
@@ -59,8 +59,8 @@ Common failures and what they mean:
 
 | Message | Fix |
 |---|---|
-| certificate is not trusted | Give the gateway a real certificate (Let's Encrypt or your own). Command Bridge does not accept a self-signed gateway. |
-| Could not connect / Timed out | The gateway is down, or a firewall blocks outbound HTTPS from Command Bridge. |
+| certificate is not trusted | Give the gateway a real certificate (Let's Encrypt or your own). OpenECC does not accept a self-signed gateway. |
+| Could not connect / Timed out | The gateway is down, or a firewall blocks outbound HTTPS from OpenECC. |
 | key ID or shared secret does not match | Compare `EXTERNAL_CHECKIN_HMAC_KEY_ID` / `_SECRET` on both servers, or rotate (below). |
 | clocks are too far apart | Fix the time on both servers (`timedatectl status`, `timedatectl set-ntp true`). |
 | not accepting sync yet | On the gateway set `GATEWAY_SYNC_ENABLED=1` in `/etc/commandbridge/checkin_gateway.env`. |
@@ -68,26 +68,26 @@ Common failures and what they mean:
 
 ## Day-to-day
 
-* **Status:** Admin > Sync status in Command Bridge, or `journalctl -u commandbridge-external-checkin-sync.service -n 30`.
+* **Status:** Admin > Sync status in OpenECC, or `journalctl -u commandbridge-external-checkin-sync.service -n 30`.
 * **Switch sync off** (settings are kept; check-ins wait on the gateway): `sudo .../tools/setup_checkin.sh --disable`.
   Switch it back on with `--test`.
-* **Command Bridge was down or could not reach the gateway:** nothing is lost. Check-ins wait on the gateway with no time
+* **OpenECC was down or could not reach the gateway:** nothing is lost. Check-ins wait on the gateway with no time
   limit and are collected on the next successful poll.
-* **Updates Command Bridge could not send** (locations, expected resources, CIR/SAM users, including revocations) retry for
+* **Updates OpenECC could not send** (locations, expected resources, CIR/SAM users, including revocations) retry for
   about 3 hours and then stop. Re-send them with the retry button on Admin > Sync status.
 * **Check-ins that stopped retrying on the gateway** (collected 12 times without being confirmed, or rejected): on the
   gateway, `sudo php /var/www/commandbridge-gateway/bin/requeue_checkins.php --list`, then `--id=N` or `--all`.
-  Command Bridge ignores check-ins it already recorded, so re-sending is safe.
+  OpenECC ignores check-ins it already recorded, so re-sending is safe.
 
 ## Changing the shared secret (rotation)
 
 Use this if the secret may have been exposed, or as routine hygiene. Sync is paused for the few minutes it takes.
 Check-ins wait on the gateway meanwhile, so nothing is lost.
 
-1. On Command Bridge: `sudo /var/www/commandbridge/tools/rotate_checkin_secret.sh`.
+1. On OpenECC: `sudo /var/www/commandbridge/tools/rotate_checkin_secret.sh`.
    It pauses sync, creates a new key ID (`commandbridge-1` becomes `commandbridge-2`) and secret, saves them, and prints them.
 2. On the gateway: `sudo /var/www/commandbridge-gateway/tools/rotate_secret.sh`. Enter the new key ID and paste the secret.
-3. Back on Command Bridge choose **Test**. When it passes, sync resumes.
+3. Back on OpenECC choose **Test**. When it passes, sync resumes.
    Choose **Undo** to go back to the old key, or **Stop here** to finish later with `setup_checkin.sh --test`.
 
 Both scripts keep a backup of the previous settings file next to it (`*.bak-YYYYMMDD-HHMMSS`, readable by root only).

@@ -1,6 +1,6 @@
 # Email delivery setup
 
-Command Bridge uses one active method for every email: Microsoft Graph, SMTP with OAuth2 (Microsoft 365), SMTP with a
+OpenECC uses one active method for every email: Microsoft Graph, SMTP with OAuth2 (Microsoft 365), SMTP with a
 username and password, or an SMTP relay without authentication. Choose it in **Settings > Email / SMTP** and use
 **Save and send test email**.
 

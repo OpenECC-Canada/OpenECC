@@ -318,7 +318,7 @@ function command_bridge_backup_read_manifest(ZipArchive $zip): array
 {
     $raw = $zip->getFromName('manifest.json');
     if ($raw === false) {
-        throw new CommandBridgeBackupException('The selected ZIP is not a Command Bridge backup.');
+        throw new CommandBridgeBackupException('The selected ZIP is not an OpenECC backup.');
     }
 
     try {
@@ -333,7 +333,7 @@ function command_bridge_backup_read_manifest(ZipArchive $zip): array
         || !is_array($manifest['tables'] ?? null)
         || !is_array($manifest['file_roots'] ?? null)
     ) {
-        throw new CommandBridgeBackupException('The selected ZIP is not a supported Command Bridge backup.');
+        throw new CommandBridgeBackupException('The selected ZIP is not a supported OpenECC backup.');
     }
 
     $roots = array_values($manifest['file_roots']);
@@ -399,7 +399,7 @@ function command_bridge_backup_validate_restore(ZipArchive $zip, array $manifest
 
         $currentColumns = command_bridge_backup_columns($name);
         if ($columns !== $currentColumns) {
-            throw new CommandBridgeBackupException('The backup database structure does not match this Command Bridge installation.');
+            throw new CommandBridgeBackupException('The backup database structure does not match this OpenECC installation.');
         }
 
         $backupTables[$name] = $table;
@@ -409,7 +409,7 @@ function command_bridge_backup_validate_restore(ZipArchive $zip, array $manifest
     sort($backupTableNames, SORT_STRING);
 
     if ($backupTableNames !== $currentTables) {
-        throw new CommandBridgeBackupException('The backup database table list does not match this Command Bridge installation.');
+        throw new CommandBridgeBackupException('The backup database table list does not match this OpenECC installation.');
     }
 
     return $backupTables;

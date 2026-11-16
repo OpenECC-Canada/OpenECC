@@ -12,8 +12,8 @@ abstract class BaseTcpdfRenderer extends TCPDF
 
         parent::__construct('P', 'mm', 'LETTER', true, 'UTF-8', false);
 
-        $this->SetCreator('GovAI for Command Bridge');
-        $this->SetAuthor('GovAI for Command Bridge');
+        $this->SetCreator('GovAI for OpenECC');
+        $this->SetAuthor('GovAI for OpenECC');
         $this->SetTitle($documentTitle !== '' ? $documentTitle : ($layout['title'] ?? 'PDF'));
         $this->SetSubject($layout['form_code'] ?? 'Form PDF');
         $this->SetMargins(0, 0, 0, true);

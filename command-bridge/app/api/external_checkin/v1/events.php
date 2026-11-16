@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-// This endpoint belongs to the public gateway application and does nothing on the main CommandBridge server.
+// This endpoint belongs to the public gateway application and does nothing on the main OpenECC server.
 $gatewaySync = dirname(__DIR__, 4) . '/app/sync.php';
 if (!is_file($gatewaySync)) {
     http_response_code(404);

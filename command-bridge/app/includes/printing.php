@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Printing forms straight from the server to a network printer.
  *
  * The server's print system (CUPS) does the printer-specific work: printers are added on the server with
- * tools/setup_printer.sh (driverless IPP first, generic PostScript as a fallback). Command Bridge talks to CUPS
+ * tools/setup_printer.sh (driverless IPP first, generic PostScript as a fallback). OpenECC talks to CUPS
  * directly over its local socket in IPP (the printing protocol) to list the printers and send a PDF: no lp/lpstat,
  * which hung when run from inside Apache. Settings (app_settings):
  *   print_access    - who may print: 'positions' (anyone holding a position in the incident, default),
@@ -359,7 +359,7 @@ function cb_print_send(string $queue, string $pdfPath, int $copies, string $titl
     $pdf = @file_get_contents($pdfPath);
     if ($pdf === false || $pdf === '') { return [null, 'The PDF could not be read.']; }
     $copies = max(1, min(20, $copies));
-    $title = mb_substr(preg_replace('/[^\p{L}\p{N} ._()#\/-]+/u', ' ', $title) ?? 'Command Bridge', 0, 80);
+    $title = mb_substr(preg_replace('/[^\p{L}\p{N} ._()#\/-]+/u', ' ', $title) ?? 'OpenECC', 0, 80);
     $body = cb_ipp_build(0x0002, array_merge(cb_ipp_base_attrs(), [
         [0x45, 'printer-uri', 'ipp://localhost/printers/' . $queue],
         [0x42, 'job-name', $title],

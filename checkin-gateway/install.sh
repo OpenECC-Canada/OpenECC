@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Command Bridge Check-In Gateway installer - fresh installs on Debian 12 / 13.
+# OpenECC Check-In Gateway installer - fresh installs on Debian 12 / 13.
 # Run as root from the unpacked release folder:   sudo ./install.sh
 #
 # The gateway is the small PUBLIC web application that lets Check-In Recorders and Staging Area
-# Managers check resources in. It has its own database and never connects to Command Bridge's.
+# Managers check resources in. It has its own database and never connects to OpenECC's.
 # This installer installs packages, creates the database, copies the application, writes the
 # Apache site (with optional TLS), creates the shared-secret settings file and checks the result.
 #
@@ -55,13 +55,13 @@ if [ "$UI_WT" = 1 ]; then exec > >(cat >> "$LOG") 2>&1; else exec > >(tee -a "$L
 
 [ -f "$SRC_DIR/database/schema.sql" ] && [ -d "$SRC_DIR/app" ] && [ -d "$SRC_DIR/public" ] || die "Run install.sh from the unpacked gateway folder (app/, public/ and database/ must be next to it)."
 VERSION="$(tr -d '[:space:]' < "$SRC_DIR/VERSION")"
-UI_TITLE="Command Bridge Check-In Gateway $VERSION installer"
+UI_TITLE="OpenECC Check-In Gateway $VERSION installer"
 
 if [ "$UI_WT" = 1 ]; then
-    ui_msg "Welcome" "This installer sets up the Command Bridge Check-In Gateway $VERSION on this server.\n\nThis is the public-facing web application for check-in recorders. It needs its own web address (ideally a public DNS name) and gets its own database. It is NOT the main Command Bridge server.\n\nA log is written to $LOG."
+    ui_msg "Welcome" "This installer sets up the OpenECC Check-In Gateway $VERSION on this server.\n\nThis is the public-facing web application for check-in recorders. It needs its own web address (ideally a public DNS name) and gets its own database. It is NOT the main OpenECC server.\n\nA log is written to $LOG."
 else
     say "=============================================="
-    say " Command Bridge Check-In Gateway $VERSION - installer"
+    say " OpenECC Check-In Gateway $VERSION - installer"
     say "=============================================="
     say "Log file: $LOG"
 fi
@@ -91,7 +91,7 @@ DEFAULT_NAME="${CB_SERVER_NAME:-$(hostname -f 2>/dev/null || hostname)}"
 ui_ask SERVER_NAME "Web address" "Server name - the public DNS name people will reach the gateway at (for example checkin.example.ca):" "$DEFAULT_NAME"
 [[ $SERVER_NAME =~ ^[A-Za-z0-9._-]+$ ]] || die "Server name may only contain letters, digits, dots, hyphens and underscores."
 
-ui_menu TLS_MODE "Encryption (HTTPS)" "How should the connection be encrypted?\n\nThe gateway is meant to be reachable from the internet, so Let's Encrypt is normally the right choice. HTTPS is required before synchronisation with Command Bridge is enabled." "${CB_TLS_MODE:-1}" \
+ui_menu TLS_MODE "Encryption (HTTPS)" "How should the connection be encrypted?\n\nThe gateway is meant to be reachable from the internet, so Let's Encrypt is normally the right choice. HTTPS is required before synchronisation with OpenECC is enabled." "${CB_TLS_MODE:-1}" \
     1 "Let's Encrypt (needs public DNS and ports 80/443)" \
     2 "Self-signed certificate (testing only)" \
     3 "My own certificate and key files" \
@@ -117,22 +117,22 @@ DETECT_TZ="$(cat /etc/timezone 2>/dev/null || timedatectl show -p Timezone --val
 ui_ask TZ_NAME "Time zone" "Time zone for times shown to check-in recorders (for example America/Edmonton):" "${CB_TIMEZONE:-$DETECT_TZ}"
 [ "$TZ_NAME" = UTC ] || [ -e "/usr/share/zoneinfo/$TZ_NAME" ] || [ "${CB_SKIP_PACKAGES:-0}" = 1 ] || die "Unknown time zone '$TZ_NAME' (see: timedatectl list-timezones)."
 
-ui_menu DELIVERY_MODE "How events reach Command Bridge" "How should check-ins get back to Command Bridge?\n\nPull is recommended: your internal Command Bridge server contacts the gateway, so Command Bridge never needs to accept connections from the internet." "${CB_DELIVERY_MODE:-pull}" \
-    pull "Command Bridge polls the gateway (recommended)" \
-    push "Gateway posts to Command Bridge (legacy)"
+ui_menu DELIVERY_MODE "How events reach OpenECC" "How should check-ins get back to OpenECC?\n\nPull is recommended: your internal OpenECC server contacts the gateway, so OpenECC never needs to accept connections from the internet." "${CB_DELIVERY_MODE:-pull}" \
+    pull "OpenECC polls the gateway (recommended)" \
+    push "Gateway posts to OpenECC (legacy)"
 [[ $DELIVERY_MODE =~ ^(pull|push)$ ]] || die "Delivery mode must be pull or push."
 EVENTS_URL="${CB_EVENTS_URL:-}"
 if [ "$DELIVERY_MODE" = push ]; then
-    ui_ask EVENTS_URL "Push delivery" "Full https:// URL of Command Bridge's check-in events endpoint:" "${EVENTS_URL:-https://commandbridge.example.ca/api/external_checkin/v1/events.php}"
+    ui_ask EVENTS_URL "Push delivery" "Full https:// URL of OpenECC's check-in events endpoint:" "${EVENTS_URL:-https://openecc.example.ca/api/external_checkin/v1/events.php}"
     [[ $EVENTS_URL =~ ^https:// ]] || die "The events URL must start with https://"
 fi
 
 HMAC_KEY_ID="${CB_HMAC_KEY_ID:-commandbridge-1}"
-ui_ask HMAC_KEY_ID "Shared secret" "Key ID that identifies the shared secret between Command Bridge and the gateway (the same value goes in Command Bridge's settings):" "$HMAC_KEY_ID"
+ui_ask HMAC_KEY_ID "Shared secret" "Key ID that identifies the shared secret between OpenECC and the gateway (the same value goes in OpenECC's settings):" "$HMAC_KEY_ID"
 [[ $HMAC_KEY_ID =~ ^[A-Za-z0-9._:-]{3,64}$ ]] || die "Key ID must be 3-64 characters (letters, digits . _ : -)."
 HMAC_SECRET="${CB_HMAC_SECRET:-}"; GENERATED_SECRET=0
 if [ -z "$HMAC_SECRET" ]; then
-    if ui_yesno "Shared secret" "Generate a strong random shared secret?\n\nChoose No to paste one you already created in Command Bridge (32 or more characters)." y; then
+    if ui_yesno "Shared secret" "Generate a strong random shared secret?\n\nChoose No to paste one you already created in OpenECC (32 or more characters)." y; then
         HMAC_SECRET="$(openssl rand -base64 48 | tr -d '\n')"; GENERATED_SECRET=1
     else
         ui_pass HMAC_SECRET "Paste the shared secret (32+ characters)"
@@ -141,9 +141,9 @@ fi
 [ "${#HMAC_SECRET}" -ge 32 ] || die "The shared secret must be at least 32 characters."
 
 SYNC_ENABLED=0
-# A pasted secret came from Command Bridge's setup, which is then ready for sync; a generated one still has to be copied there.
+# A pasted secret came from OpenECC's setup, which is then ready for sync; a generated one still has to be copied there.
 SYNC_DEFAULT=n; [ "$GENERATED_SECRET" = 0 ] && SYNC_DEFAULT=y
-if [ "$TLS_MODE" != 4 ] && ui_yesno "Synchronisation" "Accept synchronisation from Command Bridge as soon as the gateway is installed?\n\nChoose Yes if Command Bridge already has this key ID and secret (you pasted them from its setup). Choose No to leave it disabled until you have configured Command Bridge." "$SYNC_DEFAULT"; then SYNC_ENABLED=1; fi
+if [ "$TLS_MODE" != 4 ] && ui_yesno "Synchronisation" "Accept synchronisation from OpenECC as soon as the gateway is installed?\n\nChoose Yes if OpenECC already has this key ID and secret (you pasted them from its setup). Choose No to leave it disabled until you have configured OpenECC." "$SYNC_DEFAULT"; then SYNC_ENABLED=1; fi
 
 TLS_LABEL=("" "Let's Encrypt" "Self-signed certificate" "Your own certificate" "None (plain HTTP)")
 SUMMARY="  Install folder : $INSTALL_DIR\n  Web address    : $SERVER_NAME\n  Encryption     : ${TLS_LABEL[$TLS_MODE]}\n  Time zone      : $TZ_NAME\n  Database       : $DB_NAME (local MariaDB)\n  Delivery       : $DELIVERY_MODE\n  Key ID         : $HMAC_KEY_ID\n  Synchronisation: $([ $SYNC_ENABLED = 1 ] && echo enabled || echo disabled)"
@@ -203,7 +203,7 @@ chmod 0750 "$INSTALL_DIR/install.sh" "$INSTALL_DIR/update.sh" "$INSTALL_DIR"/too
 if [ ! -d "$CONF_DIR" ]; then mkdir -p "$CONF_DIR"; chown root:"$WEB_USER" "$CONF_DIR"; chmod 0750 "$CONF_DIR"; fi
 install -m 0640 -o root -g "$WEB_USER" /dev/null "$ENV_FILE"
 cat > "$ENV_FILE" <<ENVEOF
-# Command Bridge Check-In Gateway settings - written by install.sh. Keep private.
+# OpenECC Check-In Gateway settings - written by install.sh. Keep private.
 GATEWAY_ENV=production
 GATEWAY_SYNC_ENABLED=$SYNC_ENABLED
 GATEWAY_TIMEZONE=$TZ_NAME
@@ -239,7 +239,7 @@ if [ -n "$PHPVER" ] && [ -d "/etc/php/$PHPVER" ]; then
     for sapi in apache2 cli; do
         [ -d "/etc/php/$PHPVER/$sapi/conf.d" ] || continue
         cat > "/etc/php/$PHPVER/$sapi/conf.d/90-commandbridge-gateway.ini" <<PHPEOF
-; Command Bridge Check-In Gateway
+; OpenECC Check-In Gateway
 expose_php = Off
 date.timezone = $TZ_NAME
 session.cookie_httponly = 1
@@ -258,7 +258,7 @@ printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/
 
 write_http_only() {
     cat > "$APACHE_SITES/$SITE_NAME.conf" <<VHEOF
-# Command Bridge - generated by install.sh
+# OpenECC - generated by install.sh
 <VirtualHost *:80>
     ServerName $SERVER_NAME
     DocumentRoot $APP_DIR
@@ -269,7 +269,7 @@ VHEOF
 }
 write_redirect_80() {  # redirect all HTTP to HTTPS, keeping the ACME path reachable
     cat > "$APACHE_SITES/$SITE_NAME.conf" <<VHEOF
-# Command Bridge - generated by install.sh
+# OpenECC - generated by install.sh
 <VirtualHost *:80>
     ServerName $SERVER_NAME
     DocumentRoot $APP_DIR
@@ -319,7 +319,7 @@ case "$TLS_MODE" in
         SSL_DIR=/etc/ssl/commandbridge-gateway; mkdir -p "$SSL_DIR"; chmod 0755 "$SSL_DIR"
         if [[ $SERVER_NAME =~ ^[0-9.]+$ ]]; then SAN="IP:$SERVER_NAME"; else SAN="DNS:$SERVER_NAME"; fi
         openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge-gateway.key" -out "$SSL_DIR/commandbridge-gateway.crt" \
-            -subj "/CN=$SERVER_NAME/O=Command Bridge Gateway" -addext "subjectAltName=$SAN" 2>/dev/null
+            -subj "/CN=$SERVER_NAME/O=OpenECC Gateway" -addext "subjectAltName=$SAN" 2>/dev/null
         chmod 0640 "$SSL_DIR/commandbridge-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge-gateway.key"
         write_redirect_80; append_https "$SSL_DIR/commandbridge-gateway.crt" "$SSL_DIR/commandbridge-gateway.key" 0
         TLS_RESULT="self-signed (valid 825 days: $SSL_DIR/commandbridge-gateway.crt)" ;;
@@ -337,7 +337,7 @@ case "$TLS_MODE" in
             warn "Falling back to a self-signed certificate. Re-run 'certbot certonly --webroot -w $APP_DIR -d $SERVER_NAME' later."
             SSL_DIR=/etc/ssl/commandbridge-gateway; mkdir -p "$SSL_DIR"
             openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge-gateway.key" -out "$SSL_DIR/commandbridge-gateway.crt" \
-                -subj "/CN=$SERVER_NAME/O=Command Bridge Gateway" -addext "subjectAltName=DNS:$SERVER_NAME" 2>/dev/null
+                -subj "/CN=$SERVER_NAME/O=OpenECC Gateway" -addext "subjectAltName=DNS:$SERVER_NAME" 2>/dev/null
             chmod 0640 "$SSL_DIR/commandbridge-gateway.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge-gateway.key"
             write_redirect_80; append_https "$SSL_DIR/commandbridge-gateway.crt" "$SSL_DIR/commandbridge-gateway.key" 0
             TLS_RESULT="self-signed (Let's Encrypt failed)"
@@ -385,20 +385,20 @@ FINAL="$(mktemp)"; chmod 600 "$FINAL"
     echo
     echo "NEXT, ON THE COMMAND BRIDGE SERVER:"
     if [ "$GENERATED_SECRET" = 1 ]; then
-        echo "  Run:  sudo <Command Bridge folder>/tools/setup_checkin.sh"
+        echo "  Run:  sudo <OpenECC folder>/tools/setup_checkin.sh"
         echo "  Choose 'Paste the key from the gateway' and enter:"
         echo "    Gateway address : $BASE_URL"
         echo "    Key ID          : $HMAC_KEY_ID"
         echo "    Shared secret   : $HMAC_SECRET"
         echo "    ^ generated secret, shown once - it is also in $ENV_FILE"
     else
-        echo "  Command Bridge already has this key ID and secret. Test the connection and switch sync on:"
-        echo "    sudo <Command Bridge folder>/tools/setup_checkin.sh --test"
+        echo "  OpenECC already has this key ID and secret. Test the connection and switch sync on:"
+        echo "    sudo <OpenECC folder>/tools/setup_checkin.sh --test"
     fi
-    echo "  (Older Command Bridge without tools/setup_checkin.sh: see command-bridge/docs/EXTERNAL_CHECKIN.md.)"
+    echo "  (Older OpenECC without tools/setup_checkin.sh: see command-bridge/docs/EXTERNAL_CHECKIN.md.)"
     echo
     echo "Gateway tools (run as root on this server):"
-    echo "  New shared secret       : $INSTALL_DIR/tools/rotate_secret.sh   (start it from Command Bridge)"
+    echo "  New shared secret       : $INSTALL_DIR/tools/rotate_secret.sh   (start it from OpenECC)"
     echo "  Stuck check-ins         : php $INSTALL_DIR/bin/requeue_checkins.php --list"
     echo "  PIN lockouts            : php $INSTALL_DIR/bin/clear_lockouts.php --list"
     echo

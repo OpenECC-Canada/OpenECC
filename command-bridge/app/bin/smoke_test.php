@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Command Bridge smoke test.
+ * OpenECC smoke test.
  *
  *   sudo -u www-data php bin/smoke_test.php [--base-url=https://your-server/] [--insecure] [--only=env,approvers,...] [-v]
  *
@@ -68,7 +68,7 @@ function t_run(string $name, callable $fn): void
     try { $fn(); } catch (Throwable $e) { t_ok($name . ' (no exception)', false, get_class($e) . ': ' . $e->getMessage() . ' @ ' . basename($e->getFile()) . ':' . $e->getLine()); }
 }
 
-echo 'Command Bridge smoke test - ' . date('Y-m-d H:i:s') . "\n";
+echo 'OpenECC smoke test - ' . date('Y-m-d H:i:s') . "\n";
 $pdo = null;
 try {
     $pdo = db();
@@ -847,7 +847,7 @@ if ($want('http')) {
             t_ok("$p is not readable without logging in", in_array($r['code'], [301, 302, 303, 307, 401, 403, 405], true), 'HTTP ' . $r['code']);
         }
         $icon = $get('/assets/img/command-bridge-icon.svg');
-        t_ok('Command Bridge icon is served (browser tab and default logo)', $icon['code'] === 200, 'HTTP ' . $icon['code']);
+        t_ok('OpenECC icon is served (browser tab and default logo)', $icon['code'] === 200, 'HTTP ' . $icon['code']);
         $oldLogo = $get('/assets/img/ics-canada-logo.svg');
         t_ok('old ICS Canada logo file is gone from the web folder', $oldLogo['code'] === 404, 'HTTP ' . $oldLogo['code'] . ' (update.sh removes it)');
         $helpAnon = $get('/help/view.php?topic=admin/smtp');

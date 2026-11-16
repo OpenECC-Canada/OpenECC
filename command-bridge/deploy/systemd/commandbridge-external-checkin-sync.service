@@ -1,5 +1,5 @@
 [Unit]
-Description=CommandBridge external check-in push and pull synchronization worker
+Description=OpenECC external check-in push and pull synchronization worker
 Wants=network-online.target
 After=network-online.target
 

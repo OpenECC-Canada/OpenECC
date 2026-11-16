@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/sync.php';
 
 /* Retained for compatibility with the existing systemd timer. This command
- * performs no outbound network activity. Command Bridge polls the gateway. */
+ * performs no outbound network activity. OpenECC polls the gateway. */
 try {
     $result = ['requeued' => gateway_requeue_stale_outbound_events()];
     echo json_encode($result, JSON_UNESCAPED_SLASHES) . PHP_EOL;

@@ -420,7 +420,7 @@ $listUrl = app_url('/forms/ics213/index.php?operational_period_id=' . $opId);
     </div>
     <?php if ($editable): ?>
     <div class="ics213-guidance">
-      <p><strong>Who will see this message:</strong> the position you pick in "2. To" will see it on their Command Bridge
+      <p><strong>Who will see this message:</strong> the position you pick in "2. To" will see it on their OpenECC
       dashboard. Anyone you choose to email below will get it as an email, with the ICS 213 attached as a PDF.</p>
       <p><strong>If you need a reply, say how in your message.</strong> People outside the ECC may not reach the right
       person just by pressing Reply, so tell them where to send their answer. For example:</p>
@@ -470,7 +470,7 @@ $listUrl = app_url('/forms/ics213/index.php?operational_period_id=' . $opId);
         <label>Reply Date/Time<input type="datetime-local" name="reply_date_time" value="<?= e($dt($msg['reply_date_time'] ?? '') ?: date('Y-m-d\TH:i')) ?>" <?= $canEdit ? '' : 'readonly' ?>></label>
         <label>Reply received
           <select name="reply_received_via" <?= $canEdit ? '' : 'disabled' ?>>
-            <option value="app"<?= ($msg['reply_received_via'] ?? '') !== 'email' ? ' selected' : '' ?>>Entered here in Command Bridge</option>
+            <option value="app"<?= ($msg['reply_received_via'] ?? '') !== 'email' ? ' selected' : '' ?>>Entered here in OpenECC</option>
             <option value="email"<?= ($msg['reply_received_via'] ?? '') === 'email' ? ' selected' : '' ?>>By email (typed in from the email)</option>
           </select>
         </label>
@@ -525,7 +525,7 @@ $listUrl = app_url('/forms/ics213/index.php?operational_period_id=' . $opId);
 <div class="card">
   <h2>Email</h2>
   <p class="small">"Accepted" means the mail server took the email. A bounce (for example a mistyped address) comes back later
-  to Command Bridge's sending mailbox, not to this page.</p>
+  to OpenECC's sending mailbox, not to this page.</p>
   <?php if (!$sends): ?>
     <p class="muted">This message has not been emailed.</p>
   <?php else: ?>

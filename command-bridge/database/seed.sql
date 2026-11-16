@@ -1,4 +1,4 @@
--- Command Bridge reference data (baseline for 0.9.0-beta.1)
+-- OpenECC reference data (baseline for 0.9.0-beta.1)
 -- Roles, ICS position catalogue, form definitions and permissions, resource kind/type
 -- catalogue, meeting types and default application settings. No users, incidents or forms.
 SET NAMES utf8mb4;

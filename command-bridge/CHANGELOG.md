@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Renamed: Command Bridge is now OpenECC
+* The name people see is now **OpenECC**: page titles, the menu, the footer, help, installer and updater messages,
+  README files, PDF properties and the default application name. Other emergency-management products use the name
+  "Command Bridge".
+* Internal names are unchanged so existing installs update normally: the `command-bridge/` folder, `/etc/commandbridge`,
+  `/var/www/commandbridge`, the `commandbridge-*` systemd services, database names, backup format and code names.
+* Migration `0020_rename_openecc.sql`: if the saved application name (Settings > Branding) is still "Command Bridge",
+  it becomes "OpenECC". A name you chose yourself is kept. No structure change, so schema.sql and seed.sql are unchanged.
+* Source links point to github.com/OpenECC-Canada/OpenECC.
+
 * README files and the page footer now say plainly that Command Bridge is provided as is, with no warranty,
   and that you use it at your own risk (AGPL-3.0 sections 15 and 16).
 

@@ -68,7 +68,7 @@ if (!in_array($mode, ['full', 'posting'], true)) {
 }
 
 if ($mode === 'posting') {
-    // The meeting posting is Command Bridge's own wall sheet, not an ICS form, so it keeps its own layout.
+    // The meeting posting is OpenECC's own wall sheet, not an ICS form, so it keeps its own layout.
     try {
         $renderer = new Ics230PdfRenderer([
             'incident' => $incident,

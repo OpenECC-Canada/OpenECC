@@ -1,5 +1,5 @@
 [Unit]
-Description=Run the Command Bridge Check-In Gateway dispatcher every minute
+Description=Run the OpenECC Check-In Gateway dispatcher every minute
 
 [Timer]
 OnBootSec=30s

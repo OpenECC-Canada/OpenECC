@@ -2,7 +2,7 @@
 db.env
 *.env
 !*.env.example
-# Command Bridge runtime data (the default branding logo is kept)
+# OpenECC runtime data (the default branding logo is kept)
 command-bridge/app/storage/uploads/*
 !command-bridge/app/storage/uploads/index.html
 command-bridge/app/storage/branding/*

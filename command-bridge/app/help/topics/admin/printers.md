@@ -1,13 +1,13 @@
 # Printers
 
 People can send a form straight to a printer on your network with the **Print** button next to **Download PDF**.
-Nothing has to be installed on anyone's computer, and it works from phones and tablets too. The Command Bridge
+Nothing has to be installed on anyone's computer, and it works from phones and tablets too. The OpenECC
 server prints directly to the printer's IP address.
 
 ## Adding a printer (on the server)
 
 You need the printer's IP address. It's usually on the printer's network settings screen or on a configuration page
-you can print from the printer's menu. On the Command Bridge server:
+you can print from the printer's menu. On the OpenECC server:
 
 ```
 sudo /var/www/commandbridge/tools/setup_printer.sh
@@ -41,7 +41,7 @@ For scripts, the same steps work without the menu:
   People can only print forms they can open, and SysAdmins can always print.
 - **Name people see:** for example "ECC copier, 2nd floor". If it's empty, the server name is shown.
 - **People can pick it:** untick to hide a printer from the Print page without removing it.
-- **Test page** sends a one-page test from Command Bridge.
+- **Test page** sends a one-page test from OpenECC.
 
 ## Things to know
 

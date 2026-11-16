@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Central registry for the official ICS Canada PDF templates bundled with Command Bridge.
+ * Central registry for the official ICS Canada PDF templates bundled with OpenECC.
  *
  * Templates marked as non-fillable (ICS 218) are filled by stamping a text overlay onto the official page
  * (OfficialPdfTemplateExporter::stampTemplate()). Do not accept user-supplied paths here.

@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 2) . '/includes/pdf/OfficialPdfText.php';
  * Maps one person's ICS 214 activity log onto the official ICS Canada 214 template.
  * Template page 1 holds 15 activity rows (TimeRowN / Major EventsRowN); page 2 is the continuation page with 30 rows
  * (time fields Text37-55, 60-70; event fields Text5-18, 21-36). Long events wrap onto the next rows.
- * Block 7 (personnel assigned) is left blank: each person keeps their own log in Command Bridge.
+ * Block 7 (personnel assigned) is left blank: each person keeps their own log in OpenECC.
  */
 final class Ics214OfficialPdfFieldMapper
 {

@@ -174,7 +174,7 @@ if (!is_array($answer) || empty($answer['ok'])) {
 ping_line('ok', 'Signed connection test accepted: same key ID and shared secret on both servers (gateway '
     . (string)($answer['gateway_version'] ?? '?') . ')');
 if (($answer['delivery_mode'] ?? '') !== 'pull') {
-    ping_line('warn', 'The gateway is set to "' . (string)($answer['delivery_mode'] ?? '?') . '" delivery. Command Bridge polls it,'
+    ping_line('warn', 'The gateway is set to "' . (string)($answer['delivery_mode'] ?? '?') . '" delivery. OpenECC polls it,'
         . ' so set GATEWAY_DELIVERY_MODE=pull in /etc/commandbridge/checkin_gateway.env on the gateway.');
 }
 $waiting = (int)($answer['checkins_waiting'] ?? 0);

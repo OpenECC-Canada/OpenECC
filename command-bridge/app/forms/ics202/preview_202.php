@@ -46,7 +46,7 @@ th, td { border: 1px solid #777; padding: 7px; vertical-align: top; text-align: 
 <?php endforeach; ?>
 </tbody>
 </table>
-<p class="note">Attachments remain available from the ICS 202 attachments section in Command Bridge.</p>
+<p class="note">Attachments remain available from the ICS 202 attachments section in OpenECC.</p>
 </main>
 </body>
 </html>

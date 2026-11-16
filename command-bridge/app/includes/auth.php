@@ -423,7 +423,7 @@ function branding_logo_file_if_present(string $file): string {
 
 function branding_settings(): array {
     return [
-        'application_name' => get_app_setting('branding_application_name', defined('APP_SHORT_NAME') ? APP_SHORT_NAME : APP_NAME) ?: 'Command Bridge',
+        'application_name' => get_app_setting('branding_application_name', defined('APP_SHORT_NAME') ? APP_SHORT_NAME : APP_NAME) ?: 'OpenECC',
         'organization_name' => get_app_setting('branding_organization_name', defined('APP_ORG_NAME') ? APP_ORG_NAME : '') ?: 'Organization',
         'header_text' => get_app_setting('branding_header_text', '') ?: '',
         'footer_text' => get_app_setting('branding_footer_text', '') ?: '',

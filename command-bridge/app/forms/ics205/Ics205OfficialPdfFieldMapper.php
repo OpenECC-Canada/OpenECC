@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Translates the Command Bridge ICS 205 record into fields on the approved
+ * Translates the OpenECC ICS 205 record into fields on the approved
  * ICS Canada 205 AcroForm template.
  */
 final class Ics205OfficialPdfFieldMapper

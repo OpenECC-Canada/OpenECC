@@ -1,4 +1,4 @@
-# Command Bridge smoke test and TRAINING scenarios (1.0.2.56)
+# OpenECC smoke test and TRAINING scenarios (1.0.2.56)
 
 ## 1. Automatic smoke test
 

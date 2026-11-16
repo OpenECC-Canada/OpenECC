@@ -1,4 +1,4 @@
--- Command Bridge database schema (baseline for 0.9.0-beta.1)
+-- OpenECC database schema (baseline for 0.9.0-beta.1)
 -- Applied once by install.sh into an EMPTY database. Contains structure only -
 -- no incidents, forms, users or other operational data. Reference data lives in
 -- seed.sql. Later structure changes are shipped as files in database/migrations/.

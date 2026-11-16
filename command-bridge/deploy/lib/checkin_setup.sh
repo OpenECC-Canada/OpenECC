@@ -51,7 +51,7 @@ chk_ask() {
         if [ "${CB_ASSUME_YES:-0}" = 1 ]; then
             [ "${CB_CHECKIN:-0}" = 1 ] || return 0
         else
-            ui_yesno "Check-In Gateway" "Connect this Command Bridge to a Check-In Gateway?\n\nThe gateway is a separate, internet-facing server where Check-In Recorders and Staging Area Managers check resources in from their phones. Command Bridge polls it once a minute over HTTPS, so Command Bridge itself stays inside your network.\n\nChoose No if you do not use one. You can connect later with:\n    sudo <install folder>/tools/setup_checkin.sh" n || return 0
+            ui_yesno "Check-In Gateway" "Connect this OpenECC to a Check-In Gateway?\n\nThe gateway is a separate, internet-facing server where Check-In Recorders and Staging Area Managers check resources in from their phones. OpenECC polls it once a minute over HTTPS, so OpenECC itself stays inside your network.\n\nChoose No if you do not use one. You can connect later with:\n    sudo <install folder>/tools/setup_checkin.sh" n || return 0
         fi
     fi
     CHK_WANTED=1
@@ -72,7 +72,7 @@ chk_ask() {
     if [ -n "${CB_CHECKIN_SECRET:-}" ]; then
         src=2
     elif [ "${CB_ASSUME_YES:-0}" != 1 ]; then
-        ui_menu src "Shared secret" "Command Bridge and the gateway share a key ID and secret to prove requests are genuine.\n\nIs the gateway already installed?" 1 \
+        ui_menu src "Shared secret" "OpenECC and the gateway share a key ID and secret to prove requests are genuine.\n\nIs the gateway already installed?" 1 \
             1 "No - generate a new key here; I will paste it into the gateway installer" \
             2 "Yes - paste the key ID and secret the gateway installer showed me"
     fi
@@ -113,7 +113,7 @@ chk_write_env() {
     done
     tmp="$(mktemp)"
     cat > "$tmp" <<ENVEOF
-# Command Bridge <-> Check-In Gateway connection. Written by tools/setup_checkin.sh. Keep private.
+# OpenECC <-> Check-In Gateway connection. Written by tools/setup_checkin.sh. Keep private.
 # The same key ID and secret must be in /etc/commandbridge/checkin_gateway.env on the gateway.
 # Test the connection:  sudo $(chk_tools_dir)/setup_checkin.sh --test
 EXTERNAL_CHECKIN_ENABLED=0
@@ -133,7 +133,7 @@ ENVEOF
 chk_ping() {
     CHK_PING_OK=0
     if [ ! -f "$APP_DIR/bin/external_checkin_ping.php" ]; then
-        CHK_PING_OUT="FAIL $APP_DIR/bin/external_checkin_ping.php is missing. Update Command Bridge first (update.sh)."
+        CHK_PING_OUT="FAIL $APP_DIR/bin/external_checkin_ping.php is missing. Update OpenECC first (update.sh)."
         return 1
     fi
     if CHK_PING_OUT="$(runuser -u "$WEB_USER" -- php "$APP_DIR/bin/external_checkin_ping.php" 2>&1)"; then
@@ -204,7 +204,7 @@ chk_instructions() {
             echo "    Key ID        : $CHK_KEY_ID"
             echo "    Shared secret : $CHK_SECRET"
             echo "    ^ shown once here - it is also stored in $CHK_ENV_FILE"
-            echo "  Answer Yes to 'Accept synchronisation from Command Bridge'."
+            echo "  Answer Yes to 'Accept synchronisation from OpenECC'."
         fi
     } >> "$f"
 }

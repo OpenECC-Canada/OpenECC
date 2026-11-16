@@ -1,5 +1,5 @@
 /*
- * Command Bridge page frame on phones and tablets (see the "Phones and tablets" rules in assets/css/app.css).
+ * OpenECC page frame on phones and tablets (see the "Phones and tablets" rules in assets/css/app.css).
  *  - Under 1024 px wide the side menu is hidden behind the Menu button and slides in over the page.
  *  - Wide tables get their own sideways scroll box, so the page itself never scrolls sideways.
  */

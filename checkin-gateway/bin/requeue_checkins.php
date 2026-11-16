@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /*
- * List or re-send check-ins that the gateway has stopped offering to Command Bridge.
+ * List or re-send check-ins that the gateway has stopped offering to OpenECC.
  *
- * A check-in is "stuck" when Command Bridge collected it the maximum number of times
- * (GATEWAY_MAX_ATTEMPTS, default 12) without confirming it, or when Command Bridge rejected it.
+ * A check-in is "stuck" when OpenECC collected it the maximum number of times
+ * (GATEWAY_MAX_ATTEMPTS, default 12) without confirming it, or when OpenECC rejected it.
  * Stuck check-ins are never deleted, but they are not sent again until you re-queue them.
  *
  *   php bin/requeue_checkins.php --list
@@ -16,8 +16,8 @@ declare(strict_types=1);
  * Run as root or a user that can read /etc/commandbridge/checkin_gateway.env:
  *   sudo php /var/www/commandbridge-gateway/bin/requeue_checkins.php --list
  *
- * Re-queuing resets the attempt counter so Command Bridge picks the check-in up on its next poll.
- * Command Bridge ignores check-ins it has already recorded, so re-sending is safe.
+ * Re-queuing resets the attempt counter so OpenECC picks the check-in up on its next poll.
+ * OpenECC ignores check-ins it has already recorded, so re-sending is safe.
  * The action is written to the gateway audit log.
  */
 
@@ -104,7 +104,7 @@ try {
             : "No stuck check-ins. Nothing changed.\n";
         exit(0);
     }
-    echo "Re-queued {$count} check-in(s). Command Bridge will collect them on its next poll (within a minute).\n";
+    echo "Re-queued {$count} check-in(s). OpenECC will collect them on its next poll (within a minute).\n";
 } catch (Throwable $e) {
     gateway_log('requeue_checkins_failure', ['error' => $e->getMessage()]);
     fwrite(STDERR, 'requeue_checkins failed: ' . $e->getMessage() . "\n");

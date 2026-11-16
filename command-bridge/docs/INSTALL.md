@@ -1,4 +1,4 @@
-# Installing Command Bridge
+# Installing OpenECC
 
 ## 1. Prepare
 

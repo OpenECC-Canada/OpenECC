@@ -35,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!in_array($queue, array_column(cb_printers(true), 'queue'), true)) { throw new RuntimeException('Unknown printer.'); }
             $file = tempnam(sys_get_temp_dir(), 'cbtest_');
             if ($file === false) { throw new RuntimeException('Could not make the test page.'); }
-            file_put_contents($file, SimpleTextPdf::render('Command Bridge test page', ['Printer: ' . $queue, 'Sent: ' . date('Y-m-d H:i')],
-                [['heading' => 'It works', 'text' => 'This page was sent from the Command Bridge server. If you can read it, people can print forms on this printer.']]));
-            [$job, $err] = cb_print_send($queue, $file, 1, 'Command Bridge test page');
+            file_put_contents($file, SimpleTextPdf::render('OpenECC test page', ['Printer: ' . $queue, 'Sent: ' . date('Y-m-d H:i')],
+                [['heading' => 'It works', 'text' => 'This page was sent from the OpenECC server. If you can read it, people can print forms on this printer.']]));
+            [$job, $err] = cb_print_send($queue, $file, 1, 'OpenECC test page');
             @unlink($file);
             audit_log($uid, $job ? 'print' : 'print_failed', 'printer_test', null, 'Test page on ' . $queue . ($job ? ', job ' . $job : ': ' . $err));
             if ($job) { flash('success', 'Test page sent to ' . $queue . ' (job ' . $job . ').'); }
@@ -104,7 +104,7 @@ render_header('Printers');
 
 <div class="card">
   <details<?= ($installed && !$printers) ? ' open' : '' ?>>
-    <summary><strong>Server check</strong> (what Command Bridge sees)</summary>
+    <summary><strong>Server check</strong> (what OpenECC sees)</summary>
     <?php
       $t0 = microtime(true);
       [$diagRows, $diagErr] = cb_printers_query();
@@ -123,7 +123,7 @@ render_header('Printers');
 
 <div class="card">
   <h3>Adding a printer</h3>
-  <p>On the Command Bridge server, with the printer's IP address (from its network settings page or a configuration printout), run:</p>
+  <p>On the OpenECC server, with the printer's IP address (from its network settings page or a configuration printout), run:</p>
   <pre>sudo <?= e(dirname(__DIR__, 2)) ?>/tools/setup_printer.sh</pre>
   <p class="small">It checks for the print system and offers to install it, then a menu lets you add, list, test or
     remove printers. It connects driverless first (most office printers and copiers from the last ten years) and falls

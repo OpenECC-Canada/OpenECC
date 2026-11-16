@@ -9,5 +9,5 @@ if (!defined('GATEWAY_VERSION')) {
 }
 /** Where users of this network service can get the source (AGPL-3.0 section 13). */
 if (!defined('GATEWAY_SOURCE_URL')) {
-    define('GATEWAY_SOURCE_URL', 'https://github.com/PhantomNomad/CommandBridge');
+    define('GATEWAY_SOURCE_URL', 'https://github.com/OpenECC-Canada/OpenECC');
 }

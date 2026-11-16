@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/includes/pdf/OfficialPdfText.php';
 
 /**
- * Maps one released resource onto the official ICS Canada 221 Demobilization Check-Out. Command Bridge fills in what
+ * Maps one released resource onto the official ICS Canada 221 Demobilization Check-Out. OpenECC fills in what
  * it knows (the incident, the resource, its demob number and any release details); the units that must sign the
  * resource out are ticked, and their sign-offs, transport and notifications are completed by hand.
  */

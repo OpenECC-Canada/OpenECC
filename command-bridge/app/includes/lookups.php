@@ -6,7 +6,7 @@ declare(strict_types=1);
  * People can still type anything; changing a list never changes forms already filled in.
  *
  * Starter lists (includes/lookup_starters/<province>.php) are optional, province-specific values a SysAdmin can load
- * from the Lookups page. They are not in seed.sql because Command Bridge is used across Canada.
+ * from the Lookups page. They are not in seed.sql because OpenECC is used across Canada.
  */
 
 /** The lists, and where each is offered. Order = the Lookups page order. */

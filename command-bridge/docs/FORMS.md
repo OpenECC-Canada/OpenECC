@@ -1,6 +1,6 @@
 # Official forms
 
-`app/assets/pdf/official/` holds the ICS Canada form templates that Command Bridge fills and flattens with `pdftk`.
+`app/assets/pdf/official/` holds the ICS Canada form templates that OpenECC fills and flattens with `pdftk`.
 They are redistributed with permission from the forms' publisher (<https://www.icscanada.ca>) and are **not** covered
 by the AGPL licence of the code.
 

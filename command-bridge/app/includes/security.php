@@ -147,7 +147,7 @@ function csrf_failure_response(bool $sessionEnded): never {
 
     echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
         . '<meta name="viewport" content="width=device-width, initial-scale=1">' . $refresh
-        . '<title>' . $esc($title) . ' - Command Bridge</title>'
+        . '<title>' . $esc($title) . ' - OpenECC</title>'
         . '<style>body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f3f4f6;color:#111827;margin:0;'
         . 'display:flex;min-height:100vh;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box}'
         . '.card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:2rem;max-width:30rem;width:100%}'

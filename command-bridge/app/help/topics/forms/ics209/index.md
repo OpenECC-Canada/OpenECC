@@ -8,7 +8,7 @@ The ICS 209 is a snapshot of a significant incident for people **outside** it: t
 
 General steps for signing and printing are in [Working with ICS forms](help:forms/working_with_forms). There is also a wildfire version, the [ICS 209-WF](help:forms/ics209wf/index).
 
-## How Command Bridge helps
+## How OpenECC helps
 
 - There is **one report per operational period**. The report number counts up across the incident.
 - Blank fields are filled in from the previous report, then from the incident record, the assigned Incident Commander(s), your organization settings and the operational period. Blue notes show which fields were filled in this way. Nothing is kept until you save.

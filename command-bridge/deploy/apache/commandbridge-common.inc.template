@@ -1,4 +1,4 @@
-# Command Bridge access rules, shared by the HTTP and HTTPS virtual hosts.
+# OpenECC access rules, shared by the HTTP and HTTPS virtual hosts.
 # __APP_DIR__ is replaced by install.sh. AllowOverride is None: .htaccess is not used.
 <Directory __APP_DIR__>
     Options -Indexes -MultiViews +FollowSymLinks

@@ -49,7 +49,7 @@ render_header('Email User');
     <?= csrf_field() ?>
     <input type="hidden" name="user_id" value="<?= e((string)$userId) ?>">
     <div class="grid">
-      <div><label>Subject</label><input name="subject" value="Command Bridge reminder" required></div>
+      <div><label>Subject</label><input name="subject" value="OpenECC reminder" required></div>
       <div style="grid-column:1/-1;"><label>Message</label><textarea name="message" rows="8" required>Please complete your ICS 214 before leaving.</textarea></div>
     </div>
     <div style="margin-top:16px;">

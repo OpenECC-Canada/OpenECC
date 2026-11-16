@@ -643,7 +643,7 @@ function external_checkin_enqueue_expected_resource_snapshot(int $expectedResour
 
 /**
  * Queue the least-privilege CIR/SAM Companion Check-In account snapshot.
- * The verifier is derived from the user's single CommandBridge PIN. Plaintext
+ * The verifier is derived from the user's single OpenECC PIN. Plaintext
  * PINs are never transmitted.
  */
 function external_checkin_enqueue_companion_user_snapshot(int $incidentId, int $userId): int {

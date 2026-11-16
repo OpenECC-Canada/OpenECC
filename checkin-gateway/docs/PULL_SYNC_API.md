@@ -39,7 +39,7 @@ Read-only: it never leases, changes or deletes events. A `200` answer proves the
 
 `checkins_stuck` counts check-ins that are no longer offered (attempts used up, or rejected); re-send them on the gateway with
 `bin/requeue_checkins.php`. Errors: `401` wrong key ID/secret or clock difference beyond `GATEWAY_REQUEST_TTL_SECONDS`;
-`503` sync disabled on the gateway. Command Bridge calls it from `bin/external_checkin_ping.php`.
+`503` sync disabled on the gateway. OpenECC calls it from `bin/external_checkin_ping.php`.
 
 ## Pull events
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Command Bridge installer - fresh installs on Debian 12 / 13 (or a close derivative).
+# OpenECC installer - fresh installs on Debian 12 / 13 (or a close derivative).
 # Run as root from the unpacked release folder:   sudo ./install.sh
 #
 # It installs the required packages, creates the database, copies the application,
@@ -26,7 +26,7 @@ WEB_USER=www-data
 ASSUME_YES="${CB_ASSUME_YES:-0}"
 
 # shellcheck disable=SC1091
-. "$SRC_DIR/deploy/lib/ui.sh" 2>/dev/null || { echo "deploy/lib/ui.sh is missing - run install.sh from the unpacked Command Bridge folder." >&2; exit 1; }
+. "$SRC_DIR/deploy/lib/ui.sh" 2>/dev/null || { echo "deploy/lib/ui.sh is missing - run install.sh from the unpacked OpenECC folder." >&2; exit 1; }
 # shellcheck disable=SC1091
 . "$SRC_DIR/deploy/lib/timesync.sh"
 # shellcheck disable=SC1091
@@ -52,18 +52,18 @@ rand_hex() { openssl rand -hex "$1"; }
 [ "$(id -u)" -eq 0 ] || { echo "Run this installer as root (sudo ./install.sh)." >&2; exit 1; }
 mkdir -p "$(dirname "$LOG")"; touch "$LOG"; chmod 600 "$LOG"
 exec 3>&1
-ui_init "Command Bridge installer"
+ui_init "OpenECC installer"
 if [ "$UI_WT" = 1 ]; then exec > >(cat >> "$LOG") 2>&1; else exec > >(tee -a "$LOG") 2>&1; fi
 
-[ -f "$SRC_DIR/database/schema.sql" ] && [ -d "$SRC_DIR/app" ] || die "Run install.sh from the unpacked Command Bridge folder (app/ and database/ must be next to it)."
+[ -f "$SRC_DIR/database/schema.sql" ] && [ -d "$SRC_DIR/app" ] || die "Run install.sh from the unpacked OpenECC folder (app/ and database/ must be next to it)."
 VERSION="$(tr -d '[:space:]' < "$SRC_DIR/VERSION")"
-UI_TITLE="Command Bridge $VERSION installer"
+UI_TITLE="OpenECC $VERSION installer"
 
 if [ "$UI_WT" = 1 ]; then
-    ui_msg "Welcome" "This installer sets up Command Bridge $VERSION on this server.\n\nIt will install the required packages, create the database, configure Apache and encryption, and create your first administrator. You can cancel at any question.\n\nA log is written to $LOG."
+    ui_msg "Welcome" "This installer sets up OpenECC $VERSION on this server.\n\nIt will install the required packages, create the database, configure Apache and encryption, and create your first administrator. You can cancel at any question.\n\nA log is written to $LOG."
 else
     say "=============================================="
-    say " Command Bridge $VERSION - installer"
+    say " OpenECC $VERSION - installer"
     say "=============================================="
     say "Log file: $LOG"
 fi
@@ -78,18 +78,18 @@ esac
 command -v apt-get >/dev/null || die "apt-get not found."
 
 # ---------------------------------------------------------------- questions
-ui_ask INSTALL_DIR "Install folder" "Where should Command Bridge be installed?\n\nOnly its app/ subfolder is served by the web server." "${CB_INSTALL_DIR:-/var/www/commandbridge}"
+ui_ask INSTALL_DIR "Install folder" "Where should OpenECC be installed?\n\nOnly its app/ subfolder is served by the web server." "${CB_INSTALL_DIR:-/var/www/commandbridge}"
 case "$INSTALL_DIR" in /*) ;; *) die "Install folder must be an absolute path." ;; esac
 INSTALL_DIR="${INSTALL_DIR%/}"
 [ -n "$INSTALL_DIR" ] && [ "$INSTALL_DIR" != / ] || die "Refusing to install into /."
 if [ -e "$INSTALL_DIR/app" ] || [ -f "$CONF_DIR/db.env" ] || [ -f "$CONF_DIR/install.conf" ]; then
-    die "An existing Command Bridge install was found. This installer is for fresh installs only; use update.sh to upgrade."
+    die "An existing OpenECC install was found. This installer is for fresh installs only; use update.sh to upgrade."
 fi
-ui_yesno "Confirm install folder" "Install Command Bridge into:\n\n    $INSTALL_DIR" y || die "Cancelled."
+ui_yesno "Confirm install folder" "Install OpenECC into:\n\n    $INSTALL_DIR" y || die "Cancelled."
 APP_DIR="$INSTALL_DIR/app"
 
 DEFAULT_NAME="${CB_SERVER_NAME:-$(hostname -f 2>/dev/null || hostname)}"
-ui_ask SERVER_NAME "Web address" "Server name - the DNS name or IP address people will type to reach Command Bridge:" "$DEFAULT_NAME"
+ui_ask SERVER_NAME "Web address" "Server name - the DNS name or IP address people will type to reach OpenECC:" "$DEFAULT_NAME"
 [[ $SERVER_NAME =~ ^[A-Za-z0-9._-]+$ ]] || die "Server name may only contain letters, digits, dots, hyphens and underscores."
 
 ui_menu TLS_MODE "Encryption (HTTPS)" "How should the connection be encrypted?\n\nLet's Encrypt only works if this server is reachable from the internet on ports 80/443 under a public DNS name. Most internal servers should use a self-signed certificate or one from their own CA." "${CB_TLS_MODE:-2}" \
@@ -203,7 +203,7 @@ chown "$WEB_USER":"$WEB_USER" "$APP_DIR/.well-known" "$APP_DIR/.well-known/acme-
 mkdir -p "$CONF_DIR"; chown root:"$WEB_USER" "$CONF_DIR"; chmod 0750 "$CONF_DIR"
 install -m 0640 -o root -g "$WEB_USER" /dev/null "$CONF_DIR/db.env"
 cat > "$CONF_DIR/db.env" <<ENVEOF
-# Command Bridge database settings - written by install.sh. Keep private.
+# OpenECC database settings - written by install.sh. Keep private.
 DB_HOST=127.0.0.1
 DB_NAME=$DB_NAME
 DB_APP_USER=$DB_USER
@@ -230,7 +230,7 @@ if [ -n "$PHPVER" ] && [ -d "/etc/php/$PHPVER" ]; then
     for sapi in apache2 cli; do
         [ -d "/etc/php/$PHPVER/$sapi/conf.d" ] || continue
         cat > "/etc/php/$PHPVER/$sapi/conf.d/90-commandbridge.ini" <<PHPEOF
-; Command Bridge
+; OpenECC
 expose_php = Off
 date.timezone = $TZ_NAME
 upload_max_filesize = 20M
@@ -238,7 +238,7 @@ post_max_size = 25M
 max_input_vars = 5000
 session.cookie_httponly = 1
 session.use_strict_mode = 1
-; Sign-out after this many seconds without activity (Command Bridge enforces it; Debian's clean-up uses it too)
+; Sign-out after this many seconds without activity (OpenECC enforces it; Debian's clean-up uses it too)
 session.gc_maxlifetime = 3600
 PHPEOF
     done
@@ -254,7 +254,7 @@ printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/
 
 write_http_only() {
     cat > "$APACHE_SITES/$SITE_NAME.conf" <<VHEOF
-# Command Bridge - generated by install.sh
+# OpenECC - generated by install.sh
 <VirtualHost *:80>
     ServerName $SERVER_NAME
     DocumentRoot $APP_DIR
@@ -265,7 +265,7 @@ VHEOF
 }
 write_redirect_80() {  # redirect all HTTP to HTTPS, keeping the ACME path reachable
     cat > "$APACHE_SITES/$SITE_NAME.conf" <<VHEOF
-# Command Bridge - generated by install.sh
+# OpenECC - generated by install.sh
 <VirtualHost *:80>
     ServerName $SERVER_NAME
     DocumentRoot $APP_DIR
@@ -315,7 +315,7 @@ case "$TLS_MODE" in
         SSL_DIR=/etc/ssl/commandbridge; mkdir -p "$SSL_DIR"; chmod 0755 "$SSL_DIR"
         if [[ $SERVER_NAME =~ ^[0-9.]+$ ]]; then SAN="IP:$SERVER_NAME"; else SAN="DNS:$SERVER_NAME"; fi
         openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge.key" -out "$SSL_DIR/commandbridge.crt" \
-            -subj "/CN=$SERVER_NAME/O=Command Bridge" -addext "subjectAltName=$SAN" 2>/dev/null
+            -subj "/CN=$SERVER_NAME/O=OpenECC" -addext "subjectAltName=$SAN" 2>/dev/null
         chmod 0640 "$SSL_DIR/commandbridge.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge.key"
         write_redirect_80; append_https "$SSL_DIR/commandbridge.crt" "$SSL_DIR/commandbridge.key" 0
         TLS_RESULT="self-signed (valid 825 days: $SSL_DIR/commandbridge.crt)" ;;
@@ -333,7 +333,7 @@ case "$TLS_MODE" in
             warn "Falling back to a self-signed certificate. Re-run 'certbot certonly --webroot -w $APP_DIR -d $SERVER_NAME' later."
             SSL_DIR=/etc/ssl/commandbridge; mkdir -p "$SSL_DIR"
             openssl req -x509 -nodes -newkey rsa:3072 -days 825 -sha256 -keyout "$SSL_DIR/commandbridge.key" -out "$SSL_DIR/commandbridge.crt" \
-                -subj "/CN=$SERVER_NAME/O=Command Bridge" -addext "subjectAltName=DNS:$SERVER_NAME" 2>/dev/null
+                -subj "/CN=$SERVER_NAME/O=OpenECC" -addext "subjectAltName=DNS:$SERVER_NAME" 2>/dev/null
             chmod 0640 "$SSL_DIR/commandbridge.key"; chown root:"$WEB_USER" "$SSL_DIR/commandbridge.key"
             write_redirect_80; append_https "$SSL_DIR/commandbridge.crt" "$SSL_DIR/commandbridge.key" 0
             TLS_RESULT="self-signed (Let's Encrypt failed)"
@@ -379,7 +379,7 @@ cat "$SMOKE_OUT"
 SCHEME=https; [ "$TLS_MODE" = 4 ] && SCHEME=http
 FINAL="$(mktemp)"; chmod 600 "$FINAL"
 {
-    echo "Command Bridge $VERSION is installed."
+    echo "OpenECC $VERSION is installed."
     echo
     echo "  Open        : $SCHEME://$SERVER_NAME/"
     echo "  Username    : $ADMIN_USER"

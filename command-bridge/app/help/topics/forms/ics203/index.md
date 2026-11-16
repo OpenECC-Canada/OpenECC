@@ -9,7 +9,7 @@ General steps for signing and printing are in [Working with ICS forms](help:form
 
 ## How it is filled in
 
-You don't type on this form. Command Bridge builds it from the people **currently assigned** to incident positions. To change it, change the assignments in [Position assignments](help:operational_periods/assignments) and the 203 updates straight away.
+You don't type on this form. OpenECC builds it from the people **currently assigned** to incident positions. To change it, change the assignments in [Position assignments](help:operational_periods/assignments) and the 203 updates straight away.
 
 - Only positions that are in use show a name. The rest are left blank on purpose, and you can't type into them here.
 - The form shows as **Complete** once an Incident Commander is assigned.

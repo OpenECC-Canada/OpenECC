@@ -64,7 +64,7 @@ settings_menu('backup');
 
 <section class="card">
     <h2>Application data backup</h2>
-    <p>Create a downloadable backup of the Command Bridge database, uploaded operational files, and branding files.</p>
+    <p>Create a downloadable backup of the OpenECC database, uploaded operational files, and branding files.</p>
     <p class="muted">Backups do not include Apache configuration, database credentials, TLS certificates, or application source code. Protect downloaded backups as sensitive operational records.</p>
 
     <?php if (!class_exists('ZipArchive')): ?>
@@ -83,7 +83,7 @@ settings_menu('backup');
     <div class="alert alert-warning">
         Restoring replaces current database records, uploads, and branding files with the selected backup. This action cannot be undone from the web application.
     </div>
-    <p>Only restore ZIP files created by this Command Bridge backup page and compatible with this installation.</p>
+    <p>Only restore ZIP files created by this OpenECC backup page and compatible with this installation.</p>
 
     <?php if (class_exists('ZipArchive')): ?>
         <form method="post" enctype="multipart/form-data">

@@ -179,7 +179,7 @@ if ($formRecord) {
 }
 
 $lines[] = '';
-$lines[] = 'Attachments are retained in Command Bridge and are not rasterized into this PDF.';
+$lines[] = 'Attachments are retained in OpenECC and are not rasterized into this PDF.';
 $lines[] = 'This avoids server-side PDF conversion errors when pdftocairo or Ghostscript is unavailable.';
 
 ics202_emit_pdf(

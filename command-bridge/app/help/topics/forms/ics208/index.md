@@ -1,6 +1,6 @@
 # ICS 208 - Safety Message/Plan
 
-The ICS 208 expands on the safety message: the known hazards for the operational period, the precautions people must take, and whether a site safety plan is needed. In Command Bridge it is one of the forms the [ICS 202](help:forms/ics202/index) needs before the Incident Action Plan (IAP) can be approved.
+The ICS 208 expands on the safety message: the known hazards for the operational period, the precautions people must take, and whether a site safety plan is needed. In OpenECC it is one of the forms the [ICS 202](help:forms/ics202/index) needs before the Incident Action Plan (IAP) can be approved.
 
 - **Usually prepared by:** the Safety Officer.
 - **Who gets it:** everyone who receives the IAP. The signed original goes to the Documentation Unit.

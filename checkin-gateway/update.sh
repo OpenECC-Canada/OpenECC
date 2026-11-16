@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Command Bridge Check-In Gateway updater. Run as root from the folder of the NEW release:   sudo ./update.sh
+# OpenECC Check-In Gateway updater. Run as root from the folder of the NEW release:   sudo ./update.sh
 # Backs up the database, replaces the application code (never touching storage/ or db.env),
 # applies pending database migrations and runs the self-check. See docs/UPDATING.md.
 set -Eeuo pipefail

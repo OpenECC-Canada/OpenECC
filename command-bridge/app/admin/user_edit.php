@@ -218,7 +218,7 @@ render_header('Edit User');
     <?php endif; ?>
     <?php if ($incidentId > 0): ?>
       <h3>Companion Check-In Access (CIR / SAM)</h3>
-      <p class="small">Only active users assigned the CIR or SAM role can use Companion Check-In. Select the authorized check-in locations. The same CommandBridge PIN is used for local sign-in and Companion Check-In.</p>
+      <p class="small">Only active users assigned the CIR or SAM role can use Companion Check-In. Select the authorized check-in locations. The same OpenECC PIN is used for local sign-in and Companion Check-In.</p>
       <?php
         $companionRoleIds = [];
         foreach ($roles as $role) {
@@ -249,7 +249,7 @@ render_header('Edit User');
           <?php elseif (!empty($companionAccess['access_id']) && empty($companionLocationIds)): ?>
             <p class="small">Access is enabled, but no authorized check-in locations are assigned.</p>
           <?php elseif (!empty($companionAccess['access_id'])): ?>
-            <p class="small">Access enabled. The user’s CommandBridge PIN is used for Companion Check-In.</p>
+            <p class="small">Access enabled. The user’s OpenECC PIN is used for Companion Check-In.</p>
           <?php else: ?>
             <p class="small">Companion Check-In access is not enabled.</p>
           <?php endif; ?>
@@ -259,7 +259,7 @@ render_header('Edit User');
             <option value="enable">Enable Companion Check-In access</option>
             <option value="revoke">Revoke Companion Check-In access</option>
           </select>
-          <p class="small">Changing the user's CommandBridge PIN also updates their Companion Check-In PIN.</p>
+          <p class="small">Changing the user's OpenECC PIN also updates their Companion Check-In PIN.</p>
         </div>
       </div>
     <?php endif; ?>

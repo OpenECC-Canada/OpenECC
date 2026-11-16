@@ -1,4 +1,4 @@
-# Updating Command Bridge
+# Updating OpenECC
 
 ```bash
 # unpack the new release in a separate folder, then as root:

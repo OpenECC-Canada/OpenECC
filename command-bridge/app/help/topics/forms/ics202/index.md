@@ -24,7 +24,7 @@ General steps for saving and printing are in [Working with ICS forms](help:forms
 
 ## IAP forms and approval
 
-Command Bridge checks which IAP forms have been filled in for the selected operational period and ticks them for you, marked **(detected)**:
+OpenECC checks which IAP forms have been filled in for the selected operational period and ticks them for you, marked **(detected)**:
 
 - [ICS 203](help:forms/ics203/index): an Incident Commander is assigned
 - [ICS 204](help:forms/ics204/index), [ICS 205](help:forms/ics205/index), [ICS 206](help:forms/ics206/index) and [ICS 208](help:forms/ics208/index): the form has been saved for this period

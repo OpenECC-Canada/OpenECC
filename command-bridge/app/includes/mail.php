@@ -1,6 +1,6 @@
 <?php
 /**
- * Command Bridge email delivery service.
+ * OpenECC email delivery service.
  * Uses one active delivery method selected in Admin > Settings > Email Delivery.
  * PHP's local mail() transport is intentionally not used.
  */
@@ -34,7 +34,7 @@ function cb_email_host_is_local(string $host): bool {
     $host = strtolower(trim($host, " []"));
     return $host === 'localhost' || $host === '::1' || (bool)preg_match('/^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $host);
 }
-function cb_email_error(string $message): array { error_log('Command Bridge email: ' . $message); return ['ok'=>false,'message'=>$message]; }
+function cb_email_error(string $message): array { error_log('OpenECC email: ' . $message); return ['ok'=>false,'message'=>$message]; }
 function cb_email_clean(string $value): string { return trim(str_replace(["\r","\n"], '', $value)); }
 function cb_token(string $tenant, string $client, string $secret, string $scope): array {
     if (!function_exists('curl_init')) return cb_email_error('The PHP cURL extension is required for OAuth2 and Microsoft Graph.');
@@ -128,36 +128,36 @@ function app_send_mail(string $to,string $subject,string $body,array $opt=[]): b
 
 /**
  * Sends initial local-account credentials after an administrator creates a user.
- * Delivery uses the configured Command Bridge email method.
+ * Delivery uses the configured OpenECC email method.
  */
 function send_new_user_pin_email(string $to, string $realName, string $username, string $pin): bool {
     $displayName = trim($realName);
     $greeting = $displayName !== '' ? 'Hello ' . $displayName . ',' : 'Hello,';
 
     $body = $greeting . "\n\n"
-        . "An account has been created for you in Command Bridge.\n\n"
+        . "An account has been created for you in OpenECC.\n\n"
         . "Username: " . $username . "\n"
         . "PIN: " . $pin . "\n\n"
         . "For security, keep this PIN confidential and change it if your local procedures require it.\n\n"
-        . "If you were not expecting this message, please contact your Command Bridge administrator.";
+        . "If you were not expecting this message, please contact your OpenECC administrator.";
 
-    return app_send_mail($to, 'Your Command Bridge username and PIN', $body);
+    return app_send_mail($to, 'Your OpenECC username and PIN', $body);
 }
 
 /**
  * Sends a replacement local-account PIN after an administrator resets it.
- * Delivery uses the configured Command Bridge email method.
+ * Delivery uses the configured OpenECC email method.
  */
 function send_reset_user_pin_email(string $to, string $realName, string $username, string $pin): bool {
     $displayName = trim($realName);
     $greeting = $displayName !== '' ? 'Hello ' . $displayName . ',' : 'Hello,';
 
     $body = $greeting . "\n\n"
-        . "Your Command Bridge PIN has been reset by an administrator.\n\n"
+        . "Your OpenECC PIN has been reset by an administrator.\n\n"
         . "Username: " . $username . "\n"
         . "New PIN: " . $pin . "\n\n"
         . "For security, keep this PIN confidential and change it if your local procedures require it.\n\n"
-        . "If you did not request this reset, please contact your Command Bridge administrator.";
+        . "If you did not request this reset, please contact your OpenECC administrator.";
 
-    return app_send_mail($to, 'Your Command Bridge PIN has been reset', $body);
+    return app_send_mail($to, 'Your OpenECC PIN has been reset', $body);
 }

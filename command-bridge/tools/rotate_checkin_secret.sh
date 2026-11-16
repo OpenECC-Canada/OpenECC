@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Replace the shared secret between Command Bridge and the Check-In Gateway: pause, swap, resume.  Run as root:
+# Replace the shared secret between OpenECC and the Check-In Gateway: pause, swap, resume.  Run as root:
 #     sudo <install folder>/tools/rotate_checkin_secret.sh
 #
 #  1. Pauses check-in sync (the timer) and waits for a running poll to finish.
@@ -22,15 +22,15 @@ WEB_USER=www-data
 . "$LIB_DIR/checkin_setup.sh"
 
 [ "$(id -u)" -eq 0 ] || { echo "Run as root: sudo $0" >&2; exit 1; }
-[ -f "$CONF" ] || { echo "$CONF not found. Is Command Bridge installed on this server?" >&2; exit 1; }
+[ -f "$CONF" ] || { echo "$CONF not found. Is OpenECC installed on this server?" >&2; exit 1; }
 # shellcheck disable=SC1090
 . "$CONF"
 APP_DIR="$INSTALL_DIR/app"
-[ -f "$APP_DIR/bin/external_checkin_ping.php" ] || { echo "This Command Bridge is too old for this script. Update it first (update.sh)." >&2; exit 1; }
+[ -f "$APP_DIR/bin/external_checkin_ping.php" ] || { echo "This OpenECC is too old for this script. Update it first (update.sh)." >&2; exit 1; }
 chk_is_configured || { echo "No Check-In Gateway is configured. Run $TOOLS_DIR/setup_checkin.sh first." >&2; exit 1; }
 
 exec 3>&1
-ui_init "Command Bridge - new check-in shared secret"
+ui_init "OpenECC - new check-in shared secret"
 
 OLD_KEY_ID="$(chk_env_get EXTERNAL_CHECKIN_HMAC_KEY_ID)"
 GATEWAY="$(chk_base_from_env)"
@@ -112,7 +112,7 @@ while :; do
         2)
             install -m 0640 -o root -g "$WEB_USER" "$BACKUP" "$CHK_ENV_FILE"
             resume; trap - INT
-            ui_msg "Old key restored" "Command Bridge uses key ID '$OLD_KEY_ID' again$( [ "$WAS_ON" = 1 ] && printf ' and sync has resumed' ).\n\nIf you already changed the gateway, undo it there too: rotate_secret.sh printed the backup file and the cp command to restore it."
+            ui_msg "Old key restored" "OpenECC uses key ID '$OLD_KEY_ID' again$( [ "$WAS_ON" = 1 ] && printf ' and sync has resumed' ).\n\nIf you already changed the gateway, undo it there too: rotate_secret.sh printed the backup file and the cp command to restore it."
             exit 1
             ;;
         3)

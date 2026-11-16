@@ -1,6 +1,6 @@
 # Standard PDF Export Method
 
-Command Bridge exports completed ICS forms by filling the approved official ICS Canada PDF template and flattening the result. This keeps the published output aligned with the official layout rather than re-drawing each form in PHP.
+OpenECC exports completed ICS forms by filling the approved official ICS Canada PDF template and flattening the result. This keeps the published output aligned with the official layout rather than re-drawing each form in PHP.
 
 ## Components
 
