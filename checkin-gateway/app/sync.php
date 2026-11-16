@@ -15,10 +15,10 @@ function gateway_validate_internal_request(): array {
     if (!str_starts_with(strtolower((string)($_SERVER['CONTENT_TYPE'] ?? '')), 'application/json')) gateway_json(415, ['ok'=>false,'error'=>'json_required']);
     $length = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
     if ($length <= 0 || $length > GATEWAY_MAX_REQUEST_BYTES) gateway_json(413, ['ok'=>false,'error'=>'payload_too_large']);
-    $timestamp = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_TIMESTAMP'] ?? ''));
-    $nonce = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_NONCE'] ?? ''));
-    $keyId = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_KEY_ID'] ?? ''));
-    $signature = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_SIGNATURE'] ?? ''));
+    $timestamp = trim((string)($_SERVER['HTTP_X_OPENECC_TIMESTAMP'] ?? ''));
+    $nonce = trim((string)($_SERVER['HTTP_X_OPENECC_NONCE'] ?? ''));
+    $keyId = trim((string)($_SERVER['HTTP_X_OPENECC_KEY_ID'] ?? ''));
+    $signature = trim((string)($_SERVER['HTTP_X_OPENECC_SIGNATURE'] ?? ''));
     $c = gateway_config();
     if (!preg_match('/^\d{10}$/', $timestamp) || !preg_match('/^[A-Za-z0-9._:-]{16,128}$/', $nonce)
         || $keyId === '' || !hash_equals($c['hmac_key_id'], $keyId) || abs(time() - (int)$timestamp) > $c['request_ttl_seconds']) {
@@ -225,7 +225,7 @@ function gateway_queue_event(string $type, int $incidentId, int $locationId, arr
     return (int)gateway_db()->lastInsertId();
 }
 function gateway_dispatch_one(): ?array {
-    $c=gateway_config(); if(($c['delivery_mode'] ?? 'push') !== 'push' || !gateway_sync_ready() || $c['commandbridge_events_url']==='') return null;
+    $c=gateway_config(); if(($c['delivery_mode'] ?? 'push') !== 'push' || !gateway_sync_ready() || $c['openecc_events_url']==='') return null;
     $pdo=gateway_db(); $pdo->beginTransaction();
     try {
         $stmt=$pdo->query('SELECT * FROM gateway_outbound_events WHERE delivery_status IN ("pending","failed") AND next_attempt_at<=NOW() AND attempt_count<max_attempts ORDER BY id LIMIT 1 FOR UPDATE');
@@ -234,19 +234,19 @@ function gateway_dispatch_one(): ?array {
         $pdo->commit(); $row['attempt_count']++;
     } catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
     $timestamp=(string)time();$nonce=bin2hex(random_bytes(24));$body=(string)$row['event_payload'];
-    $ch=curl_init($c['commandbridge_events_url']);
-    curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>$body,CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>$c['connect_timeout_seconds'],CURLOPT_TIMEOUT=>$c['request_timeout_seconds'],CURLOPT_HTTPHEADER=>['Content-Type: application/json','Accept: application/json','X-CommandBridge-Key-Id: '.$c['hmac_key_id'],'X-CommandBridge-Timestamp: '.$timestamp,'X-CommandBridge-Nonce: '.$nonce,'X-CommandBridge-Signature: '.gateway_signature($c['hmac_secret'],$timestamp,$nonce,$body)]]);
+    $ch=curl_init($c['openecc_events_url']);
+    curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>$body,CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>$c['connect_timeout_seconds'],CURLOPT_TIMEOUT=>$c['request_timeout_seconds'],CURLOPT_HTTPHEADER=>['Content-Type: application/json','Accept: application/json','X-OpenECC-Key-Id: '.$c['hmac_key_id'],'X-OpenECC-Timestamp: '.$timestamp,'X-OpenECC-Nonce: '.$nonce,'X-OpenECC-Signature: '.gateway_signature($c['hmac_secret'],$timestamp,$nonce,$body)]]);
     $response=curl_exec($ch);$errno=curl_errno($ch);$error=curl_error($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);curl_close($ch);
     if($response!==false && $status>=200 && $status<300){$pdo->prepare('UPDATE gateway_outbound_events SET delivery_status="delivered",delivered_at=NOW(),locked_at=NULL,last_http_status=?,last_error=NULL WHERE id=?')->execute([$status,$row['id']]);return ['delivered'=>true];}
     $permanent=$status>=400&&$status<500&&$status!==408&&$status!==429;$final=$permanent||$row['attempt_count']>=$row['max_attempts'];$delay=min(1800,30*(2**min(6,max(0,$row['attempt_count']-1))));
-    $pdo->prepare('UPDATE gateway_outbound_events SET delivery_status="failed",locked_at=NULL,failed_at=IF(?,NOW(),NULL),next_attempt_at=IF(?,NULL,DATE_ADD(NOW(),INTERVAL ? SECOND)),last_http_status=?,last_error=? WHERE id=?')->execute([$final,$final,$delay,$status?:null,substr($response===false?($error?:'HTTP request failed'):'CommandBridge returned HTTP '.$status,0,1000),$row['id']]);
+    $pdo->prepare('UPDATE gateway_outbound_events SET delivery_status="failed",locked_at=NULL,failed_at=IF(?,NOW(),NULL),next_attempt_at=IF(?,NULL,DATE_ADD(NOW(),INTERVAL ? SECOND)),last_http_status=?,last_error=? WHERE id=?')->execute([$final,$final,$delay,$status?:null,substr($response===false?($error?:'HTTP request failed'):'OpenECC returned HTTP '.$status,0,1000),$row['id']]);
     return ['delivered'=>false];
 }
 
 
 /**
  * Verifies an HMAC-authenticated control request made by the internal
- * CommandBridge poller. It uses the existing CommandBridge header format.
+ * OpenECC poller. It uses the existing OpenECC header format.
  */
 function gateway_validate_control_request(array $allowedActions): array {
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') gateway_json(405, ['ok'=>false,'error'=>'method_not_allowed']);
@@ -256,10 +256,10 @@ function gateway_validate_control_request(array $allowedActions): array {
     $length = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
     if ($length <= 0 || $length > GATEWAY_MAX_REQUEST_BYTES) gateway_json(413, ['ok'=>false,'error'=>'payload_too_large']);
 
-    $timestamp = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_TIMESTAMP'] ?? ''));
-    $nonce = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_NONCE'] ?? ''));
-    $keyId = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_KEY_ID'] ?? ''));
-    $signature = trim((string)($_SERVER['HTTP_X_COMMANDBRIDGE_SIGNATURE'] ?? ''));
+    $timestamp = trim((string)($_SERVER['HTTP_X_OPENECC_TIMESTAMP'] ?? ''));
+    $nonce = trim((string)($_SERVER['HTTP_X_OPENECC_NONCE'] ?? ''));
+    $keyId = trim((string)($_SERVER['HTTP_X_OPENECC_KEY_ID'] ?? ''));
+    $signature = trim((string)($_SERVER['HTTP_X_OPENECC_SIGNATURE'] ?? ''));
     $c = gateway_config();
 
     if (!preg_match('/^\d{10}$/', $timestamp) || !preg_match('/^[A-Za-z0-9._:-]{16,128}$/', $nonce)

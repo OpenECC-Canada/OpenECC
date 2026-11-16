@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 4) . '/app/sync.php';
 
 try {
-    $request = gateway_validate_commandbridge_poll_request();
+    $request = gateway_validate_openecc_poll_request();
     if ($request['action'] === 'poll') {
         $event = gateway_reserve_outbound_event_for_poll();
         gateway_json(200, ['ok'=>true, 'event'=>$event]);

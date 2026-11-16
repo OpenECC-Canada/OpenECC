@@ -12,13 +12,13 @@ declare(strict_types=1);
  *   php bin/clear_lockouts.php --ip=ADDRESS
  *   php bin/clear_lockouts.php --location=ID --ip=ADDRESS
  *
- * Run as root or a user that can read /etc/commandbridge/checkin_gateway.env:
- *   sudo php /var/www/commandbridge-gateway/bin/clear_lockouts.php --list
+ * Run as root or a user that can read /etc/openecc/checkin_gateway.env:
+ *   sudo php /var/www/openecc-gateway/bin/clear_lockouts.php --list
  *
  * Clearing removes failure records only. It does not change who is authorized,
  * and the action is written to the gateway audit log.
  *
- * A forgotten or compromised PIN is fixed in Command Bridge (Users > Reset PIN);
+ * A forgotten or compromised PIN is fixed in OpenECC (Users > Reset PIN);
  * the new PIN reaches the gateway on the next synchronization.
  */
 

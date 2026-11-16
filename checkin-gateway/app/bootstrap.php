@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 const GATEWAY_APP_ROOT = __DIR__ . '/..';
 require_once __DIR__ . '/version.php';
-const GATEWAY_ENV_PATH = '/etc/commandbridge/checkin_gateway.env';
+const GATEWAY_ENV_PATH = '/etc/openecc/checkin_gateway.env';
 const GATEWAY_MAX_REQUEST_BYTES = 65536;
 
 require_once __DIR__ . '/login_throttle.php';
@@ -14,7 +14,7 @@ function gateway_config(): array {
 
     $config = [
         'env' => 'production', 'sync_enabled' => false, 'db_dsn' => '', 'db_user' => '', 'db_password' => '',
-        'hmac_key_id' => '', 'hmac_secret' => '', 'commandbridge_events_url' => '',
+        'hmac_key_id' => '', 'hmac_secret' => '', 'openecc_events_url' => '',
         'delivery_mode' => 'push', 'pull_lease_seconds' => 300,
         'request_ttl_seconds' => 300, 'session_idle_seconds' => 28800,
         'connect_timeout_seconds' => 5, 'request_timeout_seconds' => 20, 'max_attempts' => 12, 'timezone' => 'UTC',
@@ -40,7 +40,7 @@ function gateway_config(): array {
     $config['db_password'] = $values['GATEWAY_DB_PASSWORD'] ?? '';
     $config['hmac_key_id'] = $values['EXTERNAL_CHECKIN_HMAC_KEY_ID'] ?? '';
     $config['hmac_secret'] = $values['EXTERNAL_CHECKIN_HMAC_SECRET'] ?? '';
-    $config['commandbridge_events_url'] = $values['COMMANDBRIDGE_EVENTS_URL'] ?? '';
+    $config['openecc_events_url'] = $values['OPENECC_EVENTS_URL'] ?? '';
     $deliveryMode = strtolower(trim((string) ($values['GATEWAY_DELIVERY_MODE'] ?? 'push')));
     $config['delivery_mode'] = in_array($deliveryMode, ['push', 'pull'], true) ? $deliveryMode : 'push';
     $timezone = (string)($values['GATEWAY_TIMEZONE'] ?? 'UTC');
@@ -132,12 +132,12 @@ function gateway_render_header(string $title): void {
     $title = gateway_h($title);
     echo <<<HTML
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{$title} | Command Bridge Check-In</title><link rel="stylesheet" href="/assets/app.css"></head>
-<body><main class="container"><header><p class="eyebrow">Command Bridge</p><h1>{$title}</h1></header>
+<title>{$title} | OpenECC Check-In</title><link rel="stylesheet" href="/assets/app.css"></head>
+<body><main class="container"><header><p class="eyebrow">OpenECC</p><h1>{$title}</h1></header>
 HTML;
 }
 function gateway_render_footer(): void {
-    echo '<footer class="muted" style="margin-top:24px;font-size:.85em">Command Bridge Check-In Gateway ' . gateway_h(GATEWAY_VERSION)
+    echo '<footer class="muted" style="margin-top:24px;font-size:.85em">OpenECC Check-In Gateway ' . gateway_h(GATEWAY_VERSION)
         . ' &middot; free software under the GNU AGPL-3.0 &middot; <a href="' . gateway_h(GATEWAY_SOURCE_URL) . '">source code</a></footer></main></body></html>';
 }
 function gateway_render_error(int $status, string $message): never {

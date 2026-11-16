@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the OpenECC Check-In Gateway dispatcher every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+Unit=openecc-gateway-dispatch.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

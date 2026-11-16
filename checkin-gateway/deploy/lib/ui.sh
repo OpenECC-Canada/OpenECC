@@ -4,7 +4,7 @@
 # whiptail talks to /dev/tty directly, so it keeps working while stdout is being logged.
 
 UI_WT=0
-UI_TITLE="Command Bridge"
+UI_TITLE="OpenECC"
 UI_STEP_TOTAL=1
 
 ui_init() {  # ui_init [title]   - call after /tmp-safe preflight; may install whiptail
