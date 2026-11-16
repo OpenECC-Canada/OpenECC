@@ -1,3 +1,5 @@
+<p align="center"><img src="openecc/app/assets/img/openecc-icon.svg" width="96" alt="OpenECC logo"></p>
+
 # OpenECC
 
 > **Command Bridge is now OpenECC.** The project was renamed in November 2026 (version 0.9.0) because other

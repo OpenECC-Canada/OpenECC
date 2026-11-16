@@ -2,12 +2,11 @@
 db.env
 *.env
 !*.env.example
-# OpenECC runtime data (the default branding logo is kept)
+# OpenECC runtime data
 openecc/app/storage/uploads/*
 !openecc/app/storage/uploads/index.html
 openecc/app/storage/branding/*
 !openecc/app/storage/branding/index.html
-!openecc/app/storage/branding/org-logo-8cb09c61de6e81e74ded6a26.png
 openecc/app/.well-known/
 checkin-gateway/public/.well-known/
 # Build output and editors

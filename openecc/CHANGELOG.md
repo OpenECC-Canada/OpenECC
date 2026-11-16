@@ -21,6 +21,9 @@ that message if they find an old install.
 * The backup format is unchanged, so a Command Bridge backup restores into OpenECC. Code names (`cb_`,
   `command_bridge_` functions) are unchanged.
 * Source links point to github.com/OpenECC-Canada/OpenECC. New docs/MIGRATING.md.
+* **New logo:** a coordination hub (the ECC at the centre, linked to the people and places it supports) inside an open
+  ring shaped like a C. It replaces the bridge icon in the menu, the browser tab, the README and the access cards,
+  which now say OPENECC. The unused old bridge picture in `storage/branding/` is removed.
 
 * README files and the page footer now say plainly that Command Bridge is provided as is, with no warranty,
   and that you use it at your own risk (AGPL-3.0 sections 15 and 16).
