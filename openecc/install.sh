@@ -30,6 +30,8 @@ ASSUME_YES="${CB_ASSUME_YES:-0}"
 # shellcheck disable=SC1091
 . "$SRC_DIR/deploy/lib/timesync.sh"
 # shellcheck disable=SC1091
+. "$SRC_DIR/deploy/lib/packages.sh"
+# shellcheck disable=SC1091
 . "$SRC_DIR/deploy/lib/checkin_setup.sh"
 
 WARNINGS=()
@@ -150,8 +152,7 @@ ui_steps $(( 7 + CHK_WANTED ))
 
 # ---------------------------------------------------------------- packages
 ui_stage "Installing packages (this can take a few minutes)"
-PACKAGES=(apache2 mariadb-server mariadb-client php php-cli libapache2-mod-php php-mysql php-curl php-mbstring
-          php-xml php-zip php-gd php-intl php-tcpdf pdftk-java poppler-utils ghostscript rsync ca-certificates openssl)
+PACKAGES=("${OPENECC_PACKAGES[@]}")
 [ "$TLS_MODE" = 1 ] && PACKAGES+=(certbot)
 TIMESYNC_PKG="$(timesync_packages)"; [ -n "$TIMESYNC_PKG" ] && PACKAGES+=("$TIMESYNC_PKG")
 if [ "${CB_SKIP_PACKAGES:-0}" != 1 ]; then
