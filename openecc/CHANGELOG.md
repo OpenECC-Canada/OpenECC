@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Experimental: OpenECC appliance (issue #57)
+* `openecc/appliance/build_iso.sh` builds a USB installer from the Debian 13 netinst ISO (on any Linux with
+  xorriso). It installs Debian almost unattended on the first NVMe drive (asking before it erases it) and switches on
+  **setup mode**.
+* Setup mode: a Wi-Fi hotspot at 10.42.0.1 and a setup web page (setup code required, except on the box's own
+  screen) that asks the install questions. A root helper then runs `install.sh` unattended with the answers.
+  Optional desktop auto-login opens the setup page. Afterwards setup mode removes itself and the Wi-Fi changes to
+  the name and password chosen on the page.
+* `install.sh` takes its package list from the new `deploy/lib/packages.sh`, so setup mode can preload the same
+  packages for an offline install.
+* Guide: `openecc/docs/APPLIANCE.md`.
+
 ## 0.9.0 (2026-11-16)
 
 Version numbers drop the "-beta.N" ending from here on: 0.9.0, then 0.9.1, 0.9.2 and so on. OpenECC and the
