@@ -57,7 +57,9 @@ function db(): PDO {
         throw new RuntimeException('Database credentials are missing from db.env');
     }
 
-    $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+    $port = (int)($env['DB_PORT'] ?? 0);   // optional; only needed when MariaDB is not on its usual port
+
+    $dsn = "mysql:host={$host};" . ($port > 0 ? "port={$port};" : '') . "dbname={$dbname};charset=utf8mb4";
 
     $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

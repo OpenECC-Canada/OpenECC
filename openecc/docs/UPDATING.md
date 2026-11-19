@@ -11,6 +11,14 @@ the application code (never `storage/` or `db.env`), applies any new files in `d
 (recorded in the `schema_migrations` table) and runs the environment self-check. To roll back, restore the code from
 the previous release and the SQL backup (`gunzip -c backup.sql.gz | mariadb openecc`).
 
+The migrations are applied by `app/bin/migrate.php` (the same tool the Windows installer will use). You can run it
+yourself:
+
+```bash
+sudo php /var/www/openecc/app/bin/migrate.php --status   # list applied and pending migrations, change nothing
+sudo php /var/www/openecc/app/bin/migrate.php --admin    # apply pending migrations as MariaDB root
+```
+
 ## Coming from a private 1.0.2.x build
 
 Those builds used `/opt/.../command-bridge-webapp`, `ics_app` and `database_changes_*.sql`. There is no in-place

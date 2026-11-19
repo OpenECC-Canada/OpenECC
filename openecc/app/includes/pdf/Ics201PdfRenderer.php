@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/TcpdfLoader.php';
+require_once dirname(__DIR__) . '/external_programs.php';
 
 class Ics201PdfRenderer
 {
@@ -430,10 +431,12 @@ class Ics201PdfRenderer
         $cache = $this->attachmentCacheDir($path);
         $rendered = false;
 
-        if ($this->commandExists('pdftocairo')) {
+        $pdftocairo = cb_find_program('pdftocairo');
+        $gs = $pdftocairo === '' ? cb_find_program('gs') : '';
+        if ($pdftocairo !== '') {
             $prefix = $cache . '/page';
             if (!glob($prefix . '-*.png')) {
-                @exec('pdftocairo -png -r 144 ' . escapeshellarg($path) . ' ' . escapeshellarg($prefix) . ' 2>/dev/null');
+                cb_run_program([$pdftocairo, '-png', '-r', '144', $path, $prefix]);
             }
             for ($p = 1; $p <= $count; $p++) {
                 $img = sprintf('%s-%d.png', $prefix, $p);
@@ -445,14 +448,12 @@ class Ics201PdfRenderer
                 $pdf->drawAttachmentPageFromImage($img, $w, $h);
                 $rendered = true;
             }
-        } elseif ($this->commandExists('gs')) {
+        } elseif ($gs !== '') {
             for ($p = 1; $p <= $count; $p++) {
                 $img = $cache . '/page-' . $p . '.png';
                 if (!is_file($img)) {
-                    @exec(
-                        'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r144 -dFirstPage=' . $p . ' -dLastPage=' . $p .
-                        ' -sOutputFile=' . escapeshellarg($img) . ' ' . escapeshellarg($path) . ' 2>/dev/null'
-                    );
+                    cb_run_program([$gs, '-dSAFER', '-dBATCH', '-dNOPAUSE', '-sDEVICE=png16m', '-r144', '-dFirstPage=' . $p,
+                        '-dLastPage=' . $p, '-sOutputFile=' . $img, $path]);
                 }
                 if (!is_file($img)) {
                     continue;
@@ -471,13 +472,13 @@ class Ics201PdfRenderer
 
     private function pdfPageSizesMm(string $path): array
     {
-        if (!$this->commandExists('pdfinfo')) {
+        $pdfinfo = cb_find_program('pdfinfo');
+        if ($pdfinfo === '') {
             return [];
         }
 
-        $out = [];
-        @exec('pdfinfo ' . escapeshellarg($path) . ' 2>/dev/null', $out, $rc);
-        if (($rc ?? 1) !== 0) {
+        [$rc, $out] = cb_run_program([$pdfinfo, $path]);
+        if ($rc !== 0) {
             return [];
         }
 
@@ -491,8 +492,7 @@ class Ics201PdfRenderer
 
         $sizes = [];
         for ($p = 1; $p <= $pages; $p++) {
-            $po = [];
-            @exec('pdfinfo -f ' . $p . ' -l ' . $p . ' ' . escapeshellarg($path) . ' 2>/dev/null', $po, $prc);
+            [, $po] = cb_run_program([$pdfinfo, '-f', (string)$p, '-l', (string)$p, $path]);
             foreach ($po as $line) {
                 if (preg_match('/Page\s+' . $p . '\s+size:\s+([\d.]+)\s+x\s+([\d.]+)\s+pts/i', $line, $m)) {
                     $sizes[] = [
@@ -514,11 +514,5 @@ class Ics201PdfRenderer
             @mkdir($dir, 0775, true);
         }
         return $dir;
-    }
-
-    private function commandExists(string $command): bool
-    {
-        $result = trim((string)@shell_exec('command -v ' . escapeshellarg($command) . ' 2>/dev/null'));
-        return $result !== '';
     }
 }

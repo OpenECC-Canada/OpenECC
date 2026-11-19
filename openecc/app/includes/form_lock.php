@@ -171,12 +171,19 @@ function cb_form_can_revise(int $formRecordId): bool
 /** The PHP command-line program, for making the PDF snapshot in a separate process. */
 function cb_php_cli_binary(): string
 {
+    // OPENECC_PHP_BIN (Apache SetEnv or the environment) wins; the Windows installer sets it.
+    $configured = getenv('OPENECC_PHP_BIN');
+    if (!is_string($configured) || $configured === '') { $configured = (string)($_SERVER['OPENECC_PHP_BIN'] ?? ''); }
+    if ($configured !== '' && is_file($configured)) { return $configured; }
+    // Under Apache, PHP_BINARY is the web server, not PHP; only use it when it really is the php program.
     $bin = (string)PHP_BINARY;
-    if ($bin !== '' && preg_match('/^php[0-9.]*$/', basename($bin)) && is_executable($bin)) { return $bin; }
-    foreach (['/usr/bin/php', '/usr/local/bin/php', '/usr/bin/php' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION] as $c) {
-        if (is_executable($c)) { return $c; }
+    if ($bin !== '' && preg_match('/^php[0-9.]*(\.exe)?$/i', basename($bin)) && is_file($bin)) { return $bin; }
+    $candidates = [PHP_BINDIR . DIRECTORY_SEPARATOR . (PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php'),
+        '/usr/bin/php', '/usr/local/bin/php', '/usr/bin/php' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION];
+    foreach ($candidates as $c) {
+        if (is_file($c) && (PHP_OS_FAMILY === 'Windows' || is_executable($c))) { return $c; }
     }
-    return 'php';
+    return PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php';
 }
 
 /**

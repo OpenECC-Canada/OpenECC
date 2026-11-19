@@ -164,30 +164,13 @@ systemctl enable --now mariadb >/dev/null 2>&1 || true
 TIMESYNC_WARN="$(timesync_check)" || warn "$TIMESYNC_WARN"
 
 # ---------------------------------------------------------------- database
+# Database, application account, schema, seed and db.env are done by app/bin/install_db.php (shared with the
+# Windows installer). It connects as MariaDB root over the local socket and removes a half-made database on error.
 ui_stage "Creating the database"
-SQL="mariadb"; command -v mariadb >/dev/null || SQL="mysql"
-if $SQL -N -e "SHOW DATABASES LIKE '$DB_NAME'" | grep -q .; then die "A database named '$DB_NAME' already exists. Remove it or use update.sh."; fi
-DB_PASS="$(rand_hex 20)"
-$SQL <<SQLEOF
-CREATE DATABASE \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';
-CREATE USER '$DB_USER'@'127.0.0.1' IDENTIFIED BY '$DB_PASS';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, INDEX, REFERENCES, CREATE VIEW, SHOW VIEW, LOCK TABLES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, INDEX, REFERENCES, CREATE VIEW, SHOW VIEW, LOCK TABLES ON \`$DB_NAME\`.* TO '$DB_USER'@'127.0.0.1';
-FLUSH PRIVILEGES;
-SQLEOF
-$SQL "$DB_NAME" < "$SRC_DIR/database/schema.sql"
-$SQL "$DB_NAME" < "$SRC_DIR/database/seed.sql"
-{
-    echo "INSERT INTO schema_migrations (version) VALUES ('0000_baseline');"
-    for f in "$SRC_DIR"/database/migrations/[0-9]*.sql; do
-        if [ -e "$f" ]; then echo "INSERT IGNORE INTO schema_migrations (version) VALUES ('$(basename "$f" .sql)');"; fi
-    done
-    true
-} | $SQL "$DB_NAME"
-TABLES="$($SQL -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$DB_NAME'")"
-[ "$TABLES" -gt 50 ] || die "Database import looks incomplete ($TABLES tables)."
-say "Database ready ($TABLES tables)."
+mkdir -p "$CONF_DIR"; chown root:"$WEB_USER" "$CONF_DIR"; chmod 0750 "$CONF_DIR"
+php "$SRC_DIR/app/bin/install_db.php" --admin --env-file="$CONF_DIR/db.env" --db-name="$DB_NAME" --db-user="$DB_USER" \
+    --timezone="$TZ_NAME" --database-dir="$SRC_DIR/database" || die "The database could not be created (see the messages above)."
+chown root:"$WEB_USER" "$CONF_DIR/db.env"; chmod 0640 "$CONF_DIR/db.env"
 
 # ---------------------------------------------------------------- files
 ui_stage "Copying the application"
@@ -203,16 +186,6 @@ chmod 0750 "$INSTALL_DIR/install.sh" "$INSTALL_DIR/update.sh" "$INSTALL_DIR"/too
 chown -R "$WEB_USER":"$WEB_USER" "$APP_DIR/storage"
 chown "$WEB_USER":"$WEB_USER" "$APP_DIR/.well-known" "$APP_DIR/.well-known/acme-challenge"
 
-mkdir -p "$CONF_DIR"; chown root:"$WEB_USER" "$CONF_DIR"; chmod 0750 "$CONF_DIR"
-install -m 0640 -o root -g "$WEB_USER" /dev/null "$CONF_DIR/db.env"
-cat > "$CONF_DIR/db.env" <<ENVEOF
-# OpenECC database settings - written by install.sh. Keep private.
-DB_HOST=127.0.0.1
-DB_NAME=$DB_NAME
-DB_APP_USER=$DB_USER
-DB_APP_PASSWORD=$DB_PASS
-APP_TIMEZONE=$TZ_NAME
-ENVEOF
 cat > "$CONF_DIR/install.conf" <<CONFEOF
 # Written by install.sh; read by update.sh.
 INSTALL_DIR=$INSTALL_DIR

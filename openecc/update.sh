@@ -36,7 +36,6 @@ fi
 OLD_VER="$(tr -d '[:space:]' < "$INSTALL_DIR/VERSION" 2>/dev/null || echo unknown)"
 NEW_VER="$(tr -d '[:space:]' < "$SRC_DIR/VERSION")"
 APP_DIR="$INSTALL_DIR/app"
-SQL=mariadb; command -v mariadb >/dev/null || SQL=mysql
 [ "$SRC_DIR" != "$INSTALL_DIR" ] || die "Unpack the new release into a separate folder and run its update.sh."
 UI_TITLE="OpenECC updater"
 ui_yesno "Update OpenECC" "Update OpenECC in:\n    $INSTALL_DIR\n\nfrom version $OLD_VER to $NEW_VER?\n\nThe database is backed up first. Uploads and database settings are kept." y || { echo "Cancelled." >&3; exit 1; }
@@ -90,22 +89,16 @@ find "$INSTALL_DIR" -path "$APP_DIR/storage" -prune -o -type d -exec chmod 0750 
 find "$INSTALL_DIR" -path "$APP_DIR/storage" -prune -o -type f ! -name '*.sh' -exec chmod 0640 {} +
 chown -R "$WEB_USER":"$WEB_USER" "$APP_DIR/storage"
 
-# 4. Database migrations
+# 4. Database migrations (app/bin/migrate.php, shared with the Windows installer; MariaDB root over the local socket)
 ui_stage "Applying database migrations"
-$SQL "$DB_NAME" -e "CREATE TABLE IF NOT EXISTS schema_migrations (version varchar(64) NOT NULL, applied_at datetime NOT NULL DEFAULT current_timestamp(), PRIMARY KEY (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    INSERT IGNORE INTO schema_migrations (version) VALUES ('0000_baseline');"
-APPLIED=0
-for f in "$INSTALL_DIR"/database/migrations/[0-9]*.sql; do
-    [ -e "$f" ] || continue
-    v="$(basename "$f" .sql)"
-    if [ "$($SQL -N "$DB_NAME" -e "SELECT COUNT(*) FROM schema_migrations WHERE version='$v'")" = 0 ]; then
-        ui_substage "Migration $v"
-        $SQL "$DB_NAME" < "$f"
-        $SQL "$DB_NAME" -e "INSERT INTO schema_migrations (version) VALUES ('$v')"
-        APPLIED=$((APPLIED+1))
-    fi
-done
-echo "Migrations applied: $APPLIED"
+MIG_OUT="$(mktemp)"
+if ! php "$APP_DIR/bin/migrate.php" --admin --env-file="$ENVF" > "$MIG_OUT" 2>&1; then
+    cat "$MIG_OUT"; rm -f "$MIG_OUT"
+    die "A database migration failed (see above). Your database backup is $BKFILE"
+fi
+cat "$MIG_OUT"
+APPLIED="$(sed -n 's/^Migrations applied: //p' "$MIG_OUT" | tail -n 1)"; APPLIED="${APPLIED:-0}"
+rm -f "$MIG_OUT"
 
 # 5. Reload and check
 ui_stage "Reloading Apache and checking"

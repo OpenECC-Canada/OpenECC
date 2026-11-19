@@ -30,6 +30,8 @@ require_once $appRoot . '/includes/external_checkin_status.php';
 require_once $appRoot . '/includes/pdf/OfficialPdfTemplateExporter.php';
 require_once $appRoot . '/includes/pdf/SimpleTextPdf.php';
 require_once $appRoot . '/includes/pdf/pdf_request.php';
+require_once $appRoot . '/includes/db_migrate.php';
+require_once $appRoot . '/includes/external_programs.php';
 require_once $appRoot . '/forms/ics209/Ics209OfficialPdfFieldMapper.php';
 require_once $appRoot . '/forms/ics209/Ics209WfOfficialPdfFieldMapper.php';
 require_once $appRoot . '/forms/ics213rr_v2/Ics213rrOfficialPdfFieldMapper.php';
@@ -134,6 +136,20 @@ if ($want('env')) {
         t_ok('No pending database migrations', !$pending, $pending ? 'pending: ' . implode(', ', $pending) . ' - run update.sh' : '');
     } catch (Throwable $e) {
         t_ok('Database baseline recorded (schema_migrations)', false, 'table missing - run update.sh');
+    }
+    // install_db.php and migrate.php read the SQL files themselves (0.9.1): every file must split cleanly.
+    $sqlFiles = array_merge([dirname($appRoot) . '/database/schema.sql', dirname($appRoot) . '/database/seed.sql'],
+        array_values(cb_migration_files(dirname($appRoot) . '/database/migrations')));
+    $sqlBad = [];
+    foreach ($sqlFiles as $f) {
+        try { if (!is_file($f) || !cb_sql_split((string)file_get_contents($f))) { $sqlBad[] = basename($f) . ' (missing or empty)'; } }
+        catch (Throwable $e) { $sqlBad[] = basename($f) . ': ' . $e->getMessage(); }
+    }
+    t_ok('Database files readable by the installer and migrate.php', !$sqlBad, $sqlBad ? implode('; ', $sqlBad) : count($sqlFiles) . ' files');
+    t_ok('Migration tool present (bin/migrate.php, bin/install_db.php)', is_file($appRoot . '/bin/migrate.php') && is_file($appRoot . '/bin/install_db.php'));
+    foreach (['pdftocairo', 'pdfinfo'] as $tool) {
+        $found = cb_find_program($tool);
+        $found !== '' ? t_info("$tool: $found") : t_info("$tool not found (PDF attachments on the ICS 201/202 are shown as a note instead)");
     }
     $verFile = $appRoot . '/VERSION';
     t_ok('VERSION file present', is_file($verFile), is_file($verFile) ? trim((string)file_get_contents($verFile)) : 'missing');

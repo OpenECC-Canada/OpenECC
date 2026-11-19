@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.9.1 (2026-11-19)
+
+Groundwork for a one-click Windows installer. Nothing changes for people using OpenECC; on Debian, `install.sh` and
+`update.sh` do the same job as before.
+
+### Changed: database setup and updates are done in PHP
+* New `app/bin/install_db.php` creates the database for a fresh install: database, application account with a random
+  password, `schema.sql`, `seed.sql`, every migration recorded as already applied, then `db.env`. `install.sh` now
+  calls it instead of running the mariadb client. If anything fails part-way, the new database and account are
+  removed again, so the installer can simply be run again (before, a half-made database had to be dropped by hand).
+* New `app/bin/migrate.php` applies pending migrations. `update.sh` now calls it. `--status` lists applied and pending
+  migrations without changing anything. A migration is recorded only after all of its statements ran.
+* Both use the new `includes/db_migrate.php`, which runs the SQL files statement by statement. Migration files must
+  be plain SQL (no `DELIMITER` or other mariadb-client commands); `database/migrations/README.md` says so and the
+  smoke test checks every file.
+* `db.env` may have an optional `DB_PORT=` line, for MariaDB on a port other than 3306.
+
+### Changed: helper programs found the same way on Linux and Windows
+* The ICS 201 and 202 PDFs find and run `pdftocairo`, `pdfinfo` and Ghostscript through the new
+  `includes/external_programs.php`, without a shell. Extra folders can be listed in the `OPENECC_TOOLS_DIR` setting.
+* Form revision snapshots find the PHP program on Windows too; `OPENECC_PHP_BIN` can name it.
+* TCPDF is also looked for in `app/vendor/tcpdf/` and at `OPENECC_TCPDF_PATH` (Debian's php-tcpdf still works).
+
+### Smoke test
+* New checks: every database file can be read by the installer and `migrate.php`, and both tools are present. It
+  also notes whether `pdftocairo` and `pdfinfo` were found.
+
 ## 0.9.0 (2026-11-16)
 
 Version numbers drop the "-beta.N" ending from here on: 0.9.0, then 0.9.1, 0.9.2 and so on. OpenECC and the
